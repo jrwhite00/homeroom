@@ -408,7 +408,12 @@ function Talk({ talk, group }) {
       </p>
       <strong className={s.talkTitle}><a href={`/talks/${encodeURIComponent(talk.id)}`} className={s.talkLink}>{talk.title}</a></strong>
       {talk.missing.length > 0 && (
-        <p className={s.missing}>You&apos;d need: {talk.missing.join(", ")}.</p>
+        <div className={s.needs}>
+          <span>You&apos;d need</span>
+          <ul className={s.chips}>
+            {talk.missing.map((name) => <li key={name} className={s.chip}>{name}</li>)}
+          </ul>
+        </div>
       )}
       <About id={talk.id} />
       {group === "one_step" && sg?.kind === "beginner_talk" && (
