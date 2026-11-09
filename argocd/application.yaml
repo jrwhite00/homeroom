@@ -17,3 +17,13 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
+  # The load generator is started on demand with kubectl scale; don't scale it back to 0.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: loadgen
+      namespace: homeroom
+      jsonPointers:
+        - /spec/replicas

@@ -16,6 +16,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app import chaos
 from app.es import ES, ESError
 from app.translate import translate as translate_question
 
@@ -90,9 +91,13 @@ def translated_text(es: ES, q: str, concepts_index: str = "concepts") -> tuple[s
 @router.get("/search")
 def search(q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid", translate: bool = False,
            es: ES = Depends(get_es)) -> dict:
+    induced = chaos.apply_delay()  # simulated 800 ms when the chaos switch is on; spans get induced=true
     text, translation = translated_text(es, q) if translate else (q, None)
     try:
         results = run(es, text, mode)
     except ESError:
         raise HTTPException(status_code=502, detail="Search is unavailable right now.") from None
-    return {"q": q, "mode": mode, "translated": translation, "results": results}
+    body = {"q": q, "mode": mode, "translated": translation, "results": results}
+    if induced:
+        body["induced_delay"] = chaos.status()
+    return body

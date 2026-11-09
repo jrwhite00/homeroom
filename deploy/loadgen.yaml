@@ -1,0 +1,46 @@
+# SIMULATED students (the load generator). Scaled to 0: start it on demand with
+#   kubectl -n homeroom scale deploy/loadgen --replicas=1
+# argocd/application.yaml ignores this Deployment's replica count, so Argo CD doesn't scale it back.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  namespace: homeroom
+  labels:
+    app.kubernetes.io/name: loadgen
+    app.kubernetes.io/part-of: homeroom
+    homeroom.dev/simulated: "true"
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loadgen
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: loadgen
+        app.kubernetes.io/part-of: homeroom
+        homeroom.dev/simulated: "true"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: loadgen
+          # Same image as the backend; it only runs the loadgen module.
+          image: homeroom-backend:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "app.loadgen"]
+          env:
+            - name: LOADGEN_BASE_URL
+              value: http://backend.homeroom.svc.cluster.local
+            - name: LOADGEN_RPS
+              value: "2"
+            - name: OTEL_SERVICE_NAME
+              value: homeroom-loadgen
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

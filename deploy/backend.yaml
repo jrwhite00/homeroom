@@ -30,6 +30,13 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: homeroom-backend
+            # The chaos switch's token. Optional: without the secret the switch can't be flipped.
+            - name: CHAOS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: homeroom-chaos
+                  key: token
+                  optional: true
           readinessProbe:
             httpGet:
               path: /healthz
