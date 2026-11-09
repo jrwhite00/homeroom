@@ -37,6 +37,14 @@ spec:
                   name: homeroom-chaos
                   key: token
                   optional: true
+            # Course proposals open pull requests with a repo-scoped token. Optional: without the
+            # secret, proposals are saved to data/proposed-courses/ instead.
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: homeroom-github
+                  key: token
+                  optional: true
           readinessProbe:
             httpGet:
               path: /healthz
