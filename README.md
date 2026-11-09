@@ -2,7 +2,7 @@
 
 > **To learn the pod, you must become the pod.**
 
-A high school student picks their state and the computer science courses they've taken. Homeroom classifies every KubeCon talk as **ready**, **one step away** or **not yet**, and Kubernetes' own scheduler places the student's hours onto talk nodes.
+A high school student picks their state and the computer science courses they've taken. Homeroom sorts every KubeCon talk into **ready**, **one step away** and **not yet**, and then Kubernetes' own scheduler builds their week.
 
 - **Talks are nodes.** Each talk is a simulated Kubernetes node. The concepts a talk assumes are taints on that node.
 - **Students are pods.** Each hour of a student's week is a pod, and the concepts they know are its tolerations. kube-scheduler decides where each hour goes.
@@ -12,6 +12,7 @@ A high school student picks their state and the computer science courses they've
 
 - **Backend:** Python FastAPI (`backend/`). Endpoints:
   - `/search`: hybrid search, with optional everyday-language translation.
+  - `/week`: the student's talks sorted by readiness.
   - `/placements`: where Kubernetes put the student's hours.
   - `/courses/propose`: a teacher proposes a course.
   - `/chaos`: the chaos switch.
@@ -169,7 +170,7 @@ Both exist only for the observability demo. **Both are simulated, and they're la
 - Start it with `kubectl -n homeroom scale deploy/loadgen --replicas=1` and stop it with `--replicas=0`.
 - It plays five fictional, pseudonymous students sending a mix of requests:
   - searches, about 60%, some using everyday-language translation;
-  - attempted readiness lookups on the unimplemented `/week` path, 25%;
+  - week lookups, 25%;
   - views of where Kubernetes placed them, 15%.
 - No pseudonym is ever sent. Every request carries `X-Homeroom-Simulated: loadgen`, and the backend marks those spans and metrics `simulated=true`.
 
@@ -191,7 +192,7 @@ On top of the operator's auto-instrumentation, the backend adds its own spans an
 
 **Spans:**
 - `homeroom.search`: the mode, whether translation was used, the concepts it translated to, and the result count.
-- `homeroom.readiness`: per-talk readiness calculation and the number of concepts known.
+- `homeroom.week`: group counts.
 - `homeroom.scheduling`: counts of placed and pending student hours.
 
 **Metrics:**
@@ -200,7 +201,7 @@ On top of the operator's auto-instrumentation, the backend adds its own spans an
 - `homeroom.student_days`, split by whether the student got at least three talks that day.
 
 **Targets** (Dash0 SLOs, rolling 4 weeks):
-- A schedule-latency target is configured for `/week`, but the backend does not implement that route, so it does not measure a schedule endpoint.
+- 99% of schedule requests (`/week`) finish in under 2 seconds.
 - 99% of students are placed in at least three talks a day.
 
 The dashboard and both targets live in `observability/dash0/`.
