@@ -340,6 +340,7 @@ function Week({ week, headingRef }) {
   const [pickedDay, setPickedDay] = useState(""); // "" is every day
   const tabs = dayTabs(week.groups);
   const day = tabs.some((tab) => tab.key === pickedDay) ? pickedDay : ""; // a new week may not have that day
+  useEffect(() => { if (day !== pickedDay) setPickedDay(""); }, [day, pickedDay]);
   const groups = onlyDay(week.groups, day);
   const chosen = tabs.find((tab) => tab.key === day);
   const allDays = [{ key: "", label: "All days", month: "", ready: week.counts.ready }, ...tabs];
