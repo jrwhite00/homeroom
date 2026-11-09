@@ -1,0 +1,3 @@
+concept: Containers
+definition: A way to package a program with everything it needs so it runs the same on any computer
+technical words: Docker, container image, registry, container runtime
