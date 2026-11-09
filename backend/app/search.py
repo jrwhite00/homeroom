@@ -1,0 +1,87 @@
+"""GET /search over the sessions index.
+
+hybrid (default): an rrf retriever that fuses a BM25 multi_match on title and abstract with a
+                  match on the semantic (ELSER) field.
+keyword:          the same BM25 multi_match on its own, so the demo can compare the two.
+
+The sessions index has no "description" field; a talk's description is stored in "abstract".
+Only talks are returned. Breaks, registration, co-located events and other non-talk entries
+have is_talk=false. Solutions Showcase tip talks and Sponsor Demo Theater demos have speakers,
+so they are excluded by track.
+"""
+from __future__ import annotations
+
+from functools import lru_cache
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from app.es import ES, ESError
+
+INDEX = "sessions"
+SIZE = 10
+RANK_WINDOW = 50
+TEXT_FIELDS = ["title", "abstract"]
+EXCLUDED_TRACKS = ["Solutions Showcase", "Sponsor Demo Theater"]
+SOURCE = ["title", "speaker_names", "room", "starts_at"]
+
+Mode = Literal["hybrid", "keyword"]
+
+router = APIRouter()
+
+
+def talk_filter() -> dict:
+    return {"bool": {"filter": [{"term": {"is_talk": True}}],
+                     "must_not": [{"terms": {"track": EXCLUDED_TRACKS}}]}}
+
+
+def _with_filter(query: dict) -> dict:
+    return {"bool": {"must": [query], "filter": [talk_filter()]}}
+
+
+def build_query(q: str, mode: Mode = "hybrid", size: int = SIZE) -> dict:
+    bm25 = _with_filter({"multi_match": {"query": q, "fields": TEXT_FIELDS}})
+    if mode == "keyword":
+        return {"query": bm25, "size": size, "_source": SOURCE}
+    semantic = _with_filter({"match": {"semantic": {"query": q}}})
+    return {
+        "retriever": {"rrf": {
+            "retrievers": [{"standard": {"query": bm25}}, {"standard": {"query": semantic}}],
+            "rank_window_size": RANK_WINDOW,
+        }},
+        "size": size,
+        "_source": SOURCE,
+    }
+
+
+def to_results(response: dict) -> list[dict]:
+    results = []
+    for hit in response.get("hits", {}).get("hits", []):
+        s = hit.get("_source", {})
+        results.append({
+            "title": s.get("title"),
+            "speakers": s.get("speaker_names") or [],
+            "room": s.get("room"),
+            "starts_at": s.get("starts_at"),  # ISO 8601 with the America/Denver offset
+            "score": hit.get("_score"),
+        })
+    return results
+
+
+def run(es: ES, q: str, mode: Mode = "hybrid", size: int = SIZE) -> list[dict]:
+    return to_results(es.search(INDEX, build_query(q, mode, size)))
+
+
+@lru_cache
+def get_es() -> ES:
+    return ES.from_env()
+
+
+@router.get("/search")
+def search(q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid",
+           es: ES = Depends(get_es)) -> dict:
+    try:
+        results = run(es, q, mode)
+    except ESError:
+        raise HTTPException(status_code=502, detail="Search is unavailable right now.") from None
+    return {"q": q, "mode": mode, "results": results}
