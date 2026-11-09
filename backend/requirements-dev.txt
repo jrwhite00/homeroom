@@ -1,3 +1,5 @@
 -r requirements.txt
 pytest==9.2.0
 httpx2==2.16.0
+# Tagger only (python -m app.tag_sessions); the web app never imports it.
+anthropic==2.7.0

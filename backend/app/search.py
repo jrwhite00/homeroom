@@ -17,6 +17,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.es import ES, ESError
+from app.translate import translate as translate_question
 
 INDEX = "sessions"
 SIZE = 10
@@ -77,11 +78,21 @@ def get_es() -> ES:
     return ES.from_env()
 
 
-@router.get("/search")
-def search(q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid",
-           es: ES = Depends(get_es)) -> dict:
+def translated_text(es: ES, q: str, concepts_index: str = "concepts") -> tuple[str, dict | None]:
+    """Return (text to search, translation). Falls back to the question if nothing translates."""
     try:
-        results = run(es, q, mode)
+        translation = translate_question(es, q, concepts_index)
+    except ESError:
+        translation = None  # concepts index missing or unreachable: still search the question itself
+    return (translation["text"] if translation else q), translation
+
+
+@router.get("/search")
+def search(q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid", translate: bool = False,
+           es: ES = Depends(get_es)) -> dict:
+    text, translation = translated_text(es, q) if translate else (q, None)
+    try:
+        results = run(es, text, mode)
     except ESError:
         raise HTTPException(status_code=502, detail="Search is unavailable right now.") from None
-    return {"q": q, "mode": mode, "results": results}
+    return {"q": q, "mode": mode, "translated": translation, "results": results}

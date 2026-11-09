@@ -31,6 +31,26 @@ class ES:
         return cls(os.environ.get("ES_URL") or os.environ.get("ES_LOCAL_URL") or "http://localhost:9200",
                    os.environ.get("ES_API_KEY") or os.environ.get("ES_LOCAL_API_KEY"))
 
+    def request(self, method: str, path: str, body: dict | str | None = None, ndjson: bool = False,
+                ok404: bool = False, timeout: float | None = None) -> dict | None:
+        """Send any request. Used by the loaders; returns None for a 404 when ok404 is set."""
+        headers = dict(self._headers)
+        if ndjson:
+            headers["Content-Type"] = "application/x-ndjson"
+        data = None if body is None else (body if isinstance(body, str) else json.dumps(body)).encode()
+        request = urllib.request.Request(self.url + path, data=data, method=method, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=timeout or self.timeout) as resp:
+                return json.loads(resp.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            if ok404 and e.code == 404:
+                return None
+            raise ESError(f"{method} {path} returned HTTP {e.code}: {e.read().decode()[:500]}") from None
+        except (OSError, http.client.HTTPException) as e:  # URLError, timeouts, dropped or cut-off responses
+            raise ESError(f"could not reach Elasticsearch at {self.url}: {e}") from None
+        except ValueError:
+            raise ESError(f"{method} {path} returned a response that is not JSON") from None
+
     def search(self, index: str, body: dict) -> dict:
         request = urllib.request.Request(f"{self.url}/{index}/_search", data=json.dumps(body).encode(),
                                          method="POST", headers=self._headers)
