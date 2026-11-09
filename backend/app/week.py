@@ -1,9 +1,8 @@
-"""GET /week?state=&courses=&knows=: sort every talk into ready, one step away, not yet and unknown.
+"""GET /week?state=&courses=&concepts=: sort every talk into ready, one step away, not yet and unknown.
 
 The student's concepts are the union of what their chosen courses teach (the `teaches` field in
-the courses index) and any concepts they ticked on the checklist (knows=, concept slugs), for a
-student whose course we don't know. Each talk's group comes from James's readiness() in
-backend/readiness.py, which this module only calls. Missing concepts are shown by their name from the concepts index.
+the courses index) and any concepts they ticked on the checklist (for a course we don't know yet).
+Each talk's group comes from James's readiness() in backend/readiness.py, which this module only calls. Missing concepts are shown by their name from the concepts index.
 
 For each concept that keeps a talk one step away, we suggest one way to pick it up first:
 a Beginner-level talk about that concept that doesn't itself assume it, or, if there is none,
@@ -27,9 +26,9 @@ MAX_TALKS = 2000
 router = APIRouter()
 
 
-def split_courses(courses: str) -> list[str]:
+def split_slugs(slugs: str) -> list[str]:
     seen: list[str] = []
-    for slug in (c.strip() for c in courses.split(",")):
+    for slug in (c.strip() for c in slugs.split(",")):
         if slug and slug not in seen:
             seen.append(slug)
     return seen
@@ -147,12 +146,11 @@ def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | 
 
 @router.get("/week")
 def week(state: str = Query(..., min_length=1), courses: str = Query("", description="comma-separated course slugs"),
-         knows: str = Query("", description="comma-separated concept slugs, from the concept checklist"),
+         concepts: str = Query("", description="comma-separated concept slugs ticked on the checklist"),
          es: ES = Depends(get_es)) -> dict:
-    slugs = split_courses(courses)
     with tracer.start_as_current_span("homeroom.week") as span:  # counts only, never the student
         try:
-            body = build_week(es, state, slugs, split_courses(knows))
+            body = build_week(es, state, split_slugs(courses), split_slugs(concepts))
         except ESError:
             span.set_attribute("week.error", True)
             raise HTTPException(status_code=502, detail="Your week is unavailable right now.") from None
