@@ -33,13 +33,13 @@ A high school student picks their state and the computer science courses they've
   - It follows the rules in `.gitar/rules/`.
   - On course pull requests, the curriculum check posts a comment a teacher can read.
   - With `gitar auto-apply:on` it pushes its own fixes. In the demo PR #33, which deliberately broke `readiness()`, Gitar found the cause of the CI failure and pushed the fix.
-- **Dash0** is the observability layer:
+- **Dash0** is where we watch the app, and where the teacher's view lives: a bar chart on the dashboard showing which concepts most often keep a class "one step away" from talks. It answers the teacher's question: "What should I teach before the trip?" Under the hood:
   - The Dash0 operator auto-instruments the backend.
   - The backend adds its own spans and metrics.
   - The dashboard and two targets (SLOs) are stored as code in `observability/dash0/`.
   - The student page has browser monitoring.
   - Flipping the chaos switch shows up on the dashboard within about two minutes.
-- **Radar** runs in the `radar` namespace. We use it to watch student pods land on talk nodes and to see evictions when a talk is cancelled. Its MCP server lets the coding agent read cluster state and audit findings.
+- **Radar** is the organizer's view. Look there to see how many students are having trouble finding sessions, and what would happen if a talk got cancelled. It runs in the `radar` namespace, and its MCP server lets the coding agent read the cluster too.
 
 ## Setup from a clean laptop
 
@@ -199,6 +199,9 @@ On top of the operator's auto-instrumentation, the backend adds its own spans an
 - `homeroom.http.requests` and `homeroom.http.duration`, broken down by route, status class, `simulated` and `induced`.
 - `homeroom.students.pending`.
 - `homeroom.student_days`, split by whether the student got at least three talks that day.
+- `homeroom_missing_concept`, by `concept`, `class_code` and `simulated`: one count per student and concept when their week leaves them one step away from a talk because of that concept.
+
+**Teacher's view:** on the dashboard, pick your class in the Class dropdown. The "top missing concepts" bar chart shows which concepts kept your students one step away from talks over the last hour. The tallest bar is the best thing to teach before the trip. When the load generator is running, its simulated students are counted too.
 
 **Targets** (Dash0 SLOs, rolling 4 weeks):
 - 99% of schedule requests (`/week`) finish in under 2 seconds.
@@ -209,6 +212,15 @@ The dashboard and both targets live in `observability/dash0/`.
 - `python -m app.dash0_sync export` writes the live dashboard back to the repo.
 
 Browser monitoring (`@dash0/sdk-web`) reads its endpoint and ingest-only token from the `homeroom-dash0-web` secret at runtime.
+
+## Organizer's view (Radar)
+
+Every hour of a student's week is a pod, so a student who can't get into any talk that hour shows up in Radar as a pod that couldn't be scheduled.
+
+- **Who's stuck:** open the scheduling issues for a class's namespace (`class-<name>`) to see how many students are having trouble finding sessions right now, and in which hours.
+- **What if we cancel this talk?** Open the talk's node (`talk-<session id>`) and look at its drain plan. It lists the students who'd be bumped. Nothing changes until someone runs `cd backend && python -m app.placer cancel talk-<session id>`.
+
+Radar shows students by pod name, which is a pseudonym plus the time slot. Its messages are Kubernetes' own ("untolerated taint"), so they don't say which concept is missing. Homeroom works that out and tells the student in plain words.
 
 ## Teacher-owned curriculum
 
