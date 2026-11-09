@@ -6,8 +6,9 @@ GET  /courses?state=   the courses we know (all states when state is empty), for
 POST /courses/match    {"state", "text"}: the state's courses closest in meaning to what the student
                        typed. It searches the state's CTE course standards (semantic search on the
                        standards index), so it also finds a real course that isn't in the curriculum
-                       yet. Each match says whether we know it; an unknown one carries the standard
-                       name POST /courses/propose needs.
+                       yet. Each match says whether we know it; a known one carries its slug and level
+                       (two courses with one name at different levels are two matches); an unknown one
+                       carries the standard name POST /courses/propose needs.
 GET  /concepts         every concept with its plain-language definition, for the concept checklist
 
 /courses/match is a POST so the typed text stays out of URLs and request logs. It is never put on
@@ -48,7 +49,11 @@ def standard_name(state: str, course: str) -> str:
 
 def match_courses(es: ES, state: str, text: str) -> list[dict]:
     state = normal_state(state)
-    known = {c["course"].strip().lower(): c for c in known_courses(es, state)}
+    # Matched by name, but every course with that name is kept (each with its own slug), so two
+    # "Programming 1" courses at different levels don't collapse into one.
+    known: dict[str, list[dict]] = {}
+    for c in known_courses(es, state):
+        known.setdefault(c["course"].strip().lower(), []).append(c)
     body = {"size": STANDARD_HITS, "_source": ["course"],
             "query": {"bool": {"must": [{"match": {"semantic": {"query": text}}}],
                                "filter": [{"prefix": {"source": f"{slugify(state)}-cte-"}},
@@ -62,10 +67,13 @@ def match_courses(es: ES, state: str, text: str) -> list[dict]:
     names.sort(key=lambda n: slugify(n) != typed)  # the exact name, if typed, comes first
     matches = []
     for name in names[:MAX_MATCHES]:
-        course = known.get(name.strip().lower())
-        matches.append({"course": name, "known": course is not None,
-                        "slug": course["slug"] if course else None,
-                        "standard": standard_name(state, name)})
+        same_name = known.get(name.strip().lower(), [])
+        for course in same_name:  # one match per known course, so each level can be chosen on its own
+            matches.append({"course": name, "known": True, "slug": course["slug"],
+                            "level": course.get("level", ""), "standard": standard_name(state, name)})
+        if not same_name:
+            matches.append({"course": name, "known": False, "slug": None, "level": "",
+                            "standard": standard_name(state, name)})
     return matches
 
 

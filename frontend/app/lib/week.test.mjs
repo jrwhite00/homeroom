@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { byDay, coursesFor, proposalBody, proposalMessage, readQuery, statesFrom, timeOf, weekQuery } from "./week.mjs";
+import { byDay, coursesFor, hasLevels, proposalBody, proposalMessage, readQuery, statesFrom, timeOf, weekQuery } from "./week.mjs";
 
 const COURSES = [
   { slug: "fx-b", course: "B course", state: "Utah" },
@@ -24,6 +24,16 @@ test("the checklist shows courses for the chosen level, plus courses for everyon
   assert.deepEqual(coursesFor(all, "Utah", "high-school").map((c) => c.slug), ["hs", "any"]);
   assert.deepEqual(coursesFor(all, "Utah", "undergraduate").map((c) => c.slug), ["ug", "any"]);
   assert.deepEqual(coursesFor(all, "Utah").map((c) => c.slug), ["hs", "ug", "any"]); // no level: all of them
+});
+
+test("the level menu is only needed when a course in the chosen state has a level", () => {
+  const all = [
+    { slug: "any", course: "Web design", state: "Utah", level: "" },
+    { slug: "oh", course: "Ohio", state: "Ohio", level: "high-school" },
+  ];
+  assert.equal(hasLevels(all, "Utah"), false);
+  assert.equal(hasLevels(all, "Ohio"), true);
+  assert.equal(hasLevels([], "Utah"), false);
 });
 
 test("the address holds only state, level, course and concept slugs", () => {

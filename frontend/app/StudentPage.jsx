@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  byDay, coursesFor, GROUP_HELP, GROUP_ORDER, MAX_PROPOSAL_CONCEPTS, proposalBody, proposalMessage, readQuery,
-  statesFrom, timeOf, weekQuery,
+  byDay, coursesFor, GROUP_HELP, GROUP_ORDER, hasLevels, MAX_PROPOSAL_CONCEPTS, proposalBody, proposalMessage,
+  readQuery, statesFrom, timeOf, weekQuery,
 } from "./lib/week.mjs";
 import s from "./student.module.css";
 
@@ -65,7 +65,7 @@ export default function StudentPage() {
         if (fromAddress.state && states.includes(fromAddress.state)) {
           setState(fromAddress.state);
           const known = (c.levels || []).some((l) => l.slug === fromAddress.level);
-          fromAddress.level = known ? fromAddress.level : "";
+          fromAddress.level = known && hasLevels(c.courses, fromAddress.state) ? fromAddress.level : "";
           setLevel(fromAddress.level);
           const shown = new Set(coursesFor(c.courses, fromAddress.state, fromAddress.level).map((x) => x.slug));
           fromAddress.courses = fromAddress.courses.filter((slug) => shown.has(slug));
@@ -86,6 +86,7 @@ export default function StudentPage() {
 
   function onStateChange(e) {
     setState(e.target.value);
+    setLevel("");
     setPicked([]);
     setWeek(null);
   }
@@ -96,6 +97,18 @@ export default function StudentPage() {
     setLevel(next);
     setPicked(picked.filter((slug) => shown.has(slug))); // don't keep a class the list no longer shows
     setWeek(null);
+  }
+
+  function onKnownCourse(m) {
+    const knownInState = coursesFor(allCourses, state, "").some((c) => c.slug === m.slug);
+    if (!knownInState) return false;
+    const hiddenAtThisLevel = !stateCourses.some((c) => c.slug === m.slug);
+    if (hiddenAtThisLevel) setLevel("");
+    if (!picked.includes(m.slug)) setPicked([...picked, m.slug]);
+    setStatus(hiddenAtThisLevel
+      ? `Added ${m.course} to your classes. Showing all classes so this one stays visible.`
+      : `Added ${m.course} to your classes.`);
+    return true;
   }
 
   function onSubmit(e) {
@@ -131,7 +144,7 @@ export default function StudentPage() {
           </select>
         </div>
 
-        {state && levels.length > 0 && (
+        {state && levels.length > 0 && hasLevels(allCourses, state) && (
           <div className={s.field}>
             <label htmlFor="level">Your education level</label>
             <select id="level" value={level} onChange={onLevelChange} aria-describedby="level-hint">
@@ -178,10 +191,8 @@ export default function StudentPage() {
       </form>
 
       {state && (
-        <NotOnTheList key={state} state={state} concepts={concepts}
-                      onKnownCourse={(m) => { if (stateCourses.some((c) => c.slug === m.slug) && !picked.includes(m.slug))
-                                                setPicked([...picked, m.slug]);
-                                              setStatus(`Added ${m.course} to your classes.`); }}
+        <NotOnTheList key={state} state={state} concepts={concepts} levels={levels}
+                      onKnownCourse={onKnownCourse}
                       onConcepts={(slugs) => { setTicked([...new Set([...ticked, ...slugs])]);
                                                setStatus(`Added ${slugs.length} concepts.`); }} />
       )}
@@ -193,7 +204,7 @@ export default function StudentPage() {
   );
 }
 
-function NotOnTheList({ state, concepts, onKnownCourse, onConcepts }) {
+function NotOnTheList({ state, concepts, levels, onKnownCourse, onConcepts }) {
   const [text, setText] = useState("");
   const [matches, setMatches] = useState(null);
   const [choice, setChoice] = useState("");
@@ -234,8 +245,8 @@ function NotOnTheList({ state, concepts, onKnownCourse, onConcepts }) {
     if (choice === "none") { setStep("fallback"); return; }
     const m = matches[Number(choice)];
     if (m.known) {
-      onKnownCourse(m);
-      setMessage(`Added ${m.course} to your classes.`);
+      const added = onKnownCourse(m);
+      setMessage(added ? `Added ${m.course} to your classes.` : "That class isn't in this state's list.");
       reset();
       return;
     }
@@ -280,13 +291,17 @@ function NotOnTheList({ state, concepts, onKnownCourse, onConcepts }) {
             <legend ref={resultsHeading} tabIndex={-1}>
               {matches.length ? "Is it one of these?" : "We didn't find a close class."}
             </legend>
-            {matches.map((m, i) => (
-              <div key={m.course} className={s.check}>
-                <input type="radio" name="match" id={`match-${i}`} value={String(i)} checked={choice === String(i)}
-                       onChange={(e) => setChoice(e.target.value)} />
-                <label htmlFor={`match-${i}`}>{m.course}{m.known ? "" : " (we haven't added this class yet)"}</label>
-              </div>
-            ))}
+            {matches.map((m, i) => {
+              const levelName = levels.find((l) => l.slug === m.level)?.name;
+              return (
+                <div key={m.slug || m.course} className={s.check}>
+                  <input type="radio" name="match" id={`match-${i}`} value={String(i)} checked={choice === String(i)}
+                         onChange={(e) => setChoice(e.target.value)} />
+                  <label htmlFor={`match-${i}`}>{m.course}{levelName ? ` (${levelName})` : ""}
+                    {m.known ? "" : " (we haven't added this class yet)"}</label>
+                </div>
+              );
+            })}
             <div className={s.check}>
               <input type="radio" name="match" id="match-none" value="none" checked={choice === "none"}
                      onChange={(e) => setChoice(e.target.value)} />

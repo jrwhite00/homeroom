@@ -20,6 +20,10 @@ export function coursesFor(courses, state, level = "") {
   return courses.filter((c) => c.state === state && (!level || !c.level || c.level === level));
 }
 
+export function hasLevels(courses, state) {
+  return courses.some((c) => c.state === state && Boolean(c.level));
+}
+
 function splitList(value) {
   return [...new Set((value || "").split(",").map((s) => s.trim()).filter(Boolean))];
 }

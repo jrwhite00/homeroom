@@ -20,8 +20,9 @@ STANDARD_HITS = ["Web Development 1", "Web Development 1", "Computer Programming
 
 
 class StubES:
-    def __init__(self, fail=False):
+    def __init__(self, fail=False, courses=None):
         self.fail, self.bodies = fail, []
+        self.courses = COURSES if courses is None else courses
 
     def search(self, index, body):
         self.bodies.append((index, body))
@@ -29,7 +30,7 @@ class StubES:
             raise ESError("connection refused")
         if index == "courses":
             q = body["query"]
-            docs = [c for c in COURSES if "match_all" in q or c["state"] == q["term"]["state"]]
+            docs = [c for c in self.courses if "match_all" in q or c["state"] == q["term"]["state"]]
         elif index == "concepts":
             docs = CONCEPTS
         else:
@@ -69,16 +70,34 @@ def test_match_groups_standards_by_course_and_says_which_we_know():
     body = call(stub, "POST", "/courses/match", json={"state": "utah", "text": "making web pages"}).json()
     assert body["state"] == "Utah"
     assert body["matches"] == [
-        {"course": "Web Development 1", "known": False, "slug": None, "standard": "Utah CTE Web Development 1 strands"},
-        {"course": "Computer Programming 1", "known": True, "slug": "fx-programming-1",
+        {"course": "Web Development 1", "known": False, "slug": None, "level": "",
+         "standard": "Utah CTE Web Development 1 strands"},
+        {"course": "Computer Programming 1", "known": True, "slug": "fx-programming-1", "level": "",
          "standard": "Utah CTE Computer Programming 1 strands"},
-        {"course": "Exploring Computer Science", "known": True, "slug": "fx-exploring",
+        {"course": "Exploring Computer Science", "known": True, "slug": "fx-exploring", "level": "",
          "standard": "Utah CTE Exploring Computer Science strands"},
     ]
     index, query = stub.bodies[-1]
     assert index == "standards"
     assert query["query"]["bool"]["must"] == [{"match": {"semantic": {"query": "making web pages"}}}]
     assert {"prefix": {"source": "utah-cte-"}} in query["query"]["bool"]["filter"]
+
+
+def test_match_keeps_same_name_courses_at_different_levels_separate():
+    stub = StubES(courses=[
+        {"slug": "fx-prog-hs", "course": "Computer Programming 1", "state": "Utah", "level": "high-school"},
+        {"slug": "fx-prog-ug", "course": "Computer Programming 1", "state": "Utah", "level": "undergraduate"},
+    ])
+    matches = call(stub, "POST", "/courses/match", json={"state": "Utah", "text": "programming"}).json()["matches"]
+    by_slug = {match["slug"]: match for match in matches if match["slug"]}
+    assert by_slug["fx-prog-hs"]["level"] == "high-school"
+    assert by_slug["fx-prog-ug"]["level"] == "undergraduate"
+    assert [match["slug"] for match in matches if match["course"] == "Computer Programming 1"] == [
+        "fx-prog-hs", "fx-prog-ug",
+    ]
+    assert {match["course"] for match in matches} == {
+        "Web Development 1", "Computer Programming 1", "Exploring Computer Science",
+    }
 
 
 def test_match_puts_the_exact_name_first():
