@@ -1,0 +1,64 @@
+version: "1"
+name: talk-cancelled
+description: >-
+  A talk is cancelled. Marks the session cancelled in the sessions index, counts the students
+  placed in it from the placements index, and records a summary in homeroom-workflow-events.
+  Demo runs are labeled simulated (the default).
+enabled: true
+tags: [homeroom]
+triggers:
+  - type: manual
+    inputs:
+      - name: talk_id
+        type: string
+        required: true
+        description: The session id, for example 1371083
+      - name: simulated
+        type: boolean
+        default: true
+        description: Label the cancellation as simulated (demo)
+steps:
+  - name: get_talk
+    type: elasticsearch.search
+    with:
+      index: sessions
+      size: 1
+      _source: [id, title, starts_at]
+      query:
+        term:
+          id: "{{ inputs.talk_id }}"
+  - name: mark_cancelled
+    type: elasticsearch.update
+    with:
+      index: sessions
+      id: "{{ inputs.talk_id }}"
+      refresh: wait_for
+      doc:
+        status: Cancelled
+        cancelled_at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
+        cancelled_simulated: "{{ inputs.simulated }}"
+  - name: count_students
+    type: elasticsearch.esql.query
+    with:
+      format: json
+      query: >-
+        FROM placements | WHERE status.talk == ?
+        | STATS students = COUNT_DISTINCT(student), slot = MAX(slot)
+      params:
+        - "talk-{{ inputs.talk_id }}"
+  - name: write_summary
+    type: elasticsearch.index
+    with:
+      index: homeroom-workflow-events
+      id: "talk-cancelled-{{ inputs.talk_id }}-{{ execution.id }}"
+      refresh: wait_for
+      document:
+        type: talk-cancelled
+        talk_id: "{{ inputs.talk_id }}"
+        title: "{{ steps.get_talk.output.hits.hits[0]._source.title }}"
+        starts_at: "{{ steps.get_talk.output.hits.hits[0]._source.starts_at }}"
+        slot: "{{ steps.count_students.output.values[0][1] }}"
+        students_affected: "{{ steps.count_students.output.values[0][0] }}"
+        simulated: "{{ inputs.simulated }}"
+        at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
+        execution_id: "{{ execution.id }}"

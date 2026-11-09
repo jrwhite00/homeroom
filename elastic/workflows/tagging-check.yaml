@@ -1,0 +1,32 @@
+version: "1"
+name: tagging-check
+description: >-
+  Every 15 minutes, counts sessions that have no concept tags yet (no assumes_status, or
+  unknown) against all sessions, and records the counts in homeroom-workflow-events.
+enabled: true
+tags: [homeroom]
+triggers:
+  - type: scheduled
+    with:
+      every: 15m
+  - type: manual
+steps:
+  - name: count_tags
+    type: elasticsearch.esql.query
+    with:
+      format: json
+      query: >-
+        FROM sessions
+        | EVAL untagged = CASE(assumes_status IS NULL OR assumes_status == "unknown", 1, 0)
+        | STATS total = COUNT(*), untagged = SUM(untagged)
+  - name: write_counts
+    type: elasticsearch.index
+    with:
+      index: homeroom-workflow-events
+      id: "tagging-check-{{ execution.id }}"
+      document:
+        type: tagging-check
+        total: "{{ steps.count_tags.output.values[0][0] }}"
+        untagged: "{{ steps.count_tags.output.values[0][1] }}"
+        at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
+        execution_id: "{{ execution.id }}"
