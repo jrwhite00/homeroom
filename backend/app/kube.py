@@ -29,7 +29,7 @@ class Kubectl:
         if result.returncode != 0:
             if ok_missing and "NotFound" in result.stderr:
                 return ""
-            raise KubeError(f"kubectl {' '.join(args[:2])} failed: {result.stderr.strip()[:400]}")
+            raise KubeError(f"kubectl {args[0]} failed (exit {result.returncode})")
         return result.stdout
 
     def json(self, *args: str) -> dict:

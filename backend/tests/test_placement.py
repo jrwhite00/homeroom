@@ -4,7 +4,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import placer
-from app.kube import KubeError
+from app.es import ESError
+from app.kube import KubeError, Kubectl
 from app.main import app
 from app.placement import (check_pseudonym, missing_concepts, namespace_manifest, plain, student_pod, summarize)
 from app.search import get_es
@@ -34,6 +35,19 @@ def test_pseudonym_only_in_the_name_and_namespace_opts_out_of_dash0():
     pod = student_pod("maya", "thu-1430", [], "demo")
     assert "maya" not in json.dumps({k: v for k, v in pod["metadata"].items() if k != "name"})
     assert namespace_manifest("demo")["metadata"]["labels"]["dash0.com/enable"] == "false"
+
+
+def test_kubectl_errors_do_not_include_stderr_or_resource_names(monkeypatch):
+    class FailedCommand:
+        returncode = 1
+        stderr = 'Error from server (AlreadyExists): pods "maya-test-0000" already exists'
+
+    monkeypatch.setattr("app.kube.subprocess.run", lambda *args, **kwargs: FailedCommand())
+    with pytest.raises(KubeError) as error:
+        Kubectl().run("create", "-f", "-", stdin="{}")
+
+    assert str(error.value) == "kubectl create failed (exit 1)"
+    assert "maya" not in str(error.value)
 
 
 @pytest.mark.parametrize("bad", ["Maya", "maya smith", "m", "maya.s", "", "1maya"])
@@ -177,6 +191,18 @@ def test_controller_records_pending_message_and_recreates_evicted_pod(monkeypatc
     assert "maya-test-0000" in kube.pods
 
 
+def test_controller_waits_for_failed_pod_deletion(monkeypatch):
+    monkeypatch.setattr(placer.time, "sleep", lambda s: None)
+    kube, es = FakeKube(), FakeES()
+    placer.place(kube, es, "demo", "maya", "test-0000", [])
+    kube.pods["maya-test-0000"].setdefault("status", {})["phase"] = "Failed"
+
+    placer.reconcile(kube, es, "demo")
+
+    delete_call = next(call for call in kube.calls if call[:2] == ("delete", "pod"))
+    assert delete_call == ("delete", "pod", "maya-test-0000", "-n", "class-demo")
+
+
 def test_cancel_and_uncancel_use_the_noexecute_taint():
     kube = FakeKube()
     placer.cancel(kube, "talk-1")
@@ -196,6 +222,60 @@ def test_logs_never_contain_the_pseudonym(monkeypatch, capsys):
     placer.main(["place", "--class", "demo", "--student", "maya", "--slot", "thu-1430"], kube=kube, es=es)
     placer.main(["watch", "--class", "demo", "--once"], kube=kube, es=es)
     assert "maya" not in capsys.readouterr().out
+
+
+def test_elasticsearch_errors_do_not_log_the_pseudonym(capsys):
+    class FailingES(FakeES):
+        def request(self, method, path, body=None, ndjson=False, ok404=False, timeout=None):
+            if path.startswith("/placements/_doc/"):
+                raise ESError(f"{method} {path} failed")
+            return super().request(method, path, body, ndjson, ok404, timeout)
+
+    assert placer.main(["place", "--class", "demo", "--student", "maya", "--slot", "thu-1430"],
+                       kube=FakeKube(), es=FailingES()) == 1
+    assert "maya" not in capsys.readouterr().err
+
+
+def test_watch_continues_after_create_races_with_an_already_existing_pod(monkeypatch, capsys):
+    class CreateRaceKube(FakeKube):
+        def __init__(self):
+            super().__init__()
+            self.fail_next_pod_create = False
+
+        def run(self, *args, stdin=None, ok_missing=False):
+            if self.fail_next_pod_create and args[0] == "create":
+                self.calls.append(args)
+                pod = json.loads(stdin)
+                self.pods[pod["metadata"]["name"]] = pod
+                self.fail_next_pod_create = False
+                raise KubeError('AlreadyExists: pod "maya-test-0000"')
+            return super().run(*args, stdin=stdin, ok_missing=ok_missing)
+
+    class StopAfterRetry(Exception):
+        pass
+
+    kube, es = CreateRaceKube(), FakeES()
+    placer.place(kube, es, "demo", "maya", "test-0000", [])
+    del kube.pods["maya-test-0000"]
+    kube.fail_next_pod_create = True
+    creates_before_watch = sum(call[0] == "create" for call in kube.calls)
+    sleeps = 0
+
+    def stop_after_successful_pass(seconds):
+        nonlocal sleeps
+        sleeps += 1
+        if sleeps == 2:
+            raise StopAfterRetry
+
+    monkeypatch.setattr(placer.time, "sleep", stop_after_successful_pass)
+    with pytest.raises(StopAfterRetry):
+        placer.main(["watch", "--class", "demo", "--interval", "0"], kube=kube, es=es)
+
+    out, err = capsys.readouterr()
+    assert sum(call[0] == "create" for call in kube.calls) - creates_before_watch == 1
+    assert "placements=1" in out
+    assert "controller pass failed: Kubernetes operation failed" in err
+    assert "maya" not in err
 
 
 def test_placements_api_serves_what_the_controller_saw():
