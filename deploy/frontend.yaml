@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: frontend
     app.kubernetes.io/part-of: homeroom
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: frontend
@@ -17,9 +17,22 @@ spec:
         app.kubernetes.io/name: frontend
         app.kubernetes.io/part-of: homeroom
     spec:
+      automountServiceAccountToken: false  # no container here calls the Kubernetes API
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      # Spread replicas across real nodes. ScheduleAnyway: the kind cluster has one worker, and
+      # Honor skips the tainted KWOK talk nodes so they don't count as places to spread to.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          nodeTaintsPolicy: Honor
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: frontend
       containers:
         - name: frontend
           # Built locally and imported into the kind nodes; see Commands in CLAUDE.md.
@@ -46,6 +59,14 @@ spec:
             httpGet:
               path: /
               port: http
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: next-cache, mountPath: /app/.next/cache}
           resources:
             requests:
               cpu: 50m
@@ -53,6 +74,9 @@ spec:
             limits:
               cpu: 500m
               memory: 384Mi
+      volumes:
+        - {name: tmp, emptyDir: {}}
+        - {name: next-cache, emptyDir: {}}
 ---
 apiVersion: v1
 kind: Service
@@ -69,3 +93,18 @@ spec:
     - name: http
       port: 80
       targetPort: http
+---
+# Voluntary disruptions (node drains, upgrades) take down at most one frontend pod at a time.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend
+  namespace: homeroom
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: homeroom
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frontend
