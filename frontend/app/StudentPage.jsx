@@ -67,6 +67,8 @@ export default function StudentPage() {
           const known = (c.levels || []).some((l) => l.slug === fromAddress.level);
           fromAddress.level = known ? fromAddress.level : "";
           setLevel(fromAddress.level);
+          const shown = new Set(coursesFor(c.courses, fromAddress.state, fromAddress.level).map((x) => x.slug));
+          fromAddress.courses = fromAddress.courses.filter((slug) => shown.has(slug));
           setPicked(fromAddress.courses);
           setTicked(fromAddress.concepts);
           showWeek(fromAddress);
@@ -177,7 +179,8 @@ export default function StudentPage() {
 
       {state && (
         <NotOnTheList key={state} state={state} concepts={concepts}
-                      onKnownCourse={(m) => { if (!picked.includes(m.slug)) setPicked([...picked, m.slug]);
+                      onKnownCourse={(m) => { if (stateCourses.some((c) => c.slug === m.slug) && !picked.includes(m.slug))
+                                                setPicked([...picked, m.slug]);
                                               setStatus(`Added ${m.course} to your classes.`); }}
                       onConcepts={(slugs) => { setTicked([...new Set([...ticked, ...slugs])]);
                                                setStatus(`Added ${slugs.length} concepts.`); }} />
