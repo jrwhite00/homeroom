@@ -340,7 +340,38 @@
   color: #6a1b9a;
 }
 
-.missing,
+.needs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chip {
+  padding: 0.05rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.group[data-group="one_step"] .chip { background: #fff4e6; color: #7a4100; }
+.group[data-group="not_yet"] .chip { background: #eceefa; color: #3d4170; }
+
 .suggest {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
