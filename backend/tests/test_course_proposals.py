@@ -130,10 +130,23 @@ def test_refused_before_anything_is_opened(client, change, detail):
 def test_github_failure_saves_file_locally_and_still_shows_schedule(client):
     c, gh, local = client
     gh.fail = True
-    r = c.post("/courses/propose", json=PROPOSAL)
+    proposal = {**PROPOSAL, "teaches": [PROPOSAL["teaches"][0]]}
+    r = c.post("/courses/propose", json=proposal)
     assert r.status_code == 202 and r.json() == {"status": "saved_locally", "url": None, "number": None,
                                                   "file": "utah-computer-programming-1.yaml", "show_schedule": True}
     assert (local / "utah-computer-programming-1.yaml").read_text(encoding="utf-8").startswith("course: Computer Programming 1")
+
+
+def test_github_failure_rejects_concepts_missing_from_local_curriculum(client, monkeypatch):
+    c, gh, local = client
+    gh.fail = True
+    monkeypatch.setattr("app.curriculum.read_concepts", lambda: [{"slug": "programming-basics"}])
+
+    r = c.post("/courses/propose", json=PROPOSAL)
+
+    assert r.status_code == 422
+    assert r.json()["detail"] == "These concepts aren't in the curriculum yet: containers."
+    assert not (local / "utah-computer-programming-1.yaml").exists()
 
 
 def test_reused_branch_from_closed_proposal_is_updated(client):

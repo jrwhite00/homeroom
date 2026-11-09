@@ -151,5 +151,9 @@ def propose(gh: GitHub, p: Proposal, local_dir: Path | None = None) -> dict:
     try:
         return open_pull_request(gh, p)
     except GitHubError:
+        from app.curriculum import read_concepts
+        unknown = sorted(set(p.slugs) - {c["slug"] for c in read_concepts()})
+        if unknown:
+            raise ProposalError("These concepts aren't in the curriculum yet: " + ", ".join(unknown) + ".")
         save_locally(p, local_dir or LOCAL_DIR)
         return {"status": "saved_locally", "url": None, "number": None, "file": file_name(p)}
