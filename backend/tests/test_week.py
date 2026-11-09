@@ -216,3 +216,30 @@ def test_elasticsearch_down_is_a_502_without_backend_details():
 
 def test_state_is_required():
     assert get_week(StubES(ALL), courses="fx-intro-cs").status_code == 422
+
+
+# --- concepts= alone and with courses (the concept checklist) -------------------------------------------------------------
+
+def test_concepts_alone_match_the_same_week(week):
+    body = get_week(StubES(ALL), state="Utah", concepts="programming-basics, networking-basics").json()
+    assert {k: body[k] for k in ("courses", "knows", "messages", "counts", "groups")} == \
+        {k: week[k] for k in ("courses", "knows", "messages", "counts", "groups")} | {"courses": []}
+
+
+def test_concepts_alone_never_look_up_courses():
+    stub = StubES(ALL)
+    get_week(stub, state="Utah", concepts="containers")
+    assert "courses" not in stub.calls
+
+
+def test_ticked_concepts_add_to_the_courses_concepts():
+    body = get_week(StubES(ALL), **STUDENT, concepts="containers").json()
+    assert body["knows"] == ["Containers", "Networking basics", "Programming basics"]
+    assert "Shipping apps with containers" in titles(body, "ready")
+    assert [c["slug"] for c in body["courses"]] == ["fx-intro-cs", "fx-networks"]
+
+
+def test_concepts_elasticsearch_down_is_a_502():
+    r = get_week(StubES(ALL, fail=True), state="Utah", concepts="containers")
+    assert r.status_code == 502
+    assert r.json()["detail"] == "Your week is unavailable right now."

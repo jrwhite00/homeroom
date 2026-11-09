@@ -42,6 +42,10 @@ def find_courses(es: ES, state: str, slugs: list[str]) -> tuple[list[dict], list
     return [found[s] for s in slugs if s in found], [s for s in slugs if s not in found]
 
 
+def unknown_concept_message(slug: str) -> str:
+    return f"We don't know the concept \"{slug}\" yet, so it isn't counted. Pick it again from the list."
+
+
 def unknown_course_message(slug: str, state: str) -> str:
     return (f'We don\'t know the course "{slug}" for {state} yet, so it isn\'t counted. '
             "Check the spelling, or ask a teacher to add it.")
@@ -113,10 +117,11 @@ def suggestion(es: ES, slug: str, concepts: dict[str, dict], before: str | None)
     return found
 
 
-def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] = ()) -> dict:
+def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | None = None) -> dict:
     state = " ".join(state.split()).title()  # "utah" and "Utah" are the same state
-    courses, unknown = find_courses(es, state, course_slugs)
+    courses, unknown = find_courses(es, state, course_slugs) if course_slugs else ([], [])
     concepts = concept_table(es)
+    ticked = ticked or []
     knows = {slug for c in courses for slug in c.get("teaches", [])} | {s for s in ticked if s in concepts}
     groups: dict[str, list[dict]] = {g: [] for g in GROUPS}
     suggestions: dict[tuple[str, str | None], dict | None] = {}

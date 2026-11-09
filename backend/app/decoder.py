@@ -5,6 +5,8 @@ Nothing here writes or rewords a definition: a term is decoded only when it matc
 concept's `technical words`, and the definition shown is that concept's `definition`, verbatim.
 
     GET /talks/{id}   the talk's title and its abstract split into plain text and decoded terms
+    POST /decode      {"texts": [...]} -> {"segments": [...]}, one segment list per text, in order
+                      (short page text, such as the Kubernetes words in the week view)
 
 Matching is case-insensitive, on whole words (so "table" doesn't match inside "stable"), with an
 optional plural "s". Longer technical words win over shorter ones that overlap them ("container
@@ -13,8 +15,10 @@ image" before "image"). If two concepts list the same word, the term shows both 
 from __future__ import annotations
 
 import re
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field, StringConstraints
 
 from app.es import ES, ESError
 from app.search import get_es
@@ -77,6 +81,20 @@ def concept_table(es: ES) -> list[dict]:
     res = es.search(CONCEPTS, {"size": 500, "query": {"match_all": {}},
                                "_source": ["slug", "concept", "definition", "technical_words"]})
     return [h["_source"] for h in res.get("hits", {}).get("hits", [])]
+
+
+class DecodeRequest(BaseModel):
+    # Short page text only: a few labels and event messages, never whole documents.
+    texts: list[Annotated[str, StringConstraints(max_length=1000)]] = Field(max_length=100)
+
+
+@router.post("/decode")
+def decode_texts(req: DecodeRequest, es: ES = Depends(get_es)) -> dict:
+    try:
+        table = concept_table(es)
+    except ESError:
+        raise HTTPException(status_code=502, detail="The word explanations are unavailable right now.") from None
+    return {"segments": [decode(t, table) for t in req.texts]}
 
 
 @router.get("/talks/{talk_id}")

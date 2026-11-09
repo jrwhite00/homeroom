@@ -95,3 +95,35 @@ def test_talk_endpoint_returns_the_decoded_abstract():
 
 def test_unknown_talk_is_404():
     assert get("/talks/nope", []).status_code == 404
+
+
+def post_decode(body, es=None):
+    app.dependency_overrides[get_es] = lambda: es or StubES([])
+    try:
+        return TestClient(app).post("/decode", json=body)
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_decode_endpoint_returns_one_segment_list_per_text_in_order():
+    texts = ["Pod name", "1 node(s) had untolerated taint(s) for the Docker registry."]
+    body = post_decode({"texts": texts}).json()
+    assert ["".join(s["text"] for s in segs) for segs in body["segments"]] == texts  # word for word
+    assert body["segments"][0] == [{"text": "Pod name"}]  # no teacher definition: left alone
+    assert decoded(body["segments"][1]) == [("Docker", ["containers"]), ("registry", ["containers"])]
+
+
+def test_decode_endpoint_only_takes_short_page_text():
+    assert post_decode({"texts": ["x" * 1001]}).status_code == 422
+    assert post_decode({"texts": ["x"] * 101}).status_code == 422
+
+
+def test_decode_endpoint_says_plainly_when_the_table_is_unavailable():
+    from app.es import ESError
+
+    class DownES:
+        def search(self, index, body):
+            raise ESError("connection refused to http://secret-host:9200")
+
+    r = post_decode({"texts": ["Pod"]}, DownES())
+    assert r.status_code == 502 and "secret-host" not in r.text
