@@ -1,2 +1,5 @@
 fastapi==0.162.2
 uvicorn==0.54.0
+# FastAPI pulls in opentelemetry-api. The Dash0 operator's Python auto-instrumentation
+# (operator 0.159.0) refuses to load unless it is exactly 1.44.0. Bump both together.
+opentelemetry-api==1.44.0
