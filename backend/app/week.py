@@ -1,8 +1,9 @@
-"""GET /week?state=&courses=: sort every talk into ready, one step away, not yet and unknown.
+"""GET /week?state=&courses=&knows=: sort every talk into ready, one step away, not yet and unknown.
 
 The student's concepts are the union of what their chosen courses teach (the `teaches` field in
-the courses index). Each talk's group comes from James's readiness() in backend/readiness.py,
-which this module only calls. Missing concepts are shown by their name from the concepts index.
+the courses index) and any concepts they ticked on the checklist (knows=, concept slugs), for a
+student whose course we don't know. Each talk's group comes from James's readiness() in
+backend/readiness.py, which this module only calls. Missing concepts are shown by their name from the concepts index.
 
 For each concept that keeps a talk one step away, we suggest one way to pick it up first:
 a Beginner-level talk about that concept that doesn't itself assume it, or, if there is none,
@@ -40,6 +41,10 @@ def find_courses(es: ES, state: str, slugs: list[str]) -> tuple[list[dict], list
     found = {h["_source"]["slug"]: h["_source"] for h in res.get("hits", {}).get("hits", [])
              if h["_source"].get("state", "").strip().lower() == state.strip().lower()}
     return [found[s] for s in slugs if s in found], [s for s in slugs if s not in found]
+
+
+def unknown_concept_message(slug: str) -> str:
+    return f"We don't know the concept \"{slug}\" yet, so it isn't counted. Pick it again from the list."
 
 
 def unknown_course_message(slug: str, state: str) -> str:
@@ -109,11 +114,12 @@ def suggestion(es: ES, slug: str, concepts: dict[str, dict], before: str | None)
     return found
 
 
-def build_week(es: ES, state: str, course_slugs: list[str]) -> dict:
+def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | None = None) -> dict:
     state = " ".join(state.split()).title()  # "utah" and "Utah" are the same state
-    courses, unknown = find_courses(es, state, course_slugs)
-    knows = {slug for c in courses for slug in c.get("teaches", [])}
+    courses, unknown = find_courses(es, state, course_slugs) if course_slugs else ([], [])
     concepts = concept_table(es)
+    ticked = ticked or []
+    knows = {slug for c in courses for slug in c.get("teaches", [])} | {s for s in ticked if s in concepts}
     groups: dict[str, list[dict]] = {g: [] for g in GROUPS}
     suggestions: dict[tuple[str, str | None], dict | None] = {}
     for talk in all_talks(es):
@@ -130,7 +136,8 @@ def build_week(es: ES, state: str, course_slugs: list[str]) -> dict:
     return {
         "state": state,
         "courses": [{"slug": c["slug"], "course": c.get("course")} for c in courses],
-        "messages": [unknown_course_message(s, state) for s in unknown],
+        "messages": [unknown_course_message(s, state) for s in unknown]
+                    + [unknown_concept_message(s) for s in ticked if s not in concepts],
         "knows": sorted(concept_name(concepts, s) for s in knows),
         "labels": LABELS,
         "counts": {g: len(groups[g]) for g in GROUPS},
@@ -140,11 +147,12 @@ def build_week(es: ES, state: str, course_slugs: list[str]) -> dict:
 
 @router.get("/week")
 def week(state: str = Query(..., min_length=1), courses: str = Query("", description="comma-separated course slugs"),
+         knows: str = Query("", description="comma-separated concept slugs, from the concept checklist"),
          es: ES = Depends(get_es)) -> dict:
     slugs = split_courses(courses)
     with tracer.start_as_current_span("homeroom.week") as span:  # counts only, never the student
         try:
-            body = build_week(es, state, slugs)
+            body = build_week(es, state, slugs, split_courses(knows))
         except ESError:
             span.set_attribute("week.error", True)
             raise HTTPException(status_code=502, detail="Your week is unavailable right now.") from None

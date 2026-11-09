@@ -203,3 +203,37 @@ def test_elasticsearch_down_is_a_502_without_backend_details():
 
 def test_state_is_required():
     assert get_week(StubES(ALL), courses="fx-intro-cs").status_code == 422
+
+
+# --- knows= (the concept checklist) -------------------------------------------------------------
+
+def test_ticked_concepts_count_like_a_course(week):
+    body = get_week(StubES(ALL), state="Utah", knows="programming-basics, networking-basics").json()
+    assert {k: body[k] for k in ("courses", "knows", "messages", "counts", "groups")} == \
+        {k: week[k] for k in ("courses", "knows", "messages", "counts", "groups")} | {"courses": []}
+
+
+def test_knows_alone_never_looks_up_courses():
+    stub = StubES(ALL)
+    get_week(stub, state="Utah", knows="containers")
+    assert "courses" not in stub.calls
+
+
+def test_ticked_concepts_add_to_the_courses_concepts():
+    body = get_week(StubES(ALL), **STUDENT, knows="containers").json()
+    assert body["knows"] == ["Containers", "Networking basics", "Programming basics"]
+    assert "Shipping apps with containers" in titles(body, "ready")
+    assert [c["slug"] for c in body["courses"]] == ["fx-intro-cs", "fx-networks"]
+
+
+def test_unknown_ticked_concept_is_explained_in_plain_words():
+    body = get_week(StubES(ALL), state="Utah", knows="programming-basics,fx-not-a-concept").json()
+    assert body["knows"] == ["Programming basics"]
+    assert body["messages"] == [
+        'We don\'t know the concept "fx-not-a-concept" yet, so it isn\'t counted. Pick it again from the list.']
+
+
+def test_knows_elasticsearch_down_is_a_502():
+    r = get_week(StubES(ALL, fail=True), state="Utah", knows="containers")
+    assert r.status_code == 502
+    assert r.json()["detail"] == "Your week is unavailable right now."
