@@ -11,7 +11,7 @@
       },
       "concept": {
         "type": "string",
-        "description": "A concept slug such as networking-basics, or its name."
+        "description": "A concept slug such as networking-basics (not its name; look the slug up with homeroom.concept.define first)."
       }
     }
   },
