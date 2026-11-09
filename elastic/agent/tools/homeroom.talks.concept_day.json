@@ -1,0 +1,21 @@
+{
+  "id": "homeroom.talks.concept_day",
+  "type": "esql",
+  "description": "Talks on one day that assume a given concept, with all the concepts each one assumes. Use it to find talks that build on something the student knows.",
+  "configuration": {
+    "query": "FROM sessions | WHERE is_talk == true AND DATE_FORMAT(\"yyyy-MM-dd\", day) == ?day | EVAL needs = assumes, local = starts_at - 7 hours, time = DATE_FORMAT(\"EEE HH:mm\", local) | MV_EXPAND assumes | WHERE assumes == ?concept | SORT local | KEEP title, time, room, needs | LIMIT 100",
+    "params": {
+      "day": {
+        "type": "string",
+        "description": "The day as YYYY-MM-DD. KubeCon talks run 2026-11-09 (Mon) to 2026-11-12 (Thu)."
+      },
+      "concept": {
+        "type": "string",
+        "description": "A concept slug such as networking-basics, or its name."
+      }
+    }
+  },
+  "tags": [
+    "homeroom"
+  ]
+}

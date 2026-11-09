@@ -1,0 +1,11 @@
+{
+  "id": "homeroom.talks.search",
+  "type": "index_search",
+  "description": "Search KubeCon talks by meaning (titles and descriptions). Use it when the student describes what they want to learn in their own words.",
+  "configuration": {
+    "pattern": "sessions"
+  },
+  "tags": [
+    "homeroom"
+  ]
+}

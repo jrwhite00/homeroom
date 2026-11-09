@@ -1,0 +1,19 @@
+{
+  "id": "homeroom-claude",
+  "name": "Homeroom Claude",
+  "connector_type_id": ".inference",
+  "config": {
+    "provider": "anthropic",
+    "taskType": "chat_completion",
+    "inferenceId": "homeroom-guide-llm",
+    "providerConfig": {
+      "model_id": "claude-sonnet-5-5"
+    },
+    "taskTypeConfig": {
+      "max_tokens": 8192
+    }
+  },
+  "secrets_from_env": {
+    "providerSecrets.api_key": "ANTHROPIC_API_KEY"
+  }
+}
