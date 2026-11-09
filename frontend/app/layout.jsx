@@ -1,3 +1,5 @@
+import ChaosBanner from "./ChaosBanner";
+
 export const metadata = {
   title: "Homeroom",
   description: "Find the KubeCon talks you're ready for.",
@@ -6,7 +8,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ChaosBanner />
+        {children}
+      </body>
     </html>
   );
 }

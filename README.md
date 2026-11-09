@@ -26,3 +26,20 @@ The KubeCon schedule doesn't publish room capacities, so each node's pod capacit
 | Solutions Showcase stages and Project Pavilion | 80 |
 
 The rules are `SEAT_RULES` in `backend/app/node_sync.py`.
+
+## Simulated load and the chaos switch
+
+Both exist only for the observability demo, and both are labeled as simulated wherever they show up.
+
+**Simulated students (load generator).** `deploy/loadgen.yaml` is its own Deployment, scaled to 0. Start it with `kubectl -n homeroom scale deploy/loadgen --replicas=1` and stop it with `--replicas=0`. It plays five fictional, pseudonymous students sending a mix of searches (about 60%, some with everyday-language translation), week lookups (25%) and Kubernetes placement views (15%), about 2 requests a second (`LOADGEN_RPS`). No pseudonym is ever sent: every request carries `X-Homeroom-Simulated: loadgen`, and the backend marks those spans `simulated=true`.
+
+**Chaos switch.** Adds a **simulated 800 ms delay to `/search`**. It is off by default.
+- `GET /api/chaos` shows the state. While it's on, the app shows a yellow "Simulated slowdown is on" banner, and `/search` responses include an `induced_delay` note.
+- Every span it affects (the `/search` server span and a `chaos.delay` child span) carries `induced=true`.
+- Flipping it needs the token in the `homeroom-chaos` secret, created once by hand and never committed:
+
+```
+kubectl -n homeroom create secret generic homeroom-chaos --from-literal=token="$(openssl rand -hex 16)"
+TOKEN=$(kubectl -n homeroom get secret homeroom-chaos -o jsonpath='{.data.token}' | base64 -d)
+curl -X POST http://homeroom.localhost:18080/api/chaos -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"enabled": true}'
+```
