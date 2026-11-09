@@ -233,6 +233,50 @@
   margin-bottom: 0.5rem;
 }
 
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.dayTab.dayTab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  min-width: 7.2rem;
+  padding: 0.55rem 1rem;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.dayTab small {
+  font-weight: 400;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.dayTab.dayTab:hover:not(:disabled) {
+  border-color: var(--navy);
+  background: #fff;
+}
+
+.dayTab.dayTab[aria-pressed="true"],
+.dayTab.dayTab[aria-pressed="true"]:hover:not(:disabled) {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.dayTab[aria-pressed="true"] small {
+  color: #dcdcf5;
+}
+
 .group {
   margin: 1rem 0;
   border-radius: 14px;

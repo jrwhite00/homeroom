@@ -65,6 +65,43 @@ export function byDay(talks) {
   return days;
 }
 
+const dayKeyFormat = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }); // 2026-11-10
+const tabFormat = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, weekday: "short", day: "numeric" });
+const tabLabel = (iso) => { // "Tue 10"; Intl alone writes "10 Tue" for these two fields
+  const part = (type) => tabFormat.formatToParts(new Date(iso)).find((p) => p.type === type).value;
+  return `${part("weekday")} ${part("day")}`;
+};
+const monthFormat = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, month: "long" });
+
+// The calendar day in Denver time, so a talk at 9 pm Tuesday isn't counted on Wednesday. "" when there's no time.
+export function dayKey(iso) {
+  return iso ? dayKeyFormat.format(new Date(iso)) : "";
+}
+
+// One tab per day that has a talk, in date order, each with how many of that day's talks are ready.
+// Talks without a time have no day, so they only show under "All days".
+export function dayTabs(groups) {
+  const tabs = new Map();
+  for (const [group, talks] of Object.entries(groups)) {
+    for (const talk of talks) {
+      const key = dayKey(talk.starts_at);
+      if (!key) continue;
+      if (!tabs.has(key)) {
+        tabs.set(key, { key, label: tabLabel(talk.starts_at), month: monthFormat.format(new Date(talk.starts_at)),
+                        long: dayOf(talk.starts_at), ready: 0 });
+      }
+      if (group === "ready") tabs.get(key).ready += 1;
+    }
+  }
+  return [...tabs.values()].sort((a, b) => a.key.localeCompare(b.key));
+}
+
+// The groups with only one day's talks. An empty key means every day.
+export function onlyDay(groups, key) {
+  if (!key) return groups;
+  return Object.fromEntries(Object.entries(groups).map(([g, talks]) => [g, talks.filter((t) => dayKey(t.starts_at) === key)]));
+}
+
 export function proposalBody({ state, match, concepts }) {
   return { state, course: match.course, standard: match.standard,
            teaches: concepts.slice(0, MAX_PROPOSAL_CONCEPTS).map((slug) => ({ slug, reason: PROPOSAL_REASON })) };

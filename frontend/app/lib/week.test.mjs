@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { byDay, coursesFor, proposalBody, proposalMessage, readQuery, statesFrom, timeOf, weekQuery } from "./week.mjs";
+import { byDay, coursesFor, dayKey, dayTabs, onlyDay, proposalBody, proposalMessage, readQuery, statesFrom, timeOf, weekQuery } from "./week.mjs";
 
 const COURSES = [
   { slug: "fx-b", course: "B course", state: "Utah" },
@@ -53,4 +53,34 @@ test("every proposal result gets a plain message", () => {
   assert.match(proposalMessage({ status: "already_known" }, "X"), /already added X/);
   assert.equal(proposalMessage({ status: "rate_limited", message: "Please wait a minute." }, "X"), "Please wait a minute.");
   assert.match(proposalMessage(null, "X"), /couldn't send/);
+});
+
+test("a talk's day is its Denver calendar day", () => {
+  assert.equal(dayKey("2026-11-10T09:00:00-07:00"), "2026-11-10");
+  assert.equal(dayKey("2026-11-11T03:00:00Z"), "2026-11-10"); // 8 pm Tuesday in Denver, already Wednesday in UTC
+  assert.equal(dayKey(undefined), "");
+});
+
+const WEEK = {
+  ready: [{ id: "a", starts_at: "2026-11-11T10:00:00-07:00" }, { id: "b", starts_at: "2026-11-10T09:00:00-07:00" },
+          { id: "c", starts_at: "2026-11-10T11:00:00-07:00" }],
+  one_step: [{ id: "d", starts_at: "2026-11-12T10:00:00-07:00" }],
+  not_yet: [],
+  unknown: [{ id: "e" }],
+};
+
+test("there is one tab per day, in date order, counting the ready talks", () => {
+  const tabs = dayTabs(WEEK);
+  assert.deepEqual(tabs.map((t) => [t.key, t.ready]), [["2026-11-10", 2], ["2026-11-11", 1], ["2026-11-12", 0]]);
+  assert.equal(tabs[0].label, "Tue 10");
+  assert.equal(tabs[0].month, "November");
+  assert.deepEqual(dayTabs({ ready: [], one_step: [], not_yet: [], unknown: [{ id: "e" }] }), []); // no times, no tabs
+});
+
+test("choosing a day keeps that day's talks in every group", () => {
+  const day = onlyDay(WEEK, "2026-11-10");
+  assert.deepEqual(day.ready.map((t) => t.id), ["b", "c"]);
+  assert.deepEqual(day.one_step, []);
+  assert.deepEqual(day.unknown, []); // a talk with no time is only under "All days"
+  assert.equal(onlyDay(WEEK, ""), WEEK);
 });

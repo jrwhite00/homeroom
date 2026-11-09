@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  byDay, coursesFor, GROUP_HELP, GROUP_ORDER, MAX_PROPOSAL_CONCEPTS, proposalBody, proposalMessage, readQuery,
+  byDay, coursesFor, dayTabs, onlyDay, GROUP_HELP, GROUP_ORDER, MAX_PROPOSAL_CONCEPTS, proposalBody, proposalMessage, readQuery,
   statesFrom, timeOf, weekQuery,
 } from "./lib/week.mjs";
 import Decoded from "./Decoded";
@@ -337,6 +337,13 @@ function ConceptChecklist({ concepts, legend, note, button, max, busy, onDone, o
 }
 
 function Week({ week, headingRef }) {
+  const [pickedDay, setPickedDay] = useState(""); // "" is every day
+  const tabs = dayTabs(week.groups);
+  const day = tabs.some((tab) => tab.key === pickedDay) ? pickedDay : ""; // a new week may not have that day
+  useEffect(() => { if (day !== pickedDay) setPickedDay(""); }, [day, pickedDay]);
+  const groups = onlyDay(week.groups, day);
+  const chosen = tabs.find((tab) => tab.key === day);
+  const allDays = [{ key: "", label: "All days", month: "", ready: week.counts.ready }, ...tabs];
   return (
     <section className={s.week} aria-labelledby="week-heading">
       <h2 id="week-heading" ref={headingRef} tabIndex={-1}>Your week</h2>
@@ -346,16 +353,30 @@ function Week({ week, headingRef }) {
           : <>You haven&apos;t added any classes or concepts yet, so every talk that expects a concept is &quot;not yet&quot;.</>}
       </p>
       {week.messages.map((m) => <p key={m} className={s.note}>{m}</p>)}
+      {tabs.length > 1 && (
+        <div role="group" aria-label="Choose a day" className={s.days}>
+          {allDays.map((tab) => (
+            <button key={tab.key || "all"} type="button" className={s.dayTab} aria-pressed={day === tab.key}
+                    onClick={() => setPickedDay(tab.key)}>
+              {tab.label}
+              <small>{tab.ready} ready{tab.month ? ` · ${tab.month}` : ""}</small>
+            </button>
+          ))}
+        </div>
+      )}
+      <p role="status" aria-live="polite" className={s.visuallyHidden}>
+        {chosen ? `Showing ${chosen.long}: ${chosen.ready} talks you're ready for.` : "Showing every day."}
+      </p>
       {GROUP_ORDER.map((g) => (
         <details key={g} className={s.group} data-group={g} open={g === "ready"}>
           <summary>
-            <h3 className={s.groupTitle}>{week.labels[g]} <span className={s.count}>({week.counts[g]} talks)</span></h3>
+            <h3 className={s.groupTitle}>{week.labels[g]} <span className={s.count}>({groups[g].length} talks)</span></h3>
           </summary>
           <p className={s.small}>{GROUP_HELP[g]}</p>
-          {week.groups[g].length === 0 && <p>No talks here.</p>}
-          {byDay(week.groups[g]).map(({ day, talks }) => (
-            <div key={day}>
-              <h4 className={s.day}>{day}</h4>
+          {groups[g].length === 0 && <p>No talks here.</p>}
+          {byDay(groups[g]).map(({ day: dayName, talks }) => (
+            <div key={dayName}>
+              {!day && <h4 className={s.day}>{dayName}</h4>}
               <ul className={s.talks}>
                 {talks.map((t) => <Talk key={t.id} talk={t} group={g} />)}
               </ul>
