@@ -1,0 +1,14 @@
+# Python auto-instrumentation is switched on cluster-wide in the Dash0 operator
+# (DASH0_ENABLE_PYTHON_AUTO_INSTRUMENTATION=true); mode "all" applies it to this namespace.
+apiVersion: operator.dash0.com/v1beta1
+kind: Dash0Monitoring
+metadata:
+  name: dash0-monitoring-resource
+  namespace: homeroom
+spec:
+  instrumentWorkloads:
+    mode: all
+  logCollection:
+    enabled: true
+  prometheusScraping:
+    enabled: true

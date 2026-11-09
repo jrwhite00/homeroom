@@ -1,0 +1,19 @@
+# Applied once by hand (see Commands in CLAUDE.md). Kept outside deploy/ so the app does not manage itself.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homeroom
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jrwhite00/homeroom
+    targetRevision: main
+    path: deploy
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homeroom
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
