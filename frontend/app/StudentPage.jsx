@@ -150,7 +150,7 @@ export default function StudentPage() {
       </form>
 
       {state && (
-        <NotOnTheList state={state} concepts={concepts}
+        <NotOnTheList key={state} state={state} concepts={concepts}
                       onKnownCourse={(m) => { if (!picked.includes(m.slug)) setPicked([...picked, m.slug]);
                                               setStatus(`Added ${m.course} to your classes.`); }}
                       onConcepts={(slugs) => { setTicked([...new Set([...ticked, ...slugs])]);
