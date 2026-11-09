@@ -44,6 +44,9 @@ def ensure_index(es: ES) -> None:
             "class": kw, "student": kw, "slot": kw, "knows": kw, "updated_at": {"type": "date"},
             "status": {"properties": {"phase": kw, "talk": kw, "title": {"type": "text"},
                                       "message": {"type": "text"}, "plain": {"type": "text"},
+                                      "pod": kw, "namespace": kw,
+                                      "event": {"properties": {"type": kw, "reason": kw, "from": kw,
+                                                               "message": {"type": "text"}, "at": {"type": "date"}}},
                                       "missing": {"properties": {"slug": kw, "name": kw}}}}}}})
 
 
@@ -114,6 +117,36 @@ def latest_failed_scheduling(events: list[dict]) -> dict[str, str]:
     return {k: v[1] for k, v in latest.items()}
 
 
+def _event_time(e: dict) -> datetime:
+    """The time kubectl describe sorts an event by: the series' last sighting, else lastTimestamp, else eventTime."""
+    stamp = (e.get("series") or {}).get("lastObservedTime") or e.get("lastTimestamp") or e.get("eventTime")
+    try:
+        return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except (AttributeError, ValueError):
+        return datetime.min.replace(tzinfo=timezone.utc)
+
+
+def latest_events(events: list[dict], pods: dict[str, dict]) -> dict[str, dict]:
+    """Pod name -> the last row of `kubectl describe pod`'s Events table, word for word.
+
+    Like describe, only events about this pod (same uid) count, so a recreated pod never shows
+    the events of the evicted one it replaced.
+    """
+    latest: dict[str, tuple[datetime, dict]] = {}
+    for e in events:
+        obj = e.get("involvedObject") or {}
+        pod = pods.get(obj.get("name", ""))
+        if obj.get("kind", "Pod") != "Pod" or not pod or obj.get("uid") != pod["metadata"].get("uid"):
+            continue
+        at = _event_time(e)
+        if obj["name"] not in latest or at >= latest[obj["name"]][0]:
+            source = (e.get("source") or {}).get("component") or e.get("reportingComponent") or ""
+            latest[obj["name"]] = (at, {"type": e.get("type"), "reason": e.get("reason"), "from": source,
+                                        "message": e.get("message", ""),
+                                        "at": at.isoformat() if at.year > 1 else None})
+    return {k: v[1] for k, v in latest.items()}
+
+
 def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | None = None) -> dict:
     """One pass of the controller loop. Returns counts."""
     ns = namespace(class_name)
@@ -131,8 +164,9 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
     if counts["recreated"]:
         time.sleep(2)  # give the scheduler a moment before reading status
         pods = {p["metadata"]["name"]: p for p in kube.json("get", "pods", "-n", ns, "-l", f"{MANAGED_BY}={MANAGER}")["items"]}
-    messages = latest_failed_scheduling(kube.json("get", "events", "-n", ns, "--field-selector",
-                                                  "reason=FailedScheduling")["items"])
+    events = kube.json("get", "events", "-n", ns)["items"]
+    messages = latest_failed_scheduling(events)
+    last_event = latest_events(events, pods)
     slots = {d["slot"] for d in want}
     nodes = kube.json("get", "nodes", "-l", "type=kwok")["items"] if slots else []
     by_slot: dict[str, list[dict]] = {}
@@ -145,6 +179,8 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
         pod = pods.get(name)
         status = summarize(pod, messages.get(name) if pod and not pod["spec"].get("nodeName") else None,
                            by_slot.get(d["slot"], []), names)
+        # What `kubectl describe pod` shows, for the student page's Kubernetes view.
+        status.update({"pod": name, "namespace": ns, "event": last_event.get(name)})
         counts["running" if status["talk"] else "pending"] += 1
         lines.append(json.dumps({"update": {"_index": INDEX, "_id": doc_id(class_name, d["student"], d["slot"])}}))
         lines.append(json.dumps({"doc": {"status": status, "updated_at": now}}))
