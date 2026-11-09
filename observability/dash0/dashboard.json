@@ -74,6 +74,15 @@
               "width": 12,
               "x": 0,
               "y": 22
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/missing_concepts"
+              },
+              "height": 10,
+              "width": 24,
+              "x": 0,
+              "y": 30
             }
           ]
         }
@@ -229,8 +238,65 @@
             }
           ]
         }
+      },
+      "missing_concepts": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Teacher's view: top missing concepts in class $class_code",
+            "description": "Students one step away from at least one talk, by the one concept they are missing, over the last hour. Each student counts once per concept each time they check their week. Includes simulated students (load generator) when it runs."
+          },
+          "plugin": {
+            "kind": "BarChart",
+            "spec": {
+              "calculation": "last",
+              "format": {
+                "unit": "decimal"
+              },
+              "sort": "desc",
+              "mode": "value"
+            }
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "sum by (concept) (increase({otel_metric_name=\"homeroom_missing_concept\", class_code=\"$class_code\"}[1h]))",
+                    "seriesNameFormat": "{{concept}}"
+                  }
+                }
+              }
+            }
+          ]
+        }
       }
     },
-    "refreshInterval": "30s"
+    "refreshInterval": "30s",
+    "variables": [
+      {
+        "kind": "ListVariable",
+        "spec": {
+          "name": "class_code",
+          "display": {
+            "name": "Class"
+          },
+          "allowMultiple": false,
+          "allowAllValue": false,
+          "defaultValue": "demo",
+          "plugin": {
+            "kind": "PrometheusLabelValuesVariable",
+            "spec": {
+              "labelName": "class_code",
+              "matchers": [
+                "{otel_metric_name=\"homeroom_missing_concept\"}"
+              ]
+            }
+          }
+        }
+      }
+    ]
   }
 }

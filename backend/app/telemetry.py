@@ -9,6 +9,9 @@ Metrics (Dash0 PromQL: {otel_metric_name="<name>"}):
   homeroom.students.pending    gauge      class: student hours kube-scheduler left Pending
   homeroom.student_days        gauge      class, placed_3_or_more: student-days, split by whether the student
                                           got at least three talks that day (the second target)
+  homeroom_missing_concept     counter    concept, class_code, simulated: one per student and concept when
+                                          /week leaves the student one step away from a talk because of
+                                          that concept (the teacher's view)
 
 Never put a student identifier (pseudonym or otherwise) on a span, metric or log. Only counts, routes,
 concept slugs and classes.
@@ -50,6 +53,20 @@ meter.create_observable_gauge("homeroom.students.pending", [_observe_pending], u
                               description="Student hours that kube-scheduler left Pending")
 meter.create_observable_gauge("homeroom.student_days", [_observe_days], unit="{student_day}",
                               description="Student-days, by whether the student got at least three talks")
+
+
+# The only labels homeroom_missing_concept may carry. tests/test_teacher_view.py fails if anything else,
+# such as a student identifier, appears on it.
+MISSING_CONCEPT_LABELS = ("concept", "class_code", "simulated")
+missing_concept_counter = meter.create_counter(
+    "homeroom_missing_concept", unit="{student}",
+    description="Students one step away from a talk, by the one concept they are missing, per class")
+
+
+def record_missing_concepts(concepts, class_code: str, simulated: bool) -> None:
+    """Count one student once per concept that keeps them one step away from at least one talk."""
+    for concept in sorted(set(concepts)):
+        missing_concept_counter.add(1, {"concept": concept, "class_code": class_code, "simulated": simulated})
 
 
 def placement_stats(placements: list[dict]) -> tuple[list, list]:

@@ -3,7 +3,7 @@
     kubectl -n homeroom scale deploy/loadgen --replicas=1   # start
     kubectl -n homeroom scale deploy/loadgen --replicas=0   # stop
 
-Each simulated student is a fictional persona (a pseudonym, a state and a few courses). Personas only
+Each simulated student is a fictional persona (a pseudonym, a state and a few courses) in the demo class. Personas only
 pick what to ask; no pseudonym or other student identifier is ever sent, logged or put on a span.
 Every request carries X-Homeroom-Simulated: loadgen, so the backend marks its span simulated=true.
 
@@ -40,6 +40,7 @@ QUESTIONS = [
     ("platform engineering developer portal", False),
     ("ebpf networking security", False),
 ]
+CLASS_CODE = "demo"  # the class the simulated students belong to; feeds the teacher's view
 MIX = [("search", 0.6), ("week", 0.25), ("kubernetes", 0.15)]
 
 
@@ -55,7 +56,8 @@ def pick_request(rng: random.Random) -> tuple[str, str]:
         return kind, "/search?" + urllib.parse.urlencode(params)
     if kind == "week":
         courses = rng.sample(persona["courses"], k=rng.randint(1, len(persona["courses"])))
-        return kind, "/week?" + urllib.parse.urlencode({"state": persona["state"], "courses": ",".join(courses)})
+        return kind, "/week?" + urllib.parse.urlencode({"state": persona["state"], "courses": ",".join(courses),
+                                                        "class_code": CLASS_CODE})
     return kind, "/placements?" + urllib.parse.urlencode({"class": "demo"})
 
 
