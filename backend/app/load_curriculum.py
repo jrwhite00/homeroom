@@ -44,6 +44,7 @@ def courses_mapping() -> dict:
         "standard": {"type": "text"},
         "teaches": KW,
         "added_by": KW,
+        "level": KW,
     }}}
 
 

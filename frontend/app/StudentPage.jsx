@@ -9,7 +9,7 @@ import {
 import s from "./student.module.css";
 
 // The student page: pick a state, tick courses, see the week. No accounts and nothing about the student
-// is sent or stored; the address holds only the state and course and concept slugs.
+// is sent or stored; the address holds only the state, education level and course and concept slugs.
 
 async function getJson(path, options) {
   const r = await fetch(`/api${path}`, options);
@@ -22,6 +22,8 @@ export default function StudentPage() {
   const [allCourses, setAllCourses] = useState([]);
   const [concepts, setConcepts] = useState([]);
   const [state, setState] = useState("");
+  const [level, setLevel] = useState("");
+  const [levels, setLevels] = useState([]); // {slug, name}
   const [picked, setPicked] = useState([]); // course slugs
   const [ticked, setTicked] = useState([]); // concept slugs from the checklist
   const [loadError, setLoadError] = useState("");
@@ -57,10 +59,14 @@ export default function StudentPage() {
     Promise.all([getJson("/courses"), getJson("/concepts")])
       .then(([c, k]) => {
         setAllCourses(c.courses);
+        setLevels(c.levels || []);
         setConcepts(k.concepts);
         const states = statesFrom(c.courses);
         if (fromAddress.state && states.includes(fromAddress.state)) {
           setState(fromAddress.state);
+          const known = (c.levels || []).some((l) => l.slug === fromAddress.level);
+          fromAddress.level = known ? fromAddress.level : "";
+          setLevel(fromAddress.level);
           setPicked(fromAddress.courses);
           setTicked(fromAddress.concepts);
           showWeek(fromAddress);
@@ -70,7 +76,7 @@ export default function StudentPage() {
   }, []);
 
   const states = statesFrom(allCourses);
-  const stateCourses = coursesFor(allCourses, state);
+  const stateCourses = coursesFor(allCourses, state, level);
 
   function toggle(list, setList, slug) {
     setList(list.includes(slug) ? list.filter((x) => x !== slug) : [...list, slug]);
@@ -82,13 +88,21 @@ export default function StudentPage() {
     setWeek(null);
   }
 
+  function onLevelChange(e) {
+    const next = e.target.value;
+    const shown = new Set(coursesFor(allCourses, state, next).map((c) => c.slug));
+    setLevel(next);
+    setPicked(picked.filter((slug) => shown.has(slug))); // don't keep a class the list no longer shows
+    setWeek(null);
+  }
+
   function onSubmit(e) {
     e.preventDefault();
     if (!state) {
       setWeekError("Choose your state first.");
       return;
     }
-    showWeek({ state, courses: picked, concepts: ticked });
+    showWeek({ state, level, courses: picked, concepts: ticked });
   }
 
   return (
@@ -114,6 +128,18 @@ export default function StudentPage() {
             {states.map((st) => <option key={st} value={st}>{st}</option>)}
           </select>
         </div>
+
+        {state && levels.length > 0 && (
+          <div className={s.field}>
+            <label htmlFor="level">Your education level</label>
+            <select id="level" value={level} onChange={onLevelChange} aria-describedby="level-hint">
+              <option value="">Show all classes</option>
+              {levels.map((l) => <option key={l.slug} value={l.slug}>{l.name}</option>)}
+            </select>
+            <p id="level-hint" className={s.small}>Optional. We use it to show the classes that fit where you are,
+              so &quot;Programming 1&quot; in high school isn&apos;t mixed up with college.</p>
+          </div>
+        )}
 
         {state && (
           <fieldset className={s.fieldset}>

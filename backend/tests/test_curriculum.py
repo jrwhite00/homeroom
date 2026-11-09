@@ -51,6 +51,19 @@ def test_reads_keys_with_spaces_and_comma_lists(curriculum):
     assert course["teaches"] == ["scaling", "containers"] and course["added_by"] == "Ms. Example (fictional)"
 
 
+def test_course_level_is_optional_and_read_as_a_slug(curriculum):
+    assert read_courses(curriculum)[0]["level"] == ""  # web-1 doesn't say: it is for everyone
+    write(curriculum, "courses", "prog-ug", "course: Programming 1\nstate: Utah\nteaches: scaling\n"
+          "level: Undergraduate\n")
+    assert {c["slug"]: c["level"] for c in read_courses(curriculum)}["prog-ug"] == "undergraduate"
+
+
+def test_unknown_course_level_names_the_file_and_the_choices(curriculum):
+    write(curriculum, "courses", "prog-x", "course: Programming 1\nteaches: scaling\nlevel: college\n")
+    with pytest.raises(CurriculumError, match="prog-x.yaml.*high-school, undergraduate, graduate, technical-program"):
+        read_courses(curriculum)
+
+
 def test_missing_concept_is_reported(curriculum):
     write(curriculum, "courses", "cs-principles", "course: CSP\nteaches: scaling, kubernetes-basics\n")
     assert missing_concepts(read_courses(curriculum), read_concepts(curriculum)) == [

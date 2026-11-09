@@ -50,6 +50,15 @@ def test_courses_for_a_state_in_name_order():
     assert [c["slug"] for c in body["courses"]] == ["fx-programming-1", "fx-exploring"]
 
 
+def test_courses_carry_their_level_and_the_level_choices():
+    body = call(StubES(), "GET", "/courses", params={"state": "utah"}).json()
+    assert [l["slug"] for l in body["levels"]] == ["high-school", "undergraduate", "graduate", "technical-program"]
+    assert body["levels"][3]["name"] == "Technical program / boot camp"
+    stub = StubES()
+    call(stub, "GET", "/courses")
+    assert "level" in stub.bodies[0][1]["_source"]
+
+
 def test_all_courses_without_a_state():
     body = call(StubES(), "GET", "/courses").json()
     assert {c["state"] for c in body["courses"]} == {"Utah", "Ohio"}

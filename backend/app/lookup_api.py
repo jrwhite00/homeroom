@@ -1,6 +1,8 @@
 """What the student page reads to fill in its form.
 
-GET  /courses?state=   the courses we know (all states when state is empty), for the course checklist
+GET  /courses?state=   the courses we know (all states when state is empty), for the course checklist.
+                       Each has a `level` ("" when it is for everyone), and `levels` lists the choices
+                       for the education-level menu; the page does the filtering
 POST /courses/match    {"state", "text"}: the state's courses closest in meaning to what the student
                        typed. It searches the state's CTE course standards (semantic search on the
                        standards index), so it also finds a real course that isn't in the curriculum
@@ -17,6 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.course_proposals import slugify
+from app.curriculum import LEVELS
 from app.es import ES, ESError
 from app.search import get_es
 
@@ -34,7 +37,7 @@ def normal_state(state: str) -> str:
 
 def known_courses(es: ES, state: str = "") -> list[dict]:
     query = {"term": {"state": normal_state(state)}} if state.strip() else {"match_all": {}}
-    res = es.search(COURSES, {"size": 500, "query": query, "_source": ["slug", "course", "state"]})
+    res = es.search(COURSES, {"size": 500, "query": query, "_source": ["slug", "course", "state", "level"]})
     courses = [h["_source"] for h in res.get("hits", {}).get("hits", [])]
     return sorted(courses, key=lambda c: (c.get("state", ""), c.get("course", "")))
 
@@ -74,7 +77,8 @@ class MatchRequest(BaseModel):
 @router.get("/courses")
 def courses(state: str = Query("", max_length=60), es: ES = Depends(get_es)) -> dict:
     try:
-        return {"courses": known_courses(es, state)}
+        return {"courses": known_courses(es, state),
+                "levels": [{"slug": slug, "name": name} for slug, name in LEVELS.items()]}
     except ESError:
         raise HTTPException(status_code=502, detail=UNAVAILABLE) from None
 

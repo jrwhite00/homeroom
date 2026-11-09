@@ -14,13 +14,27 @@ test("states are listed once, in order", () => {
   assert.deepEqual(coursesFor(COURSES, "Utah").map((c) => c.slug), ["fx-b", "fx-a"]);
 });
 
-test("the address holds only state, course and concept slugs", () => {
+test("the checklist shows courses for the chosen level, plus courses for everyone", () => {
+  const all = [
+    { slug: "hs", course: "Programming 1", state: "Utah", level: "high-school" },
+    { slug: "ug", course: "Programming 1", state: "Utah", level: "undergraduate" },
+    { slug: "any", course: "Web design", state: "Utah", level: "" },
+    { slug: "oh", course: "Ohio", state: "Ohio", level: "high-school" },
+  ];
+  assert.deepEqual(coursesFor(all, "Utah", "high-school").map((c) => c.slug), ["hs", "any"]);
+  assert.deepEqual(coursesFor(all, "Utah", "undergraduate").map((c) => c.slug), ["ug", "any"]);
+  assert.deepEqual(coursesFor(all, "Utah").map((c) => c.slug), ["hs", "ug", "any"]); // no level: all of them
+});
+
+test("the address holds only state, level, course and concept slugs", () => {
   const q = weekQuery({ state: "Utah", courses: ["fx-a", "fx-b"], concepts: ["containers"] });
   assert.equal(q, "state=Utah&courses=fx-a%2Cfx-b&concepts=containers");
-  assert.deepEqual(readQuery("?" + q), { state: "Utah", courses: ["fx-a", "fx-b"], concepts: ["containers"] });
+  assert.deepEqual(readQuery("?" + q), { state: "Utah", level: "", courses: ["fx-a", "fx-b"], concepts: ["containers"] });
+  assert.equal(weekQuery({ state: "Utah", level: "graduate" }), "state=Utah&level=graduate");
+  assert.equal(readQuery("?state=Utah&level=graduate").level, "graduate");
   assert.equal(weekQuery({ state: "Utah" }), "state=Utah");
-  assert.deepEqual(readQuery(""), { state: "", courses: [], concepts: [] });
-  assert.deepEqual(readQuery("?courses=fx-a,,fx-a, fx-b"), { state: "", courses: ["fx-a", "fx-b"], concepts: [] });
+  assert.deepEqual(readQuery(""), { state: "", level: "", courses: [], concepts: [] });
+  assert.deepEqual(readQuery("?courses=fx-a,,fx-a, fx-b"), { state: "", level: "", courses: ["fx-a", "fx-b"], concepts: [] });
 });
 
 test("talks are grouped by day in Denver time", () => {

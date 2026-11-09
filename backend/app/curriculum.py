@@ -5,16 +5,25 @@ They are read line by line rather than as YAML, so a value that contains a colon
 ("definition: How X works: step one") still reads the way the teacher meant it.
 
     curriculum/concepts/<slug>.yaml   concept, definition, technical words
-    curriculum/courses/<slug>.yaml    course, state, standard, teaches, added by
+    curriculum/courses/<slug>.yaml    course, state, standard, teaches, added by, level (optional)
 
 A concept's slug is its file name without .yaml. A course's `teaches` lists concept slugs,
-separated by commas.
+separated by commas. A course's `level` is optional and says who the course is for: one of LEVELS.
+A course with no level is shown to every student.
 """
 from __future__ import annotations
 
 from pathlib import Path
 
 DEFAULT_DIR = Path(__file__).resolve().parents[2] / "curriculum"
+
+# Education levels a course can be written for (the `level` line), and the names students see.
+LEVELS = {
+    "high-school": "High School",
+    "undergraduate": "Undergraduate",
+    "graduate": "Graduate",
+    "technical-program": "Technical program / boot camp",
+}
 
 
 class CurriculumError(ValueError):
@@ -54,10 +63,17 @@ def read_concepts(directory: Path = DEFAULT_DIR) -> list[dict]:
 
 
 def read_courses(directory: Path = DEFAULT_DIR) -> list[dict]:
-    """Read every courses/*.yaml into {slug, course, state, standard, teaches, added_by}."""
+    """Read every courses/*.yaml into {slug, course, state, standard, teaches, added_by, level}.
+
+    `level` is "" when the course doesn't say. A level that isn't in LEVELS is a CurriculumError, so a
+    typo is caught when the curriculum is loaded instead of quietly hiding the course from students.
+    """
     courses = []
     for path in sorted((directory / "courses").glob("*.yaml")):
         f = parse_lines(path.read_text(encoding="utf-8"), path.name)
+        level = f.get("level", "").strip().lower()
+        if level and level not in LEVELS:
+            raise CurriculumError(f"{path.name} has level \"{level}\". Use one of: {', '.join(LEVELS)}")
         courses.append({
             "slug": path.stem,
             "course": f.get("course", ""),
@@ -65,6 +81,7 @@ def read_courses(directory: Path = DEFAULT_DIR) -> list[dict]:
             "standard": f.get("standard", ""),
             "teaches": split_list(f.get("teaches")),
             "added_by": f.get("added_by", ""),
+            "level": level,
         })
     return courses
 

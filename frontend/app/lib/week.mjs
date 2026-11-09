@@ -15,8 +15,9 @@ export function statesFrom(courses) {
   return [...new Set(courses.map((c) => c.state).filter(Boolean))].sort();
 }
 
-export function coursesFor(courses, state) {
-  return courses.filter((c) => c.state === state);
+// A course with no level is for everyone. With no level chosen, every course shows.
+export function coursesFor(courses, state, level = "") {
+  return courses.filter((c) => c.state === state && (!level || !c.level || c.level === level));
 }
 
 function splitList(value) {
@@ -24,10 +25,11 @@ function splitList(value) {
 }
 
 // The page's choices live in the address, so the back button and a refresh keep them.
-// Only a state and course and concept slugs: nothing about the student.
-export function weekQuery({ state, courses = [], concepts = [] }) {
+// Only a state, an education level (a broad group, not who you are) and course and concept slugs.
+export function weekQuery({ state, level = "", courses = [], concepts = [] }) {
   const params = new URLSearchParams();
   if (state) params.set("state", state);
+  if (level) params.set("level", level);
   if (courses.length) params.set("courses", courses.join(","));
   if (concepts.length) params.set("concepts", concepts.join(","));
   return params.toString();
@@ -35,7 +37,7 @@ export function weekQuery({ state, courses = [], concepts = [] }) {
 
 export function readQuery(search) {
   const params = new URLSearchParams(search);
-  return { state: params.get("state") || "", courses: splitList(params.get("courses")),
+  return { state: params.get("state") || "", level: params.get("level") || "", courses: splitList(params.get("courses")),
            concepts: splitList(params.get("concepts")) };
 }
 
