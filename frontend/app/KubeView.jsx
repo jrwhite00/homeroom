@@ -51,12 +51,12 @@ function wordsToDecode(placements) {
 
 // A word joined to a name by "-", "/" or "." is part of that name ("class" in "class-demo/maya-thu-1430"),
 // not the concept, so it stays plain. The text itself is never changed.
-const NAME_JOINER = /[-/.]/;
 function outsideNames(segments) {
   return segments.map((s, i) => {
-    const before = segments[i - 1]?.text.slice(-1) || "";
-    const after = segments[i + 1]?.text.slice(0, 1) || "";
-    return s.concepts && (NAME_JOINER.test(before) || NAME_JOINER.test(after)) ? { text: s.text } : s;
+    const before = segments[i - 1]?.text.slice(-2) || "";
+    const after = segments[i + 1]?.text.slice(0, 2) || "";
+    const joined = /\w[-/.]$/.test(before) || /^[-/.]\w/.test(after) || /[-/]$/.test(before) || /^[-/]/.test(after);
+    return s.concepts && joined ? { text: s.text } : s;
   });
 }
 
@@ -130,13 +130,15 @@ export default function KubeView({ classId, student }) {
   // Send any new words to the jargon decoder. If it can't be reached, the words show as plain text.
   useEffect(() => {
     if (!placements) return;
-    const texts = wordsToDecode(placements).filter((t) => !asked.current.has(t));
-    if (!texts.length) return;
-    texts.forEach((t) => asked.current.add(t));
-    fetch("/api/decode", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ texts }) })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((body) => setDecoded((d) => ({ ...d, ...Object.fromEntries(texts.map((t, i) => [t, body.segments[i]])) })))
-      .catch(() => texts.forEach((t) => asked.current.delete(t))); // try again on the next refresh
+    const pending = wordsToDecode(placements).filter((t) => !asked.current.has(t) && t.length <= 1000);
+    for (let i = 0; i < pending.length; i += 100) {
+      const texts = pending.slice(i, i + 100);
+      texts.forEach((t) => asked.current.add(t));
+      fetch("/api/decode", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ texts }) })
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((body) => setDecoded((d) => ({ ...d, ...Object.fromEntries(texts.map((t, j) => [t, body.segments[j]])) })))
+        .catch(() => texts.forEach((t) => asked.current.delete(t))); // try again on the next refresh
+    }
   }, [placements]);
 
   const hours = placements && [...placements].sort((a, b) => (a.slot + a.student).localeCompare(b.slot + b.student));
