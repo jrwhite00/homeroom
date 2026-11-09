@@ -4,3 +4,6 @@ __pycache__/
 node_modules/
 .next/
 .env*
+
+# Standards PDFs are downloaded at load time. Never commit them or their text (public repo, CSTA is CC BY-NC-SA).
+data/standards/cache/

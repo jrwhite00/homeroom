@@ -1,3 +1,8 @@
 -r requirements.txt
 pytest==9.2.0
 httpx2==2.16.0
+# Load time only (app.load_standards), not in the image. pypdf extracts the standards PDFs;
+# cryptography opens the encrypted Utah 6-12 PDF; fonttools decodes the CSTA fonts.
+pypdf==7.0.0
+cryptography==50.0.2
+fonttools==4.68.0
