@@ -28,7 +28,7 @@ Tagline: "To learn the pod, you must become the pod."
 - Never use a student identifier as a metric label, span attribute or log field.
 - No secrets in the repo, logs or output. Tokens come from Kubernetes secrets or environment variables. Never print their values.
 - One concern per pull request, with tests. Keep diffs small.
-- Never merge. Open the pull request, wait for Gitar's review, list its findings, and James decides. Never tick an "Apply fix" box.
+- Never merge. After opening a pull request, comment `gitar auto-apply:on` on it so Gitar can push fixes. Wait for Gitar's review and any fixes it pushes, then list its findings. James merges.
 - curriculum/ changes only through reviewed course pull requests. Never edit a file there directly.
 - Simulated things are labeled: seat counts, the load generator, the chaos switch (induced=true on affected spans).
 - Report counts with _count, never _cat/indices (semantic chunks inflate docs.count).
