@@ -6,6 +6,7 @@ from app.es import ES, loopback
 
 @pytest.mark.parametrize("url, expected", [
     ("http://localhost:9200", "http://127.0.0.1:9200"),
+    ("http://LOCALHOST:9200", "http://127.0.0.1:9200"),
     ("https://localhost:9200/", "https://127.0.0.1:9200/"),
     ("http://localhost", "http://127.0.0.1"),
     ("http://127.0.0.1:9200", "http://127.0.0.1:9200"),

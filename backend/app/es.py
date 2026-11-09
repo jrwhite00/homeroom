@@ -23,7 +23,8 @@ def loopback(url: str) -> str:
     parts = urllib.parse.urlsplit(url)
     if parts.hostname != "localhost":
         return url
-    netloc = parts.netloc.replace("localhost", "127.0.0.1", 1)
+    userinfo, _, _ = parts.netloc.rpartition("@")
+    netloc = (userinfo + "@" if userinfo else "") + "127.0.0.1" + (f":{parts.port}" if parts.port else "")
     return urllib.parse.urlunsplit(parts._replace(netloc=netloc))
 
 
