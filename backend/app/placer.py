@@ -44,7 +44,7 @@ def ensure_index(es: ES) -> None:
             "class": kw, "student": kw, "slot": kw, "knows": kw, "updated_at": {"type": "date"},
             "status": {"properties": {"phase": kw, "talk": kw, "title": {"type": "text"},
                                       "message": {"type": "text"}, "plain": {"type": "text"},
-                                      "pod": kw, "namespace": kw,
+                                      "pod": kw, "namespace": kw, "node": kw, "host_ip": kw,
                                       "event": {"properties": {"type": kw, "reason": kw, "from": kw,
                                                                "message": {"type": "text"}, "at": {"type": "date"}}},
                                       "missing": {"properties": {"slug": kw, "name": kw}}}}}}})
@@ -105,15 +105,17 @@ def learn(kube: Kubectl, es: ES, class_name: str, pseudonym: str, concept: str) 
 
 
 def latest_failed_scheduling(events: list[dict]) -> dict[str, str]:
-    """Pod name -> the scheduler's most recent FailedScheduling message."""
+    """Pod UID -> the scheduler's most recent FailedScheduling message."""
     latest: dict[str, tuple[str, str]] = {}
     for e in events:
         if e.get("reason") != "FailedScheduling":
             continue
-        name = e["involvedObject"]["name"]
+        uid = (e.get("involvedObject") or {}).get("uid")
+        if not uid:
+            continue
         stamp = e.get("lastTimestamp") or e.get("eventTime") or ""
-        if name not in latest or stamp >= latest[name][0]:
-            latest[name] = (stamp, e.get("message", ""))
+        if uid not in latest or stamp >= latest[uid][0]:
+            latest[uid] = (stamp, e.get("message", ""))
     return {k: v[1] for k, v in latest.items()}
 
 
@@ -177,10 +179,13 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
     for d in want:
         name = pod_name(d["student"], d["slot"])
         pod = pods.get(name)
-        status = summarize(pod, messages.get(name) if pod and not pod["spec"].get("nodeName") else None,
+        pod_uid = ((pod or {}).get("metadata") or {}).get("uid")
+        status = summarize(pod, messages.get(pod_uid) if pod and not pod["spec"].get("nodeName") else None,
                            by_slot.get(d["slot"], []), names)
-        # What `kubectl describe pod` shows, for the student page's Kubernetes view.
-        status.update({"pod": name, "namespace": ns, "event": last_event.get(name)})
+        # What `kubectl describe pod` shows, for the student page's Kubernetes view: the pod, where it
+        # runs (node and host IP, printed as node/IP like describe does) and its latest event.
+        status.update({"pod": name, "namespace": ns, "node": (pod or {}).get("spec", {}).get("nodeName"),
+                       "host_ip": (pod or {}).get("status", {}).get("hostIP"), "event": last_event.get(name)})
         counts["running" if status["talk"] else "pending"] += 1
         lines.append(json.dumps({"update": {"_index": INDEX, "_id": doc_id(class_name, d["student"], d["slot"])}}))
         lines.append(json.dumps({"doc": {"status": status, "updated_at": now}}))
