@@ -104,15 +104,17 @@ def learn(kube: Kubectl, es: ES, class_name: str, pseudonym: str, concept: str) 
 
 
 def latest_failed_scheduling(events: list[dict]) -> dict[str, str]:
-    """Pod name -> the scheduler's most recent FailedScheduling message."""
+    """Pod UID -> the scheduler's most recent FailedScheduling message."""
     latest: dict[str, tuple[str, str]] = {}
     for e in events:
         if e.get("reason") != "FailedScheduling":
             continue
-        name = e["involvedObject"]["name"]
+        uid = (e.get("involvedObject") or {}).get("uid")
+        if not uid:
+            continue
         stamp = e.get("lastTimestamp") or e.get("eventTime") or ""
-        if name not in latest or stamp >= latest[name][0]:
-            latest[name] = (stamp, e.get("message", ""))
+        if uid not in latest or stamp >= latest[uid][0]:
+            latest[uid] = (stamp, e.get("message", ""))
     return {k: v[1] for k, v in latest.items()}
 
 
@@ -121,17 +123,17 @@ def event_time(e: dict) -> str:
 
 
 def latest_events(events: list[dict]) -> dict[str, dict]:
-    """Pod name -> its most recent event of any reason (type, reason, message), as kubectl describe lists it."""
+    """Pod UID -> its most recent event of any reason (type, reason, message), as kubectl describe lists it."""
     latest: dict[str, tuple[str, dict]] = {}
     for e in events:
-        name = (e.get("involvedObject") or {}).get("name")
-        if not name:
+        uid = (e.get("involvedObject") or {}).get("uid")
+        if not uid:
             continue
         stamp = event_time(e)
-        if name not in latest or stamp >= latest[name][0]:
+        if uid not in latest or stamp >= latest[uid][0]:
             source = (e.get("source") or {}).get("component") or e.get("reportingComponent") or None
-            latest[name] = (stamp, {"type": e.get("type"), "reason": e.get("reason"), "from": source,
-                                    "message": e.get("message", "")})
+            latest[uid] = (stamp, {"type": e.get("type"), "reason": e.get("reason"), "from": source,
+                                   "message": e.get("message", "")})
     return {k: v[1] for k, v in latest.items()}
 
 
@@ -164,11 +166,12 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
     for d in want:
         name = pod_name(d["student"], d["slot"])
         pod = pods.get(name)
-        status = summarize(pod, messages.get(name) if pod and not pod["spec"].get("nodeName") else None,
+        pod_uid = ((pod or {}).get("metadata") or {}).get("uid")
+        status = summarize(pod, messages.get(pod_uid) if pod and not pod["spec"].get("nodeName") else None,
                            by_slot.get(d["slot"], []), names)
         # What kubectl describe shows for this pod: its name, the node it's on and its latest event.
         status.update(pod=name, node=(pod or {}).get("spec", {}).get("nodeName"),
-                      host_ip=(pod or {}).get("status", {}).get("hostIP"), event=latest.get(name))
+                      host_ip=(pod or {}).get("status", {}).get("hostIP"), event=latest.get(pod_uid))
         counts["running" if status["talk"] else "pending"] += 1
         lines.append(json.dumps({"update": {"_index": INDEX, "_id": doc_id(class_name, d["student"], d["slot"])}}))
         lines.append(json.dumps({"doc": {"status": status, "updated_at": now}}))

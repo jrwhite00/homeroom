@@ -4,6 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.es import ES, ESError
+from app.placement import PSEUDONYM
 from app.search import get_es
 from app.telemetry import refresh_placement_gauges, tracer
 
@@ -18,7 +19,7 @@ def all_placements(es: ES) -> list[dict]:
 
 @router.get("/placements")
 def placements(class_name: str = Query(alias="class", pattern=r"^[a-z0-9-]{1,32}$"),
-               student: str | None = Query(None, pattern=r"^[a-z][a-z0-9]{1,20}$"),
+               student: str | None = Query(None, pattern=PSEUDONYM.pattern),
                es: ES = Depends(get_es)) -> dict:
     with tracer.start_as_current_span("homeroom.scheduling", attributes={"class": class_name}) as span:
         try:

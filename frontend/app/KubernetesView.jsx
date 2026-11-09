@@ -14,6 +14,8 @@ const WORDS = [
   ["Phase", "Where your hour is right now. Pending means it's still waiting for a seat. Running means it has one."],
   ["Node", "A place a pod can go. Here, each talk is a node, so the node is the talk you're placed in."],
   ["Event", "A note Kubernetes writes about your pod, like a line in a diary. We show the newest one exactly as Kubernetes wrote it."],
+  ["Normal", "An everyday step Kubernetes took for this hour, like giving you a seat. Nothing went wrong."],
+  ["Warning", "Kubernetes ran into something it couldn't do yet, such as no talk having room. It keeps trying; this is a note, not a verdict on you."],
   ["default-scheduler", "The part of Kubernetes that decides which talk each hour goes to."],
   ["Scheduled", "Kubernetes found a talk for this hour and gave you a seat."],
   ["FailedScheduling", "Kubernetes couldn't find a talk for this hour yet."],
@@ -83,7 +85,7 @@ export default function KubernetesView({ classId, student }) {
             <dl style={{ margin: 0 }}>
               <Row label="Pod" word="Pod"><code>{p.pod || "—"}</code></Row>
               <Row label="Phase" word="Phase"><code>{p.phase}</code></Row>
-              <Row label="Node" word="Node"><code>{p.node ? (p.host_ip ? `${p.node}/${p.host_ip}` : p.node) : "<none>"}</code></Row>
+              <Row label="Node" word="Node"><code>{p.node || "No talk yet"}</code></Row>
               <Row label="Latest event" word="Event">
                 {p.event
                   ? <code style={{ whiteSpace: "pre-wrap" }}>{[p.event.type, p.event.reason, p.event.from, p.event.message].filter(Boolean).join("  ")}</code>
