@@ -16,7 +16,7 @@ def readiness(assumes: list[str] | None, knows: set[str]) -> tuple[str, list[str
     if assumes is None:
         return UNKNOWN, []
     missing = sorted(set(assumes) - set(knows))
-    if len(missing) <= 1:
+    if not missing:
         return READY, missing
     if len(missing) == 1:
         return ONE_STEP, missing
