@@ -9,7 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.course_proposals import Proposal, ProposalError, propose
+from app.es import ES
 from app.github import GitHub
+from app.search import get_es
 
 router = APIRouter()
 
@@ -32,6 +34,8 @@ def get_github() -> GitHub:
     return GitHub.from_env()
 
 
+# Behind the Envoy gateway every request has the gateway's address, so this is one shared limit of
+# 3 proposals a minute for everyone, not per student. Fine for the single-laptop demo.
 RATE_LIMIT = 3
 RATE_WINDOW_SECONDS = 60
 _client_proposals: dict[str, list[float]] = {}
@@ -56,7 +60,8 @@ def _rate_limited(client: str, now: float | None = None) -> bool:
 
 
 @router.post("/courses/propose", status_code=202)
-def propose_course(proposal: CourseProposal, request: Request, gh: GitHub = Depends(get_github)) -> dict:
+def propose_course(proposal: CourseProposal, request: Request, gh: GitHub = Depends(get_github),
+                   es: ES = Depends(get_es)) -> dict:
     client = request.client.host if request.client else "unknown"
     if _rate_limited(client):
         return {"status": "rate_limited", "message": "Please wait a minute before suggesting another course.",
@@ -67,7 +72,7 @@ def propose_course(proposal: CourseProposal, request: Request, gh: GitHub = Depe
     try:
         # Keep the count-then-open flow atomic within this single-replica demo.
         with _proposal_lock:
-            result = propose(gh, p)
+            result = propose(gh, p, es=es)
     except ProposalError as e:
         raise HTTPException(status_code=422, detail=str(e)) from None
     # Whatever happened with GitHub, the student page goes on to show the schedule.

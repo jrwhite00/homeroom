@@ -9,6 +9,8 @@ from fastapi.testclient import TestClient
 from app import course_proposals, courses_api, propose_course
 from app.course_proposals import FOOTER, Proposal
 from app.courses_api import get_github
+from app.es import ESError
+from app.search import get_es
 from app.github import GitHub, GitHubError
 from app.main import app
 
@@ -66,12 +68,31 @@ PROPOSAL = {"state": "Utah", "course": "Computer Programming 1", "standard": "Ut
                         {"slug": "containers", "reason": "Strand 6 deploys a program in a container."}]}
 
 
+class StubES:
+    """The concepts index as loaded from main, or unreachable."""
+
+    def __init__(self, slugs=("programming-basics", "containers"), fail=False):
+        self.slugs, self.fail, self.calls = list(slugs), fail, []
+
+    def search(self, index, body):
+        self.calls.append(index)
+        if self.fail:
+            raise ESError("could not reach Elasticsearch")
+        return {"hits": {"hits": [{"_id": s} for s in self.slugs]}}
+
+
 @pytest.fixture
-def client(tmp_path, monkeypatch):
+def es():
+    return StubES()
+
+
+@pytest.fixture
+def client(tmp_path, monkeypatch, es):
     monkeypatch.setattr(course_proposals, "LOCAL_DIR", tmp_path / "proposed")
     monkeypatch.setattr(courses_api, "_client_proposals", {})
     gh = StubGitHub()
     app.dependency_overrides[get_github] = lambda: gh
+    app.dependency_overrides[get_es] = lambda: es
     yield TestClient(app), gh, tmp_path / "proposed"
     app.dependency_overrides.clear()
 
@@ -85,7 +106,7 @@ def test_opens_pull_request_with_course_file_on_new_branch(client):
     assert pr["head"] == "course/utah-computer-programming-1" and pr["base"] == "main"
     assert gh.files[("course/utah-computer-programming-1", "curriculum/courses/utah-computer-programming-1.yaml")] == (
         "course: Computer Programming 1\nstate: Utah\nstandard: Utah CTE Computer Programming 1 strands\n"
-        "teaches: programming-basics, containers\nadded by: Homeroom, after a student confirmed a match\n")
+        "teaches: programming-basics, containers\nadded by: Homeroom\n")
 
 
 def test_body_says_student_confirmed_lists_reasons_and_ends_with_teacher_line(client):
@@ -190,17 +211,38 @@ def test_three_proposals_per_client_per_minute(client):
     assert len(gh.pulls) == 4
 
 
-def test_github_failure_rejects_concepts_missing_from_local_curriculum(client, monkeypatch):
+def test_github_failure_checks_concepts_against_the_index(client, es):
     c, gh, local = client
     gh.fail = True
-    monkeypatch.setattr("app.curriculum.read_concepts", lambda: [{"slug": "programming-basics"}])
-
+    es.slugs = ["programming-basics"]
     r = c.post("/courses/propose", json=PROPOSAL)
-
     assert r.status_code == 422
     assert r.json()["detail"] == "These concepts aren't in the curriculum yet: containers."
     assert not (local / "utah-computer-programming-1.yaml").exists()
 
+
+@pytest.mark.parametrize("es_state", ["unreachable", "empty"])
+def test_github_and_index_both_unavailable_saves_nothing_but_shows_schedule(client, es, es_state):
+    c, gh, local = client
+    gh.fail = True
+    es.fail = es_state == "unreachable"
+    if es_state == "empty":
+        es.slugs = []
+    r = c.post("/courses/propose", json=PROPOSAL)
+    assert r.status_code == 202
+    assert r.json()["status"] == "not_saved" and r.json()["show_schedule"] is True
+    assert "schedule" in r.json()["message"]
+    assert not local.exists() or not any(local.iterdir())
+
+
+def test_github_failure_uses_the_index_not_the_curriculum_folder(client, es, monkeypatch):
+    # The backend image has no curriculum/ folder, so the fallback must not depend on it.
+    c, gh, local = client
+    gh.fail = True
+    monkeypatch.setattr("app.curriculum.DEFAULT_DIR", local / "no-such-folder")
+    r = c.post("/courses/propose", json=PROPOSAL)
+    assert r.status_code == 202 and r.json()["status"] == "saved_locally"
+    assert es.calls == ["concepts"]
 
 def test_reused_branch_from_closed_proposal_is_updated(client):
     c, gh, _ = client
@@ -221,11 +263,10 @@ def test_script_opens_same_pull_request_added_by_james(capsys):
 
 
 def test_from_env_uses_only_the_repository_scoped_token(monkeypatch):
-    monkeypatch.delenv("COURSE_PROPOSAL_GITHUB_TOKEN", raising=False)
-    monkeypatch.setenv("GITHUB_TOKEN", "personal-token-must-not-be-used")
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     assert GitHub.from_env()._token is None
 
-    monkeypatch.setenv("COURSE_PROPOSAL_GITHUB_TOKEN", "repository-scoped-token")
+    monkeypatch.setenv("GITHUB_TOKEN", "repository-scoped-token")
     assert GitHub.from_env()._token == "repository-scoped-token"
 
 

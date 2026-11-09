@@ -4,7 +4,7 @@
         --state Utah --course "Computer Programming 1" --standard "Utah CTE Computer Programming 1 strands" \
         --teaches programming-basics,containers --reason "programming-basics=Variables, loops and functions."
 
-The file says `added by: James`. COURSE_PROPOSAL_GITHUB_TOKEN must contain a repository-scoped token,
+The file says `added by: James`. GITHUB_TOKEN must contain a repository-scoped token,
 never a personal token, and is never printed.
 """
 from __future__ import annotations
@@ -36,6 +36,9 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
         return 1
     if result["status"] == "saved_locally":
         print(f"GitHub didn't accept it; saved data/proposed-courses/{result['file']} instead.", file=sys.stderr)
+        return 1
+    if result["status"] in ("not_saved", "limit_reached"):
+        print(f"Not opened: {result['message']}", file=sys.stderr)
         return 1
     print({"opened": f"Opened {result['url']}", "already_open": f"Already open: {result['url']}",
            "already_known": "That course is already in the curriculum."}[result["status"]])

@@ -5,7 +5,8 @@ format. It goes on its own branch, course/<state>-<course>, so there is at most 
 per course: proposing the same course again returns the open one.
 
 Nothing about the student goes anywhere: not in the file, the branch, the commit or the pull request.
-A student-confirmed match is recorded as "added by: Homeroom, after a student confirmed a match".
+A student-confirmed match is recorded as "added by: Homeroom", the format teachers practiced; the
+pull request body says a student confirmed the match.
 
 The checks mirror .gitar/rules/curriculum.md, so a proposal that Gitar would reject is refused before
 anything is opened: every concept must exist on main, at most 4 concepts, the standard must be
@@ -22,15 +23,18 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from app.es import ES, ESError
 from app.github import GitHub, GitHubError
 
-STUDENT_ADDED_BY = "Homeroom, after a student confirmed a match"
+STUDENT_ADDED_BY = "Homeroom"
 MAX_CONCEPTS = 4
 MAX_OPEN_COURSE_PRS = 5
 MAX_LOCAL_PROPOSALS = 20
 LOCAL_DIR = Path(__file__).resolve().parents[2] / "data" / "proposed-courses"
 FOOTER = "A teacher must approve before this merges."
 LIMIT_MESSAGE = "Course proposals are full right now. You can still view your schedule."
+UNAVAILABLE_MESSAGE = "We couldn't send your course to a teacher right now. You can still view your schedule."
+CONCEPTS_INDEX = "concepts"
 
 
 class ProposalError(ValueError):
@@ -169,14 +173,31 @@ def save_locally(p: Proposal, directory: Path = LOCAL_DIR) -> Path:
     return target
 
 
-def propose(gh: GitHub, p: Proposal, local_dir: Path | None = None) -> dict:
+def concepts_in_index(es: ES | None) -> set[str]:
+    """Concept slugs in the Elasticsearch concepts index (loaded from main), or an empty set if unreadable.
+
+    Used when GitHub can't be reached. The backend image holds only app/, so curriculum/ isn't there.
+    """
+    if es is None:
+        return set()
+    try:
+        res = es.search(CONCEPTS_INDEX, {"size": 1000, "_source": False, "query": {"match_all": {}}})
+    except ESError:
+        return set()
+    return {hit["_id"] for hit in res.get("hits", {}).get("hits", [])}
+
+
+def propose(gh: GitHub, p: Proposal, local_dir: Path | None = None, es: ES | None = None) -> dict:
     """Validate, then open the pull request, or save the file locally if GitHub fails."""
     validate(p)
     try:
         return open_pull_request(gh, p)
     except GitHubError:
-        from app.curriculum import read_concepts
-        unknown = sorted(set(p.slugs) - {c["slug"] for c in read_concepts()})
+        known = concepts_in_index(es)
+        if not known:
+            # Neither GitHub nor Elasticsearch can confirm the concepts: save nothing.
+            return {"status": "not_saved", "url": None, "number": None, "message": UNAVAILABLE_MESSAGE}
+        unknown = sorted(set(p.slugs) - known)
         if unknown:
             raise ProposalError("These concepts aren't in the curriculum yet: " + ", ".join(unknown) + ".")
         try:
