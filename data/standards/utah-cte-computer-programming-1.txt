@@ -1,0 +1,473 @@
+STRANDS AND STANDARDS
+COMPUTER PROGRAMMING 1
+Learning that works for Utah
+CourCourse Descripse Descriptiontion
+This foundational course introduces students to the core principles of software engineering and computer 
+programming. Through hands-on experience, students will learn to design, write, and test their own programs 
+while applying key mathematical concepts. The course emphasizes problem-solving, logical thinking, and the 
+development of basic coding skills using industry-relevant tools and practices. Teachers guide students through 
+real-world scenarios to build confidence and competence in software development.
+  Intended Grade Level 9-12
+  Units of Credit 0.5
+  Core Code 35.02.00.00.030
+  Concurrent Enrollment Core Code 35.02.00.13.030
+  Prerequisite Computer Science Principles
+  Skill Certification Test Number 820
+  Skill Certification Cut Score 73%
+  Test Weight 0.5
+  Meets Digital Studies Credit Requirement Yes
+  License Area of Concentration CTE and/or Secondary Education 6-12
+  Required Endorsement(s)
+  Endorsement 1 Intro to Computer Science
+  Endorsement 2 Programming & Software Development
+  Endorsement 3 Web Development
+  Endorsement 4 Information Technology Systems
+Updated: May 2026
+
+COMPUTER PROGRAMMING 1
+2]Page
+REVISED: JUNE 2025
+SSTRAND 1 TRAND 1
+Students will be familiar with and use a programming language IDE (Integrated Development Environment). 
+StStandarandard 1d 1 
+Demonstrate concept knowledge of different languages. 
+• Students will be aware of several programming languages and their purposes or use cases
+• Python - data science
+• Java - desktop application and server-side software
+• SQL - databases
+• JavaScript - web apps
+• C# - desktop applications
+• R - math and graphs
+• C++ - video games, desktop applications
+• C - operating systems, embedded systems
+• Describe the difference between an interpreted language vs a compiled language
+• Identify characteristics of high-level and low-level languages
+StStandarandard 2d 2 
+Demonstrate the ability to use an IDE. 
+• Use an IDE to develop, compile, and run programs
+• Understand the difference between syntax, run-time, and logic errors
+• Please see vocabulary list for specific definitions
+• Understand the process of debugging (finding and fixing errors)
+• Strategies students might learn for debugging could include:
+• Guess and Check
+• Deactivating sections to identify problematic code
+• Looking for typos, missing tags, or incorrect syntax
+• Making the problem smaller - identifying important points (changing variable values, getting
+input, etc.)
+• Asking a friend or team member for help
+• Printing, watching, or changing variable values while the program runs
+• Using a debugging tool
+• Thinking about when the code last worked and what has been added since then
+PPerferformance Skillsormance Skills 
+Use an IDE to create a solution to solve a problem. 
+ 
+
+COMPUTER PROGRAMMING 1
+3]Page
+REVISED:  JUNE 2025
+SSTRAND 2TRAND 2 
+Students will understand program development methodology and best practices. 
+StStandarandard 1d 1 
+Demonstrate the ability to use good programming style. 
+• Demonstrate proper use of white space (between lines and indentation)
+• Use appropriate naming conventions for identifiers (variables, methods, functions, and file names)
+• Understand the appropriate use of constants versus variables in programming style
+• Construct identifiers with meaningful format; camelCase and underscore
+• Implement appropriate output formatting (decimal places, dollar signs, and correct placement of
+variable data in a sentence)
+StStandarandard 2d 2 
+Understand the order of the software development life cycle. 
+• Identify the members of a computer programming/software engineering team:
+• team leader
+• analyst
+• senior developer
+• junior developer
+• client/subject matter expert
+• Project Analysis: Identify specifications and understand requirements to create a solution to a problem
+• Planning/Design: Design an algorithm to solve the problem using appropriate documentation (single,
+multi-line, and/or documentation comments, flowcharts, etc.)
+• Define an algorithm
+• Break the problem down into its subcomponents using top-down design
+• Implementation: Write the code, with comments, to implement the algorithm
+• Testing: Test program for verification of errors and proper functionality
+• Release and Maintenance: Release the solution and provide updates when necessary
+PPerferformance Skillsormance Skills 
+Demonstrate knowledge of program development methodology through a project. 
+
+COMPUTER PROGRAMMING 1
+4]Page
+REVISED:  JUNE 2025
+SSTRAND 3 TRAND 3
+Students will understand and implement key programming concepts. 
+StStandarandard 1d 1 
+Understand and implement input and output commands. 
+• Understand the difference between input and output
+• Understand there are different types of input (file, keyboard, mouse, microphone)
+• Understand there are different types of output (speakers, monitor, printer, file)
+• Write a program that receives input from a keyboard and produces output to the display
+StStandarandard 2d 2 
+Understand and implement data types and variables. 
+• Differentiate between primitive data types (boolean, integer, float and string)
+• Identify proper use of primitive data types (when to use one versus another)
+• Declare a variable and assign it a value using the assignment operator
+• Understand the difference between declaring and initializing a variable
+StStandarandard 3d 3 
+Understand and implement operators and operands. 
+• Use basic arithmetic operators (modulus [MOD or %], multiplication, integer division, float division,
+addition, subtraction)
+• Use basic comparison operators (<, >, ==, >=, <=)
+• Use basic assignment operator (=)
+• Understand order of operations for all operators
+• Parenthesis
+• Exponent
+• Multiplication
+• Division
+• Modulus [MOD or %]
+• Addition
+• Subtraction
+• Use basic logical operators (AND, OR, NOT)
+• Use operands in conjunction with arithmetic, relational, and logical operators
+StStandarandard 4d 4 
+Understand and implement expressions in a program. 
+• Understand how operators and operands are used to form expressions
+• Identify and implement syntactically correct expressions
+• Possible examples: A OR B, 5==6, x !=3.142, x = 4, y + 7
+StStandarandard 5d 5 
+Understand and implement functions. 
+• Understand and properly define scope, local variable, and global variable
+• Understand what functions are and what they are used for (readability, reusability, modularity,
+abstraction)
+• Understand the difference between a built-in function and user defined function
+• Utilize built-in functions
+• Understand that functions may or may not require arguments (input(s))
+• Understand that functions may or may not return value(s) (output(s))
+
+COMPUTER PROGRAMMING 1
+5]Page
+REVISED:  JUNE 2025
+StStandarandard 6d 6 
+Understand and implement complex data types. 
+• Understand the difference between simple and complex/primitive and reference data types
+• Declare a string variable in a program
+PPerferformance Skillsormance Skills 
+Write one or more programs that demonstrate effective use of the key programming concepts defined in 
+Strand 3. 
+
+COMPUTER PROGRAMMING 1
+6]Page
+REVISED:  JUNE 2025
+SSTRAND 4TRAND 4 
+Understand and implement control structures. 
+StStandarandard 1d 1 
+Understand and implement IF statements in a program. 
+• IF
+• Understand when to use an IF statement
+• Demonstrate correct use of an IF statement
+• ELSE-IF
+• Understand when to use an ELSE-IF statement
+• Demonstrate correct use of ELSE-IF statements
+• ELSE
+• Understand when to use an ELSE statement
+• Demonstrate proper use of an ELSE statement
+• Nesting IF statements
+• Understand when to use a nested IF statement
+• Demonstrate proper use of a nested IF statement
+Students will be able to read a program and know which if statement will execute during a given situation and 
+which will be ignored 
+StStandarandard 2d 2 
+Understand and implement basic loop structures in programs. 
+• For-loops
+• Understand when to use a for-loop
+• When you know the number of times you are going to iterate
+• Understand the three components of a for-loop
+• An initial value ( i = 0)
+• A condition ( i < 7 )
+• An update expression ( i = i + 1 )
+• Demonstrate proper use of for-loops
+• While-loops
+• Understand when to use a while-loop
+• When you want to stop iterating when a boolean condition is no longer true
+• Demonstrate proper use of a while-loop
+• Nested loops (loop within a loop)
+• Understand when to use nested loops
+• Demonstrate proper use of nested loops
+• Identify the various ways that loops can end (break, met condition, condition fail)
+• Design loops so they iterate the correct number of times
+• Understand what causes an infinite loop
+
+COMPUTER PROGRAMMING 1
+7]Page
+REVISED:  JUNE 2025
+h·f-1:i 11!■ :i 
+True True True True 
+True False False True 
+False True False True 
+False False False False 
+StStandarandard 3d 3 
+Understand and implement expressions and complex conditions in control structures. 
+• Create expressions using relational operators
+• Example: (a > 6, x != 7, y > 4)
+• Form complex conditions using logical operators
+• Example: (a > 6 AND x != 7 OR y > 4)
+• Incorporate complex conditions in loop structures
+• Example: While a player’s health is greater than 50 and player is not dead
+• Understand a Truth Table
+(ex: ) 
+PP f ererformance Skillsormance Skills 
+Write one or more programs that demonstrate effective use of control structures. 
+
+COMPUTER PROGRAMMING 1
+8]Page
+REVISED:  JUNE 2025
+SSTRAND 5TRAND 5 
+Students will be aware of career opportunities in the Computer Programming/Software Engineering 
+industry. 
+StStandarandard 1d 1 
+Investigate career opportunities, trends, and requirements related to computer programming/software 
+engineering careers. 
+• Understand the role each team member plays in a computer programming/software engineering team:
+• team leader
+• analyst
+• senior developer
+• junior developer
+• client/subject matter expert
+• Describe work performed by each member of the computer programming/software engineering team
+• Investigate trends and traits associated with computer programming/software engineering careers
+(creativity, technical, leadership, collaborative, problem solving, design, etc.)
+• Discuss related career pathways
+PPerferformance Skillsormance Skills 
+Develop awareness of career opportunities in the computer programming/software engineering industry. 
+ 
+
+COMPUTER PROGRAMMING 1
+9]Page
+REVISED:  JUNE 2025
+SSTRAND 6TRAND 6 
+Students will be aware of the ethical issues in computer programming and the impact AI is making on the 
+industry. 
+StStandarandard 1d 1 
+This is a statement from the USBE Board on Artificial Intelligence. 
+Students will develop the knowledge and skills to use Artificial Intelligence responsibly and effectively in CTE 
+courses. 
+• Responsible use of AI, which includes recognizing when to use AI, using appropriate prompts to
+produce desired output, determining accuracy of information, how AI has contributed to a product, and
+communicating that clearly.
+• The importance of transparency and documentation, both in their own use of AI tools and in verifying
+the authenticity of others’ work.
+• How AI influences all work, including the evolving boundaries and tightening restrictions around
+intellectual property and copyright.
+StStandarandard 2d 2 
+Understand current ethical issues dealing specifically with computer programming and information in society. 
+• Explain the impact software can have on society (i.e., privacy, piracy, copyright laws, ease of use, etc.)
+• Explain the ethical reasons for creating reliable and robust software
+• Describe how computer-controlled automation affects a workplace and society
+StStandarandard 3d 3 
+AI use in Programming: Students will understand the ethical use of AI in coding and how it impacts the 
+programming field. 
+• Academic integrity and attribution
+• Know when AI use is appropriate
+• Explain why you should not rely only on the use of AI to write your code
+• Understand disclosing when you use AI
+• Understanding vs. over-reliance on AI
+• Verifying and debugging AI generated code
+• Reviewing the code to make sure there are no coding errors
+• Understand that AI tools can be helpful for debugging code, but it’s important to double-check their
+suggestions using your own programming knowledge
+• Ethical implication of AI written software
+PPerferformance Skillsormance Skills 
+Develop an awareness of all the ethical implications of Artificial Intelligence (AI). 
+
+COMPUTER PROGRAMMING 1
+10]Page
+REVISED:  JUNE 2025
+Industry Test Points by StrandIndustry Test Points by Strand 
+Test Name 
+Computer
+ Programming 
+1 
+Test # 
+820 
+Number of Test Points by Strand 
+ 1  2  3  4  5  6 
+5 7 16 15 1 2 
+Number of Questions by Strand 
+1 2 3 4 5 6 
+3 6 14 15 1 2 
+Total 
+Points 
+46 
+Total 
+Questions
+41 
+
+COMPUTER PROGRAMMING 1
+11]Page 
+REVISED:  JUNE 2025
+Computer Programming 1 – VOCABULARY 
+Strand 1 - Students will be familiar with and use a programming language IDE (Integrated Development 
+Environment). 
+IDE (Integrated Development Environment: Software for building applications that combines common 
+developer tools in a single interface. 
+Interpreted Language: Source code is read and executed by an interpreter 
+Compiled Language: Source code is translated into machine code, and the machine code is stored in a separate 
+file. 
+High-Level Language: Programming Language that enables a programmer to write programs that are closer to 
+human language. 
+Low-Level Language: Programming language that contains basic instructions recognized by a computer. 
+Syntax Error: Error which is detected and prevents the program from running. 
+Run-Time Error: Error in the code that occurs while the program is running. 
+Logic Error: Mistake in the code that produces incorrect results. 
+Debugging: Finding and fixing problems in an algorithm or program. 
+Software Development Life Cycle: A process that produces software with the highest quality and lowest cost in 
+the shortest time possible 
+Strand 2 - Students will understand program development methodology and best practices. 
+White Space: Blank lines and extra spacing to improve readability of code. 
+Identifiers: Names given to variables, constants, methods, and functions. 
+Variable: A named value within a program. 
+Function: A named group of programming instructions. 
+Constant: Data values that stay the same every time a program is executed. 
+Camel Case: Naming convention where the first letter of name is lowercase, and each new word is capitalized. 
+(camelCase) 
+Pascal Case: Naming convention where the first letter of each compound word is capitalized. (PascalCase) 
+Snake Case: Naming convention where spaces are replaced with underscores. (snake_case) 
+
+COMPUTER PROGRAMMING 1
+12]Page
+REVISED:  JUNE 2025
+Software Development Life Cycle: 
+1. Requirements Analysis - Identify specifications and understand requirements to create a solution.
+2. Planning/Design - Design an algorithm to solve the problem using appropriate documentation.
+3. Implementation - Write the code
+4. Testing - Test program for verification of errors and proper functionality.
+5. Release & Maintenance - Release the solution and provide updates when necessary.
+Algorithm: A finite set of instructions that accomplish a task. 
+Strand 3 - Students will understand and implement key programming concepts. 
+Scope: Determines the accessibility (visibility) of variables. 
+Local Variable: Only recognized inside the function in which it is declared. 
+Global Variable: Recognized from anywhere inside a program. 
+Input: The information computers get from users, devices, or other computers. 
+Output: The information computers give to users, devices, or other computers. 
+String: An ordered sequence of characters. 
+Integer: A data type that is used for a whole number 
+Boolean: A data type that is either true or false. 
+Float: A data type that is used for fractional values in decimal format. 
+Declaration: Stating the name and data type of a variable. 
+Initialization: Assignment of an initial value for a variable. 
+Arithmetic Operators: Includes addition, subtraction, multiplication, division, and modulus operators. 
+Comparison Operators: <, >, ≤, ≥, ==, ≠ indicate a Boolean expression. 
+Order of Operations: Parenthesis, exponents, multiplication, modulus, division, addition, subtraction 
+(PEMMDAS). 
+Logical Operators: NOT, AND, and OR, which evaluate to a Boolean value. 
+Expression: A combination of operators, constants, and variables. 
+Integer Division: Division in which the fractional part (remainder) is discarded. 
+
+13]Page
+REVISED:  JUNE 2025
+          COMPUTER PROGRAMMING 1  
+Float Division: Division in which the fractional part (remainder) is included with a certain number of values 
+after the decimal. 
+Function: A named group of programming instructions 
+Readability: The ease with which the code is read and understood. 
+Reusability: Capability of being used again or repeatedly. 
+Modularity: Enables reusability and minimizes duplication. 
+Abstraction: Hiding unnecessary details from the user. 
+Built-In Function: Any function that is provided as part of a high-level language and can be executed by a 
+simple reference with specification of arguments. 
+User-Defined Function: A function created by the user. 
+Arguments: The variables given to the function for execution. 
+Parameters: The names listed in the method/function’s definition. 
+Return: A value that is sent back to the user by a method/function. 
+Void Return: Indicates that the function does not return a value. 
+Simple Data Types: char, string, integer, float, double, boolean. 
+Complex Data Types: enumeration, array, list, object. 
+Strand 4 - Understand and implement control structures 
+Conditional Statement: Decision making based on a Boolean value. 
+Nested IF Statement: An if statement placed inside another if statement. 
+For Loop: 
+Initial Value 
+Condition 
+Increment/Decrement 
+While Loop: Loops through a block of code as long as a specified condition is true. 
+Nested Loop: A loop placed inside another loop. 
+Break: Statement used to immediately terminate a loop. 
+
+COMPUTER PROGRAMMING 1
+14]Page
+REVISED:  JUNE 2025
+Met Condition: Expression evaluates to true. 
+Failed Condition: Expression evaluates to false. 
+Iterate: Each cycle through a loop. 
+Infinite Loop: A loop that, due to a logic error, will continue endlessly. 
+Complex Condition: Formed by combining multiple conditions with logical operators. 
+Exit Condition: Used to exit a loop. 
+
+COMPUTER PROGRAMMING 1
+15]Page
+REVISED:  JUNE 2025
+ComputComputer Prer Progrogramming 1 - Skills Ramming 1 - Skills Reeffererence Sheeence Sheett 
+Assignment, Display, and Input 
+a = expression Evaluates expression and then assigns a copy of the result to
+the variable a. 
+DISPLAY(expression) Displays the value of (expression) in the console window.
+INPUT( ) Accepts a value from the user and returns the input value. 
+Arithmetic Operators and Numeric Procedures 
+a + b 
+a - b 
+a * b 
+a / b 
+The arithmetic operators +,-,*, and / are used to perform
+arithmetic on a and b. 
+For example, 17 / 5 evaluates to 3.4. 
+The order of operations used in mathematics applies when 
+evaluating expressions. 
+a MODULUS b 
+-or-
+a MOD b
+Evaluates to the remainder when a is divided by b.
+For example, 17 MOD 5 evaluates to 2.
+MODULUS (MOD) has the same precedence as the
+operators. 
+ * and /
+Relational and Boolean Operators 
+NOT condition Evaluates to true if condition is false; otherwise evaluates
+ to false.
+condition1 AND condition2 Evaluates to true if both condition1 and condition2 are
+true; otherwise evaluates to false.
+condition1 OR condition2  Evaluates to true if condition1 is true or if condition2 
+is true or if both condition1 and condition2 are true;
+otherwise evaluates to false.
+FOR(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is executed a certain
+number of times. 
+
+COMPUTER PROGRAMMING 1
+16]Page
+REVISED:  JUNE 2025
+WHILE(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is repeated
+until the (condition) evaluates to false.
+IF(condition1)  If (condition1) evaluates to true, the code in
+{ <first block of statements> is executed;
+<first block of statements> if (condition1) evaluates to false, then
+{ (condition2) is tested; if (condition2) evaluates to
+ELSE IF(condition2) true, the code in
+{ <second block of statements> is executed; if
+<second block of statements> both (condition1) and (condition2) evaluate
+}  to false, then the code in <third block of 
+ELSE statements> is executed.
+{
+ <third block of statements> 
+} 
+Procedures and Procedure Calls 
+PROCEDURE procName( )  Defines procName as a procedure that takes no arguments.
+{ The procedure contains <block of statements>.
+<block of statements> 
+} The procedure procName can be called using the following
+notation: 
+procName( ) 

@@ -1,0 +1,478 @@
+STRANDS AND STANDARDS
+EXPLORING COMPUTER SCIENCE
+Learning that works for Utah
+CourCourse Descripse Descriptiontion
+Exploring Computer Science introduces students to the diverse and dynamic field of computer science through 
+engaging, accessible topics. Students will learn to design and evaluate solutions by developing algorithms
+and writing programs, while also exploring how data is created, transformed, and interpreted. The course 
+emphasizes computational thinking and problem-solving in contexts that are meaningful to students’ lives. 
+Learners will investigate how computing systems and innovations function, and analyze their societal impacts. 
+Topics include artificial intelligence, web development, programming, and physical computing, all within a 
+collaborative and ethical computing culture.
+  Intended Grade Level 9-12
+  Units of Credit 0.5
+  Core Code 35.02.00.00.007
+  Concurrent Enrollment Core Code 35.02.00.13.007
+  Prerequisite None
+  Skill Certification Test Number 802
+  Skill Certification Cut Score 74%
+  Test Weight 0.5
+  Meets Digital Studies Credit Requirement Yes
+  License Area of Concentration CTE and/or Secondary Education 6-12
+  Required Endorsement(s)
+  Endorsement 1 or Cybersecurity
+  Endorsement 2 or Information Technology Systems
+  Endorsement 3 or Intro to Computer Science
+  Endorsement 4 or Multimedia
+  Endorsement 5 or Programming & Software Development
+  Endorsement 6 Web Development
+Updated: April 2026
+
+EXPLORING COMPUTER SCIENCE
+2]Page
+REVISED: JUNE 2025
+ 
+SSTRAND 1TRAND 1 
+Computer Science Practices 
+Students will employ the following practices throughout the course. They provide a framework and serve as 
+helpful reminders of the high-level skills and dispositions computer scientists should be continually developing. 
+StStandarandard 1d 1 
+Critical Thinking 
+• Use the structured problem-solving process to help address new problems
+• View challenges as solvable
+• Decompose or break down larger problems into smaller components
+StStandarandard 2d 2 
+Persistence 
+• Expect and value mistakes as a natural and productive part of problem solving
+• Continue working with new ideas and consider multiple possible approaches
+• Iterate and continue to improve partial solutions
+StStandarandard 3d 3 
+Creativity 
+• Incorporate personal interests and ideas into activities and projects
+• Experiment with new ideas and consider multiple possible approaches
+• Extend or build upon the ideas and projects of others
+StStandarandard 4d 4 
+Collaboration 
+• Work with others to develop solutions that incorporate all contributors
+• Mediate disagreements and help teammates agree on a common solution
+• Actively contribute to the success of group projects
+StStandarandard 5d 5 
+Communication 
+• Structure work so that it can be easily understood by others
+• Consider the perspective and background of your audience when presenting work
+• Provide and accept constructive feedback in order to improve work
+PPerferformance Skillsormance Skills 
+Students will consistently demonstrate strong computer science practices by applying structured problem-
+solving strategies, thinking critically to break down complex challenges, and persisting through iterative 
+improvement. They will engage creatively by exploring multiple approaches and incorporating original ideas, 
+while collaborating effectively with peers to develop shared solutions. Students will communicate their 
+thinking clearly, adapt their work for different audiences, and provide and apply constructive feedback to 
+refine and strengthen outcomes. 
+
+EXPLORING COMPUTER SCIENCE
+3]Page
+REVISED: JUNE 2025
+SSTRAND 2TRAND 2 
+Problem Solving with Computers 
+Students will learn how computers input, output, store, and process information. Students will gain the 
+importance of solving problems, and/or automating tasks with the aid of computers, as well as a basic 
+understanding of the algorithms computers use. 
+StStandarandard 1d 1 
+Students will understand computer hardware and the tasks they perform: 
+• Students will identify the required functions for a device to be classified as a computer (receives input,
+processing; output; storage)
+• Analyze the characteristics of hardware and software components including processors, RAM, ROM,
+hard drive, input and output devices, and operating system.
+• Understand the relationship between bits and bytes.
+• Compare and convert between the following sizes: kilobyte, megabyte, gigabyte, terabyte and
+• petabyte.
+• Discuss the difference between consumer and enterprise (cloud) storage.
+• Discuss the speed of the computer (gigahertz).
+• Students will identify examples of tasks that can and cannot be accomplished with a computer.
+StStandarandard 2d 2 
+Students will describe changes technology has made on communication, privacy, and social interactions. 
+• Impacts of technology on society from the following perspectives: social, economic, political, legal,
+• ethical, and moral issues
+• Permanence of online information
+• Consider issues around privacy and collection of data
+• Students will understand that all their online behavior and digital communications will have long-term
+ramifications either positive or negative.
+• Online safety
+StStandarandard 3d 3 
+Students will discuss how and why binary is used to represent data in a computer. 
+• Describe how binary digits (bits) are stored in different media
+• Understand the binary system or pattern for counting up to 8 digits
+• Convert numbers between 0 and 128 from decimal to binary and vice versa.
+• Describe how real-world phenomena such as numbers, characters (ASCII), or images (RGB) are digitized
+and represented in a computer.
+StStandarandard 4d 4 
+Students will understand different algorithms used in problem solving. 
+• Solve a problem through an iterative process.
+1. Define - Understand the Problem
+2. Prepare - Plan the Solution (design via pseudocode/flowcharts/storyboards)
+3. Try - Carry out the Plan (Code)
+4. Reflect - Review and Discuss your Solution (Testing / Feedback)
+• Explain when a binary search would be more efficient than a linear search
+
+EXPLORING COMPUTER SCIENCE
+4]Page
+REVISED: JUNE 2025
+StStandarandard 5d 5 
+Students will gain knowledge and skills while considering the social, moral, and ethical impacts of Artificial 
+Intelligence (AI) systems and usage. 
+• Students will explain the idea of intelligence specifically as it relates to computers.
+• Students will explain what it means for a machine to learn
+• Students will identify the AI being used, such as image recognition, speech recognition, translation,
+creation of artifacts (media, print, sound, etc.), etc.
+• Students will train and test an existing AI system (machine learning).
+• Students will understand the difference between predictive and generative AI
+• Examples of predictive could be a streaming service that recommends movies based on your past
+viewing history, forecasting market trends, etc.
+• Examples of generative could be a software program that creates original artwork from a text
+prompt, an app that composes music in the style of a famous artist, etc.
+• Students will explore and explain the social and ethical impacts of AI (human and algorithmic
+bias, worker obsolescence through automation, user interface improvements, human/machine
+augmentation, etc.)
+• Appropriate use of AI
+• Effective prompting
+• Students will gain an understanding of how AI is changing different sectors such as medicine,
+agriculture, manufacturing, etc.
+PPerferformance Skillsormance Skills 
+Students will apply foundational computing knowledge to analyze how computers input, process, store, and 
+output information while using algorithms to solve problems and automate tasks. They will interpret and 
+represent data using binary systems, evaluate the capabilities and limitations of computer hardware and 
+software, and engage in iterative problem-solving processes to design and refine solutions. Students will 
+also assess the societal, ethical, and practical impacts of technology and artificial intelligence, demonstrating 
+responsible, informed, and effective use of computing systems in real-world contexts. 
+
+EXPLORING COMPUTER SCIENCE
+5]Page
+REVISED: JUNE 2025
+SSTRAND 3TRAND 3 
+Web Development 
+Students will learn social responsibility and ethics with regard to web development and how to use the basic 
+building blocks of the World Wide Web: HTML5 and Cascading Style Sheets (CSS). Students will follow the 
+steps to create a website by planning, designing, and coding a personal website. 
+StStandarandard 1d 1 
+Social Responsibility of Website Development 
+• Students will understand ethical behavior as it relates to an AUP , Intellectual Property, Netiquette,
+Respecting Privacy, Anti-Spamming Laws, etc.
+• Students will demonstrate knowledge of standard copyright rules.
+• Understand copyright for original creations.
+• Understand the creative commons license
+• Understand when to obtain permission for non-original work.
+• Students will identify the use and purpose of acceptable use policy (AUP).
+• Comply with the school’s AUP
+StStandarandard 2d 2 
+Design Process 
+• Students will understand the need to know the purpose of website design in relationship to the
+intended audience and client needs.
+• Students will plan a website design using storyboards, wireframes, etc.
+StStandarandard 3d 3 
+HTML (Hyper Text Markup Language) 
+• Students will understand that the HTML programming language is used to create all websites on the
+internet and acts as the structure for a website.
+• Students will code the foundation for a basic webpage including the element tags DOCTYPE, html,
+head, title, and body.
+• Students will create pages with tags and attributes at the inline level. (DOCTYPE, title, head, body,
+h1 – h6, p, etc.)
+• Students will create web pages with text formatting, links, images, and lists.
+StStandarandard 4d 4 
+CSS (Cascading Style Sheets) 
+• Students will understand that CSS (Cascading Style Sheets) are used to customize the style or looks of a
+website.
+• Students will apply CSS to a website.
+• Apply CSS to a web site using best practices (external CSS).
+• Students will format web pages using CSS
+• Modify background properties such as color and image.
+• Modify font properties such as font-family, size, and color.
+• Modify border properties such as width, style, and color.
+• Implement tags and classes to modify an HTML element.
+
+EXPLORING COMPUTER SCIENCE
+6]Page
+REVISED: JUNE 2025
+ 
+StStandarandard 5d 5 
+Careers in Web Development 
+• Students will explore various careers in Web Development including front end developer, back end
+developer, full stack developer, and UX/UI designer.
+PPerferformance Skillsormance Skills 
+Students will design, develop, and evaluate functional websites by applying ethical practices, user-centered 
+design principles, and foundational web technologies. They will plan and create websites using HTML to 
+structure content and CSS to enhance visual design, while ensuring accessibility, usability, and alignment with 
+audience needs. Students will demonstrate responsible digital behavior by adhering to acceptable use policies, 
+respecting intellectual property, and applying online ethics. Additionally, students will explore career pathways 
+in web development and reflect on the skills, tools, and roles required in the field. 
+
+EXPLORING COMPUTER SCIENCE
+7]Page
+REVISED: JUNE 2025
+SSTRAND 4TRAND 4 
+Programming and Algorithms 
+Students will understand that an algorithm is a sequence of steps designed to accomplish a specific task. 
+Algorithms are then translated into programs, or code, to provide instructions for computing devices. 
+StStandarandard 1d 1 
+Program Design 
+• Students will identify how planning strategies (such as flowcharts, storyboards, prototypes or
+pseudocode) are used when creating a program.
+StStandarandard 2d 2 
+Algorithms 
+• Define an algorithm as a set of clearly defined, logical steps to solve a problem.
+• Students will describe the steps needed to efficiently solve a non-computing problem using a
+pseudocode algorithm
+• Students will examine and formulate algorithms that solve specific problems.
+StStandarandard 3d 3 
+Input/Output 
+• Students will recognize a variety of different user input sources such as text input, sensors, mouse
+response, movement, or event. Students will recognize a variety of different outputs such as sounds,
+light, vibrations, movement, text and/or graphics.
+StStandarandard 4d 4 
+Variables 
+• Students will understand that variables are named locations in memory used to store data.
+• Students will be able to identify variables and when they should be used in code.
+StStandarandard 5d 5 
+Conditionals 
+• Students will understand that programs use conditionals to perform different computations or actions
+based on whether a condition is true or false (booleans).
+StStandarandard 6d 6 
+Loops 
+• Students will understand that programs use loops (iteration) to be more efficient and avoid code
+duplication.
+• For loop – know the number of times you are going to iterate
+• While loop – iterate until a boolean condition is no longer true
+StStandarandard 7d 7 
+Operators 
+• Students will understand that programs use mathematical symbols ( +, -, *, /, >, <, ==, AND, OR) in
+a program to perform specific operations (mathematical, relational, or logical) and produce a single
+result.
+StStandarandard 8d 8 
+Functions 
+• Students will understand that a function is a named block of code that performs a specific task.
+Functions encourage efficiency (repeated code), reusability, and readability.
+
+EXPLORING COMPUTER SCIENCE
+8]Page
+REVISED: JUNE 2025
+StStandarandard 9d 9 
+Debugging 
+• Students will understand that debugging is finding and removing errors from a program so it can
+operate as intended. Strategies students might learn for debugging could include:
+• Guess and Check
+• Deactivating sections to identify problematic code
+• Looking for typos, missing tags, or incorrect syntax
+• Making the problem smaller - identifying important points (changing variable values, getting input,
+etc.)
+• Asking a friend or team member for help
+• Printing, watching, or changing variable values while the program runs
+• Using a debugging tool
+• Thinking about when the code last worked and what has been added since then
+StStandarandard 10d 10 
+Physical Computing 
+• Students will demonstrate an understanding of the relationship between hardware and software.
+• Students will define and explain an algorithm for a physical computing device. (sequence of
+instructions processed by the device.)
+• Students will create a prototype of a physical computing device that uses algorithms to solve a
+computational problem.
+• Students will create a physical project or program a physical device
+• Students will illustrate ways the project or physical device implements logic, input, and output
+through hardware components (sensors, buttons, switches, etc.)
+• Students will systematically identify and fix problems with the project or physical device.
+StStandarandard 11d 11 
+Careers in Programming 
+• Students will explore various careers in programming such as Software Engineer, Video Game
+Developer, Mobile App Developer, and Web Developer.
+PPerferformance Skillsormance Skills 
+• Students will design algorithms and create programming solutions to a variety of computational
+problems using a block or text programming language.
+• Students will develop a program or programs that:
+• makes a decision based on data or user input (conditionals).
+• accepts user and/or sensor input and stores the result in a variable.
+• uses variables that represent different data types.
+• uses structures that repeat blocks/lines of code (loops).
+• uses operators.
+• uses functions.
+• Students will analyze, test, improve and debug computer programs.
+• Students will design and create a physical project or program a physical device and debug the project or
+device
+
+EXPLORING COMPUTER SCIENCE
+9]Page
+REVISED: JUNE 2025
+Industry Test Points by StrandIndustry Test Points by Strand 
+T
+est Name 
+Exploring 
+Computer 
+Science 
+Test # 
+802 
+Number of Test Points by Strand 
+1  2  3  4 
+2 21 11 14 
+Number of Questions by Strand 
+1 2 3 4 
+2 14 9 12 
+Total 
+Points 
+48 
+Total 
+Questions
+37 
+
+EXPLORING COMPUTER SCIENCE
+10]Page
+REVISED: JUNE 2025
+Exploring Computer Science Vocabulary 
+Strand 2: Problem Solving with Computers 
+Algorithm: A list of steps to finish a task. 
+ASCII: A common numeric representation of a text character (American Standard Code for Information 
+Interchange). 
+Artificial Intelligence (AI): A technology that mimics human intelligence, performing tasks such as 
+understanding language, recognizing patterns, and making decisions. 
+Bias: Prejudice in favor of or against one thing, person, or group compared with another. 
+Binary: A way of representing information using only two options. 
+Binary Search: Compares the target value to the middle element of the array.  If they are not equal, the half 
+in which the target cannot lie is eliminated and the search continues on the remaining half, again taking the 
+middle element to compare to the target value and repeating this until the target value is found. 
+Bit: The single unit of information in a computer, typically represented as a 0 or a 1. 
+Byte: The most common fundamental unit of digital data (ex: Kilobyte, Megabyte, etc.).  A single byte is 8 bits 
+worth of data. 
+Decimal: A term that describes the base-10 number system, probably the most commonly used number 
+system.  The decimal number system consists of ten single-digit numbers: 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9. 
+Digital Footprint: The collected information about an individual across multiple websites on the Internet. 
+Gigabyte: A unit of information equal to 1024 megabytes or 2^30 (1,073,741,824) bytes. 
+Hertz/Gigahertz: A unit measuring the waves or frequencies of electric changes each second, such as the clock 
+rate of a computer CPU. 
+Input: The action of entering data into your computer.  
+Kilobyte: The smallest unit of measurement greater than a byte; a kilobyte is 103 or 1,000 bytes. 
+Linear Search: A process in which a sequential search is made over all items one by one.  Every item is checked 
+and if a match is found then that particular item is returned, otherwise the search continues till the end of the 
+data collection. 
+Megabyte: Equal to 1,000 kilobytes; a megabyte is 106 or 1,000,000 bytes. 
+
+11]Page
+REVISED: JUNE 2025
+ 
+EXPLORING COMPUTER SCIENCE
+Operating system: Software that communicates with the hardware and allows other programs to run.  It is 
+comprised of system software, or the fundamental files your computer needs to boot up and function.  Every 
+desktop computer, tablet, and smartphone includes an operating system that provides basic functionality for 
+the device; common desktop operating systems include Windows, OS X, and Linux. 
+Output: What the computer produces based on user input.  This includes data produced at a software level, 
+such as the result of a calculation, or at a physical level, such as a printed document.  A basic example of 
+software output is a calculator program that produces the result of a mathematical operation.  A more 
+complex example is the results produced by a search engine, which compares keywords to millions of pages in 
+its web page index. 
+Pixel: In short for “Picture Element”.  These small little dots are what make up the image on computer displays, 
+whether they are flat-screen (LCD) or tube (CRT) monitors. The screen is divided up into a matrix of thousands 
+of even millions of pixels. Typically, you cannot see the individual pixels because the are so small. This is a good 
+thing, because most people prefer to look at smooth, clear images rather than blocky, “pixelated” ones. 
+Privacy: A branch of data security concerned with the proper handling of data – consent, notice, and 
+regulatory obligations.  More specifically, practical data privacy concerns often revolve around: 
+• Whether or how data is shared with third parties
+• How data is legally collected or stored.
+• Regulatory restrictions such as GDPR, HIPAA, GLBA, or CCPA.
+Processor: A small chip that resides in computers and other electronic devices.  Its basic job is to receive input 
+and provide the appropriate output. 
+Processing: A series of operations on data, especially by a computer, to retrieve, transform, or classify 
+information. 
+RAM: “Random Access Memory” is common hardware component found in electronic devised, including 
+desktop computers, laptops, tables, and smartphones.  The amount of RAM in a device determines how much 
+memory the operating system and open applications can use.  When a device has sufficient RAM, several 
+programs can run simultaneously without any slowdown. When a device uses close to 100% of the available 
+RAM, memory must be swapped between applications, which may cause a noticeable slowdown. 
+RGB: A numeric representation of a color based on red, green, and blue values. 
+ROM: “Read-Only Memory” is memory containing hardwired instructions that the computer uses when it 
+boots up before the system software loads.  In PCs the instructions are read from a small program in the ROM, 
+called the BIOS (Basic Input/Output System). 
+Sorting Algorithm: A sorting algorithm is an algorithm that puts elements of a list in a certain order. 
+Terabyte: Is equal to 1,024 gigabytes or 1,000,000 megabytes 
+Turning Test: A test for intelligence in a computer, requiring that a human being should be unable to distinguish 
+the machine from another human being by using the replies to questions put to both. 
+
+12]Page
+REVISED: JUNE 2025
+          EXPLORING COMPUTER SCIENCE
+Strand 3 – Web Development 
+Back End Web Developer: Person who uses scripting languages such as PHP and other databases to design how 
+a website works. 
+Copyright: The exclusive legal right to print, publish, perform, film, or record literary, artistic, or musical 
+material, and to authorize others to do the same. 
+Creative Commons: A set of various licenses that allow people to share their copyrighted work to be copied, 
+edited, built upon, etc. while retaining the copyright to the original work (often used attributively). 
+CSS (Cascading Style Sheets): A language used to describe how HTML elements should be styled. 
+CSS Class: An identifier that allows multiple elements in an HTML document to be styled in the same way. 
+Digital Footprint: A trial of data you create while using the Internet.  It includes the website you visit, emails 
+you send, and information you submit to online services. 
+Front End Web Developer: Person who uses HTML, CSS, and image editing software to design that front end or 
+public side of the website. 
+Full Stack Development : Developer who is comfortable working with both back-end and front-end 
+technologies. 
+Headings: HTML tags that are used to indicate sections of a page.  The name of each heading indicates its level 
+in a hierarchy. 
+HTML: Hypertext Markup Language, a language used to create web pages. 
+HTML Element: A piece of a website, marked by a start tag and often closed with an end tag. 
+HTML Tag: The special set of characters that indicates the start and end of an HTML element and that 
+element’s type. 
+HTTP: Hypertext Transfer Protocol, the set of rules for transferring files on the World Wide Web. 
+Hyperlink: A word, phrase, or image that you can click on to jump to a new document or a new section within 
+the current document.  Text hyperlinks are often blue and underlined, but do not have to be. When you click it, 
+a new page or place in the current page will open. 
+Netiquette: The rules of etiquette that apply when communicating over computer networks, especially the 
+Internet. 
+Web Browser: An application used to access and view websites. Common web browsers include Microsoft 
+Internet Explorer, Google Chrome, Mozilla Firefox, and Apple Safari. 
+
+13]Page
+REVISED: JUNE 2025
+EXPLORING COMPUTER SCIENCE
+Website Content: The text and images on a website. 
+Website Structure: How the content of a website is organized. 
+UX (User Experience) Designer: Designers are primarily concerned with how the product feels. 
+UI (User Interface) Designer: Designers are particular about how the product is laid out 
+Strand 4 – Programming & Algorithms 
+Boolean Logic: Deals with the basic operations of truth values: AND, OR, NOT, and combinations thereof. 
+Conditional Statement: A set of rules performed is a certain condition is met.  It is sometimes referred to as an 
+If-Then statement, because IF a condition is met, THEN an action is performed. 
+Debugging: A systematic approach to problem solving that is often used to find and resolve a problem, error, or 
+fault within software or a computer system. 
+Decompose: Break a problem down into smaller pieces. 
+Flowchart: A graphic representation of an algorithm, a step-by-step approach to solving a task. 
+Functions: “Self-contained” modules of code that accomplish a specific task.  Functions usually “take in” data, 
+process it, and “return” a result.  Once a function is written, it can be used repeatedly.  Functions can be 
+“called” from the inside of other functions. 
+Iterate: The repetition of a function or process in a computer program.  Iterations of functions are common in 
+computer programming since they allow multiple blocks of data to be processed in sequence. This is typically 
+done using a “while loop” or “for loop”.  These loops will repeat a process until a certain number or case is 
+reached. 
+Loop: A programing structure that repeats a sequence of instructions as long as a specific condition is true. 
+Mobile App Developer: A Mobile App Developer designs, builds, and tests applications for smartphones and 
+tablets. They use programming skills and user-centered design to create apps that are functional, easy to use, 
+and responsive across different devices, often working as part of a development team. 
+Operators: A symbol that usually represents an action or process.  These symbols were adapted from 
+mathematics and logic.  An operator is capable of manipulating a certain value or operand. Operators are 
+the backbone of any program, and they are used for everything from very simple functions like counting to 
+complex algorithms like security encryption. 
+Physical Computing: Building interactive physical systems by the use of software and hardware that can sense 
+and respond to the analog world. 
+Pseudocode: A detailed yet readable description of what a computer program or algorithm must do, expressed 
+in a formally styled natural language rather than in a programming language. 
+
+EXPLORING COMPUTER SCIENCE
+14]Page
+REVISED: JUNE 2025
+Prototype: An early approximation of a final product or information system, often built for demonstration 
+purposes. 
+Sensors: A device that detects and responds to some type of input from the physical environment.  Sensors 
+send data to a microprocessor (computer). 
+Software Engineer: A Software Engineer designs, builds, tests, and improves computer programs and 
+applications with a programming language. 
+Storyboard: A graphic organizer that provides the viewer with a high-level view of a project.  In software 
+development, a storyboard can help developers quickly get a sense of what work still needs to be completed. 
+User: A person for whom a hardware or software product is designed (as distinguished from the developers). 
+Variable: A placeholder for a piece of information that can change. 
+Note: This definition differs from that used in math. 
+Video Game Developer: A Video Game Developer designs, builds, and tests video games by combining 
+programming, creativity, and problem-solving skills. They work with artists, designers, and other developers to 
+create interactive gameplay, fix bugs, and improve player experience. 

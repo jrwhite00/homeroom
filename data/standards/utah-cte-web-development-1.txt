@@ -1,0 +1,380 @@
+STRANDS AND STANDARDS
+WEB DEVELOPMENT 1
+CourCourse Descripse Descriptiontion
+Web Development 1 is a course designed to guide students in a project-based environment in the 
+development of up-to-date concepts and skills that are used in the development of today’s websites. Students 
+will learn the fundamentals of how the Internet works. They will learn and use the basic building blocks of 
+the World Wide Web: HTML5 coding and Cascading Style Sheets (CSS). Students follow the steps to create a 
+website by planning, designing, developing, deploying, and maintaining of the website projects. Students will 
+learn and use different scripting technologies to create more dynamic and interactive websites. They will learn 
+what it takes for a career in web development as they complete projects and create their own website(s).
+  Intended Grade Level 9-12
+  Units of Credit 0.5
+  Core Code 35.02.00.00.060
+  Concurrent Enrollment Core Code 35.02.00.13.060
+  Prerequisite None
+  Skill Certification Test Number 893
+943,992,993,994,9940
+  Skill Certification Cut Score 893 - 68%
+943,992,993,994,9940 (no cut score)
+  Test Weight 0.5
+  Meets Digital Studies Credit RequirementYes
+  License Area of Concentration CTE and/or Secondary Education 6-12
+  Required Endorsement(s)
+  Endorsement 1 or Web Development
+  Endorsement 2 or Multimedia
+  Endorsement 3 or Programming & Software Development
+  Endorsement 4 or Business, Finance, & Marketing – Level 2
+  Endorsement 5 or Business, Finance, & Mktg -Comprehensive
+
+WEB DEVELOPMENT 1 
+STRAND 1 
+Digital Citizenship: Students will understand the basic principles of copyright, AUP, and 
+ethical behavior. (Suggested time proportion 5%) 
+Standard 1 
+Demonstrate knowledge of standard copyright rules. 
+•  Understand copyright for original creations. 
+•  Understand the creative commons license. 
+•  Understand when to obtain permission for non-original work. 
+Standard 2 
+Identify the use and purpose of acceptable use policy (AUP). 
+•  Understand the AUP for your school. 
+Standard 3 
+Understand ethical behavior as it relates to an AUP, Intellectual Property, Netiquette, 
+Respecting Privacy, Anti-Spamming Laws, etc. 
+Performance Skills 
+•  Understand copyright as it applies to you. 
+•  Understand a basic AUP agreement. 
+STRAND 2 
+Fundamentals of HTML5: Students will create a multi-page website using good coding practice (Such as those found in 
+W3Schools.) (Suggested time proportion 40%) 
+Standard 1 
+Demonstrate knowledge required to develop an HTML document. 
+•  Code the foundation for a webpage. Include the element tags DOCTYPE, html, 
+head, title, and body. 
+•  Structure the page using semantic and structural elements such as: header, 
+nav, main, section, article, aside, footer, div, etc. 
+•  Use meta tags for page documentation. 
+•  Use appropriate comments. 
+Standard 2 
+Explain appropriate file structure and naming conventions. 
+•  Use logical file structure to build websites. 
+•  Incorporate appropriate naming conventions for website files. 
+Standard 3 
+Use the DOCTYPE Declaration. 
+•  Develop pages using the DOCTYPE declaration. 
+2 | P a g e Revised:  August 2022 
+
+WEB DEVELOPMENT 1 
+Standard 4 
+Code a website with appropriate HTML structure and according to W3C standards that can be 
+validated. 
+•  Demonstrate best practice by consistently using lowercase text for all 
+element names. 
+•  Properly nest elements. 
+•  Use quotes on attribute values. 
+Standard 5 
+Demonstrate the use of the following elements and attributes. 
+•  Create pages with the following block elements: html, head, body, style, 
+header, nav, main, section, footer, div. 
+•  Create pages with the following tags and attributes. (DOCTYPE, title, h1, h2, h6, 
+p, br, meta, etc.) 
+•  Code a website with text formatting, links, images, lists, tables (tabular data), etc. 
+•  Relative Links are relative to the directory of the website. (images/photo.jpg) 
+•  Absolute links are the exact location on the internet and contain a protocol. 
+(http, https, ftp) 
+•  Code special characters such as: &nbsp; &copy; &quot; &lt; &gt; &amp; &mdash;. 
+•  Demonstrate the use of HTML forms, buttons, text fields, checkboxes, and 
+radio buttons. (Form does not need to submit to an actual database or 
+email.) 
+Performance Skills 
+Students will code a website with: 
+•  HTML5 semantic tags (header, footer, section, article, nav, aside) 
+•  Meta tags 
+•  Use special characters 
+•  Hyperlink(s) and Email link(s) 
+•  Table(s) with tabular data (not used for layout) 
+•  Image link 
+•  Lists 
+•  Form elements 
+3 | P a g e Revised:  August 2022 
+
+Selector Declarat ion Declarat ion 
+• 
+{ color: blue; font-size: 12px;} 
+Property Value Property Value 
+I 
+con,.,. 
+I 
+WEB DEVELOPMENT 1 
+STRAND 3 
+Cascading Style Sheets (CSS): Students will format websites using CSS. 
+(Suggested time proportion 35%) 
+Standard 1 
+Apply CSS to your website. 
+•  Apply CSS to an element using an inline style. (An inline style may be used to 
+apply a unique style for a single element.) 
+•  Apply CSS to a webpage using an internal style. (Internal style rules may be used 
+to uniquely style a single page.) 
+•  Apply CSS to a website using an external stylesheet. (Best Coding Practice - One 
+file changes the entire website.) 
+Standard 2 
+Apply essential syntax & CSS box model. 
+•  Add style rule, declaration, selector, property value pair. Use correct css 
+syntax: 
+Example of a style rule. 
+CSS Box Model 
+Standard 3 
+Students will format websites using CSS 
+•  Modify background properties such as: color and image. 
+•  Modify font properties such as: font-family, size, and color. 
+•  Link to and use an online font. (i.e.: Google Fonts, Adobe Fonts, etc.) 
+•  Modify margin and padding size around elements. 
+•  Code id & class tags within HTML 
+•  Within CSS use id & class tags to modify a HTML elements. 
+4 | P a g e Revised:  August 2022 
+
+WEB DEVELOPMENT 1 
+•  Implement an id selector to modify a single element on the page. 
+•  Unique id tags are only used one time per page 
+•  “classes” can be used one or more times per page  
+•  Implement selectors pseudo class elements (i.e.:  a:link, a:visited, a:active a:hover) 
+•  Use appropriate comments throughout your CSS 
+Standard 4 
+Format page layout using CSS. 
+•  Use width, height, or auto to adjust the size. 
+•  Use CSS Grid to layout the websites. 
+Performance Skills 
+Students will be able to make the following changes to a website: 
+•  Background image(s) or Background color 
+•  Import graphics (jpeg/gif/png/svg) 
+•  Font changes (color, size, style) 
+•  Original CSS3 animation (optional) 
+STRAND 4 
+Site Planning: Students will plan, design, implement, and maintain website(s). 
+(Suggested time proportion 10%) 
+Standard 1 
+Analyze Project requirements. 
+•  Identify the purpose and audience for a website. 
+•  Identify basic principles of website usability, readability, and accessibility. 
+•  Usability: Cross browser compatibility. 
+•  Readability: contrast, size, font, and color. 
+•  Accessibility standards that address the needs of people with visual 
+and motor impairments, such as using alt tags, strong instead of 
+bold, etc. 
+•  Identify and follow steps in the website planning and development process. 
+Standard 2 
+Users are the focus of all design. 
+•  Plan a website by using sketches, wireframes, or site maps. 
+•  Design elements are easy to access, understand, and use. 
+•  Keep the interface simple, create consistency, use common UI elements, 
+placement in page layout, strategically use color and texture, use typography to 
+help increase scannability, legibility and readability, and inform your users of 
+location, actions, or errors. 
+5 | P a g e Revised:  August 2022 
+
+WEB DEVELOPMENT 1 
+Standard 3 
+Code and design a minimum three-page website.  (This is integrated into every Strand.) 
+Performance Skills 
+Students will be able to: 
+•  Build a mock-up, sketch, or wireframe of a website 
+•  Check for cross browser compatibility, readability, and accessibility 
+STRAND 5 
+The student will create and prepare images to integrate with website designs, using image 
+editing software. (Suggested time proportion 5%) 
+Standard 1 
+Open, edit, and save an image for effective use on your website. 
+•  Crop and resize various images. 
+•  Optimize an image. (Resize and change resolution for optimal load time.) 
+•  Enhance an image. 
+Standard 2 
+•  Incorporate a logo and header into webpage. 
+•  Incorporate images into a website. 
+Performance Skills 
+Students will be able to: 
+•  Add an enhanced image to your website. 
+•  Optimize an image for quick loading on a website. 
+STRAND 6 
+Exploration & Preparation for Careers in Web Development: Students will explore careers in 
+web development and prepare a portfolio of projects created. 
+(Suggested time proportion 5%) 
+Standard 1 
+Explore IT web development careers. 
+•  Identify job roles in the Information Technology (IT) industry as they apply to 
+web development. 
+•  Understand the responsibilities, tasks, and skills each job requires. 
+UI designer, UX designer, front-end web developer, back-end web developer, 
+and full stack developer. 
+6 | P a g e Revised:  August 2022 
+
+Test Name Test Number of Test Points by Strand Total Total # 1 2 3 4 5 6 7 8 9 10 Points Questions 
+Web Development 1 893 2 17 15 3 1 2 40 32 
+WEB DEVELOPMENT 1 
+Workplace Skills 
+The following workplace skills should be discussed, taught, and re-enforced in the course: 
+•  Communication 
+•  Teamwork 
+•  Critical and Creative Thinking 
+•  Problem Solving 
+•  Dependability 
+•  Legal requirements / expectations 
+Skill Certificate Test Points by Strand 
+7 | P a g e Revised:  August 2022 
+
+ 
+ 
+ 
+WEB DEVELOPMENT 1 
+Vocabulary – Page 1 
+Strand 1 – Digital Citizenship 
+Creative Commons A Creative Commons license is one of several public copyright licenses that enable the free distribution of an otherwise copyrighted "work". 
+AUP (Acceptable Use Policy) A set of rules that define the way in which a network may be used. 
+Intellectual Property Work that is the result of creativity to which one has rights and may apply for a copyright. 
+Netiquette The correct or acceptable way of communicating on the Internet. 
+Anti-Spamming Laws 
+Commercial email messages clearly identifies that it is an advertisement, provides 
+notice to the recipient of the ability to opt-out from further commercial email 
+messages, and lists a valid address for a sender. 
+Privacy Laws Information privacy laws or data protection laws prohibit the disclosure or misuse of information about private individuals. 
+Strand 2 – HTML 
+HTML Hypertext Markup Language. The coding scheme used to format text for use on the World Wide Web. 
+Semantic Elements Clearly describes its meaning to both the browser and the developer. Example <footer> 
+Non-Semantic Elements Tells nothing about its content. Example <span>, <div>, etc. 
+Validation (W3C) Validating a website is the process of ensuring that the pages on the website conform to the norms or standards defined by various organizations 
+Elements Is everything from the start tag to the end tag 
+Attributes Attributes provide additional information about an element. Example name/value pairs like: name="value" 
+Tags The HTML from < > the entire element and attribute combination. 
+Block Level Elements Start on a new line and can contain other code 
+Inline Level Elements Does not start on a new line and only takes up as much width as necessary 
+Relative Links URLs that reference files on the same server within the same directory (folder). Does not contain a protocol (http, https, ftp, etc.) 
+Absolute Links 
+Complete internet address that takes one to the exact directory or file of a website. 
+Starts with a protocol (http: https: ftp: etc. ) example: 
+http://www.businessdictionary.com/definition/absolute-URL.html 
+Meta Elements An HTML code that resides in the head section of a webpage and includes information about the page, such as keywords, and descriptions. 
+Character Entities 
+(Special Characters) Are used to display reserved characters in HTML. Example &amp; &nbsp; 
+Keywords Are words or phrases that describe content. They can be used as metadata to describe images, text documents, database records, and webpages. 
+Viewport The viewport is the user's visible area of a webpage. It varies with the device - it will be smaller on a mobile phone than on a computer screen. 
+8 | P a g e Revised:  August 2022 
+
+ 
+ 
+ 
+ 
+WEB DEVELOPMENT 1 
+Vocabulary – Page 2 
+Strand 3 – CSS 
+CSS Used to control a website’s text color, background colors, borders, spacing, headers, links and positioning of elements. 
+Inline Style Used to apply a unique style for a single element 
+Internal Style Used to uniquely style a single page 
+External Style Best coding Practice |One file changes the entire website 
+Cascade Order Controls which rule applies when there is a conflict. Inline, internal, external 
+Best Coding Practice Are a set of informal rules set by the development community 
+Strand 4 – Site Planning 
+Usability Assesses how easy user interfaces are to use. The word "usability" also refers to methods for improving ease-of-use during the design process. 
+Readability The ease with which a person can understand a passage of text. The complexity of your content, as well as the typographic elements used on your site. 
+Accessibility 
+Is the inclusive practice of ensuring there are no barriers that prevent interaction 
+with, or access to, websites on the World Wide Web by people with physical 
+disabilities, situational disabilities, and socio-economic restrictions on bandwidth 
+and speed. 
+Cross Browser 
+Compatibility 
+If your website is not tested and debugged on different platforms and browsers, it 
+won't work the same on all of them. 
+Wireframe A visual prototype of a webpage that focuses on content, layout, and behavior. 
+UI (User Interface) 
+Elements 
+They add interactivity to a user interface, providing touchpoints for the user as they 
+navigate the website. Examples: buttons, scrollbars, menu items and checkboxes 
+Site Map A list of pages of a website. 
+Strand 5 Image Editing 
+Image Resolution To optimize an image so that it will run at its utmost capacity in terms of speed and efficiency. 
+Metadata 
+The detail an image holds. The term applies to raster digital images, film images, and 
+other types of images. Higher resolution means more image detail. Image resolution 
+can be measured in various ways. 
+Strand 6 - Careers 
+UX (User Experience) 
+Developer 
+UX Designers are primarily concerned with how the product feels. Designers who 
+consider all the visual, interactive elements of a product interface—including 
+buttons, icons, spacing, typography, color schemes, and responsive design. 
+UI (User Interface) 
+Developer 
+UI Designers are particular about how the product is laid out. Designers who develop 
+the interaction between the user and a website- including prototypes, wireframes, 
+and testing. 
+Front End Web 
+Developer Developer who uses HTML, CSS, and JavaScript to develop websites. 
+Back End Web 
+Developer Developer who uses dynamic content, databases, and PHP to develop websites. 
+9 | P a g e Revised:  August 2022 
+
+ 
+WEB DEVELOPMENT 1 
+Code List – Page 1 
+<!DOCTYPE html> HTML5 Doctype <a></a> Inserts a link 
+<html></html> Indicates the beginning and end of an HTML document. <br> Breaks a line of text at the point where the tag appears. 
+<title></title> 
+Indicates the beginning and end of the title; the 
+title does not display in the body of the 
+webpage but displays on the title bar of the 
+browser. 
+<img> Inserts an image 
+<head></head> 
+Indicates the beginning and end of a section of 
+the document used for the title and other 
+document header information. 
+<em></em> For Italics for best accessibility 
+<body></body> Indicates the beginning and end of the webpage body. <strong></strong> For Bold text and increased accessibility 
+<header></header> The <header> element represents a container for introductory content. 
+<footer></footer> 
+The <footer> tag defines a footer for a 
+document or section. A <footer> element 
+typically contains: authorship information, 
+copyright information, contact information, 
+sitemap, back to top links, and related 
+documents 
+Special Characters (Character Entities) 
+<main></main> The <main> tag defines the main content of the page &nbsp; A non-breaking space is a space that will not break into a new line. 
+<section></section> 
+The <section> tag defines sections in a 
+document, such as chapters, headers, footers, 
+or any other sections of the document. 
+&copy; © 
+<article></article> 
+The <article> tag specifies independent, self-
+contained content. An article should make 
+sense on its own and it should be possible to 
+distribute it independently from the rest of the 
+site. Potential sources for the <article> element: 
+Forum post, Blog post, News story, or 
+Comment. 
+&quote; " 
+<nav></nav> The <nav> tag defines a set of navigation links. &lt; < 
+<aside></aside> 
+The <aside> tag defines some content aside 
+from the content it is placed in. The aside 
+content should be related to the surrounding 
+content. 
+&gt: > 
+<div></div> Defines a division/section &amp; & 
+<h1></h1> Largest Heading &mdash; -
+<h2></h2> 
+<h3></h3> CSS 
+<h4></h4> Background Attributes Color & Image 
+<h5></h5> Font Attributes type, size, and color 
+<h6></h6> Smallest Heading Border Attributes width, style, and color 
+<p></p> Paragraph ID Used 1 time per page 
+<li></li> Indicates that the item that follows the tag is an item within a list. Class Used multiple times per page 
+<ol></ol> Indicates the beginning and end of an ordered list. a:link Unvisited link 
+<ul></ul> Indicates the beginning and end of an unordered (bulleted) list. a:visited Visited link 
+<table></table> Inserts a table with data. Not to be used to format the page. a:active Selected Link 
+<td></td> Table Data a:hover Selects links on mouse over 
+<tr></tr> Table Row 
+<th></th> Table Header 
+<hr> Inserts a horizontal line. 
+10 | P a g e Revised:  August 2022 

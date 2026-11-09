@@ -45,8 +45,12 @@ Commands below are Git Bash. Container paths need `MSYS_NO_PATHCONV=1` or Git Ba
   `MSYS_NO_PATHCONV=1 docker exec cnh-control-plane cat /etc/kubernetes/admin.conf > ~/.kube/kind-cnh`, then `kubectl --kubeconfig ~/.kube/kind-cnh config set-cluster cnh --server=https://127.0.0.1:36705` and `config rename-context kubernetes-admin@cnh kind-cnh` (same --kubeconfig).
 - Backend tests: `cd backend && pip install -r requirements-dev.txt && python -m pytest -q` (Python 3.12).
 - Backend locally: `cd backend && uvicorn app.main:app --reload` (http://127.0.0.1:8000/healthz).
+- Load the standards index: `cd backend && python -m app.load_standards --recreate` (about 3 minutes, ELSER embeds each description). Needs `ES_API_KEY` in the environment (or `ES_LOCAL_API_KEY`; start-local keeps it in `~/cnh-infra/elastic-start-local/.env` inside WSL). `ES_URL` defaults to http://localhost:9200. It prints file vs `_count` per source and exits 1 on a mismatch. `--dry-run` parses only.
 - Frontend locally: `cd frontend && npm ci && npm run dev` (http://127.0.0.1:3000).
 - Build images: `docker build -t homeroom-backend:0.1.0 backend && docker build -t homeroom-frontend:0.1.0 frontend`
 - Load images into kind (no kind CLI here): `for n in cnh-control-plane cnh-worker; do docker save homeroom-backend:0.1.0 homeroom-frontend:0.1.0 | MSYS_NO_PATHCONV=1 docker exec -i $n ctr -n k8s.io images import -; done`, then `kubectl -n homeroom rollout restart deploy` if the tag didn't change.
 - Register the Argo CD app (once): `kubectl apply -f argocd/application.yaml`. It syncs deploy/ from main.
 - Open the app through the gateway: `kubectl -n envoy-gateway-system port-forward svc/$(kubectl -n envoy-gateway-system get svc -l gateway.envoyproxy.io/owning-gateway-name=demo -o name | cut -d/ -f2) 18080:80`, then http://homeroom.localhost:18080 (backend at /api/healthz).
+
+## Local plan (not in git)
+plan/ is ignored by git and holds the full plan (plan/plan.md) and the pull request prompts (plan/prompts.md). Read both before starting. Work through the prompts in order, one pull request each, and never commit anything from plan/.

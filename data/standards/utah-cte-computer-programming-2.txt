@@ -1,0 +1,426 @@
+STRANDS AND STANDARDS 
+COMPUTER PROGRAMMING 2 
+CTE® 
+Learning that works for Utah 
+CourCourse Descripse Descriptiontion 
+This course builds on foundational programming skills by introducing students to more advanced concepts and 
+techniques. Students will deepen their understanding of software development through hands-on projects 
+that emphasize problem-solving, algorithmic thinking, and code optimization. Using a high-level programming 
+language such as Java, Python, C++, or C#, students will design and implement complex applications, explore 
+object-oriented programming, and apply debugging and testing strategies. The course also encourages ethical 
+and responsible coding practices, preparing students for further study or entry-level programming roles. 
+Intended Grade Level 9-12
+ Units of Credit 0.5
+ Core Code 35-02-00-00-032
+ Concurrent Enrollment Core Code 35-02-00-13-032
+ Prerequisite Computer Programming 1
+ Skill Certification Test Number 822 - C++ 
+824 - Java 
+827 - Python 
+828 - C#
+ Skill Certification Cut Score 822 – C++ – 75% 
+824 – Java – 74% 
+827 – Python – 73% 
+828 – C# – 71%
+ T est Weight 0.5
+ License Area of Concentration CTE and/or Secondary Education 6-12
+ Required Endorsement(s)
+ Endorsement 1 Intro to Computer Science
+ Endorsement 2 Programming & Software Development 
+Updated: April 2026 
+
+COMPUTER PROGRAMMING 2
+2]Page
+REVISED: JUNE 2025
+ 
+SSTRAND 1 TRAND 1
+Students will demonstrate static (array), dynamic (vector, Arraylist, etc.) list structures, and strings. 
+StStandarandard 1d 1 
+Demonstrate the ability to use static arrays/lists in programs. 
+• Declare and initialize arrays/lists of all applicable types
+• Perform data input to and output from arrays/lists
+• Perform operations on arrays/lists including sort arrays
+• Iterate through the structure (i.e., for-each, enhanced for, or iterators)
+StStandarandard 2d 2 
+Demonstrate the ability to use dynamic arrays/lists (i.e. vectors, Arraylist, or generic lists). 
+• Declare and initialize a dynamic array/list
+• Add and remove items from the array/list
+• Output data from arrays/lists
+• Perform operations on arrays/lists
+• Iterate through the structure (i.e. for-each, enhanced for, or iterators)
+• Use a loop to iterate through the structure
+StStandarandard 3d 3 
+Demonstrate the ability to use strings in programs. 
+• Compare string values
+• Find the length of a string
+• Copy part or all of string values into other strings
+• Concatenate string values
+• Locate substring positions
+• Insert strings into other strings
+PPerferformance Skillsormance Skills 
+Students demonstrate mastery of static and dynamic arrays, lists, and strings in projects. 
+
+COMPUTER PROGRAMMING 2
+3]Page
+REVISED: JUNE 2025
+SSTRAND 2TRAND 2 
+Students will properly use sequential files. 
+StStandarandard 1d 1 
+Demonstrate the ability to use sequential files in programs. 
+• Create and initialize sequential files
+• Store data to sequential files
+• Retrieve data from sequential files
+• Update sequential files
+StStandarandard 2d 2 
+Define an API – 
+• An API (Application Programming Interface) is a set of rules and protocols that enables different
+software applications to communicate with each other and exchange data or functionality
+• An API is like a bridge that lets different software systems exchange data or use each other's features
+without needing to know what's happening behind the scenes
+• Know the different types of API’s (ex: REST, SOAP , GraphQL, WebSocket, DatabaseAPI, etc.)
+• Implement or Demonstrate an API
+• Demonstrate how to use an API in program development.
+ If students do not have access to use APIs directly, the teacher may provide a demonstration instead.
+PPerferformance Skillsormance Skills 
+Demonstrate sequential file access utilizing reading and writing operations. 
+ 
+
+COMPUTER PROGRAMMING 2
+4]Page
+REVISED: JUNE 2025
+SSTRAND 3TRAND 3 
+Create user defined functions/methods/procedures using top-down design and functional decomposition. 
+StStandarandard 1d 1 
+Students will understand and properly apply scope. 
+• Understand that variables and functions/methods/procedures have scope, which influences where they
+can be declared and accessed
+• Declare and access local variables in a program
+• Declare and access global variables in a program
+StStandarandard 2d 2 
+Students will understand and implement function/methods/procedures inputs and outputs. 
+• Understand the correlation between arguments (inputs) and parameters (variables)
+• Understand that functions/methods/procedures may or may not require arguments
+• Understand that functions/methods/procedures may or may not return values
+• Define functions/methods/procedures:
+• with parameters
+• without parameters
+• with return values
+• without return values
+• default parameters
+StStandarandard 3d 3 
+Students will understand and implement functional decomposition. (Breaking a program down into one or 
+more functions/methods/procedures.) 
+• Identify repetitive or redundant code in an application
+• Understand the role abstraction plays in computer programming
+• Demonstrate how to abstract multiple steps into a function/method/procedure
+• Identify the characteristics of a well-defined function/method/procedure
+• Examples: shorter code, efficiency, reduced memory consumption, high reliability, readability,
+abstraction
+PPerferformance Skillsormance Skills 
+Create several user defined functions/methods/procedures with and without inputs and/or return values. 
+ 
+
+COMPUTER PROGRAMMING 2
+5]Page
+REVISED: JUNE 2025
+SSTRAND 4 TRAND 4
+Students will properly demonstrate object-oriented programming techniques. 
+StStandarandard 1d 1 
+Demonstrate the ability to use built-in classes. 
+• Instantiate objects
+• Use object data members (i.e., Java’s arr. length)
+• Use object member functions (methods)
+StStandarandard 2d 2 
+Demonstrate the ability to create user-defined classes. 
+• Create and use data members (instance variables)
+• Create a constructor to initialize the data members
+• Create and use member functions (methods)
+PPerferformance Skillsormance Skills 
+Properly employ object-oriented programming techniques. 
+SSTRAND 5TRAND 5 
+Students will properly demonstrate code comprehension and debugging techniques. 
+StStandarandard 1d 1 
+Demonstrate the ability to comprehend code outcomes. 
+• Tracing - Cognitively following the passes of a loop, nested function calls, change in value of global and
+local scoped variables, etc.
+• Debugging - Utilizing 3rd party tools (IDE’s) to step through a program and troubleshoot
+• Testing - Validating the outputs of a program and testing its robustness. (i.e., boundary conditions,
+invalid inputs, unexpected scenarios, incorrect results, etc.)
+PPerferformance Skillsormance Skills 
+Demonstrate code comprehension and debugging techniques by tracing, debugging, and testing programs. 
+
+COMPUTER PROGRAMMING 2
+6]Page
+REVISED: JUNE 2025
+SSTRAND 6TRAND 6 
+Students will apply appropriate programming skill as an effective member of a team demonstrating the 
+ability to collaborate with others. 
+StStandarandard 1d 1 
+Demonstrate the ability to apply knowledge to a programming project. 
+• Formalize specifications
+• Choose proper input parameters
+• Choose appropriate data structures and processing
+• Design appropriate output
+• Use appropriate test data
+• Write good documentation
+StStandarandard 2d 2 
+Demonstrate the ability to use teamwork and collaboration in a programming project. 
+• Divide a project among programmers
+• Present work to a group
+• Coordinate work with others in the group
+• Complete assigned work according to predetermined deadlines
+• Participate in a peer performance evaluation
+• Demonstrate professionalism in team relationships, communication, timeliness, and attitude
+PPerferformance Skillsormance Skills 
+Apply appropriate programming skills as an effective member of a team. 
+
+COMPUTER PROGRAMMING 2
+7]Page
+REVISED: JUNE 2025
+SSTRAND 7TRAND 7 
+Students will demonstrate knowledge of current ethical issues dealing with computers and information in 
+a global society. They will be aware of the ethical issues in computer programming and the impact AI is 
+making on the industry. 
+StStandarandard 1d 1 
+Demonstrate knowledge of the social and ethical consequences of computers. 
+• Explain the ethical reasons for creating reliable and robust software
+• Explain the impact software can have on society (i.e., privacy, piracy, copyright laws, ease of use, ete.)
+• Show how security concerns can be addressed in an application (i.e., biometrics, passwords,
+information hiding, etc.)
+• Describe how computer-controlled automation affects a workplace and society
+• Give examples of ways to protect information on computer systems (attacks, viruses, malware, etc.)
+StStandarandard 2d 2 
+This is a statement from the USBE Board on Artificial Intelligence. 
+Students will develop the knowledge and skills to use Artificial Intelligence responsibly and effectively in CTE 
+courses. 
+• Responsible use of AI, which includes recognizing when to use AI, using appropriate prompts to
+produce desired output, determining accuracy of information, how AI has contributed to a product, and
+communicating that clearly.
+• The importance of transparency and documentation, both in their own use of AI tools and in verifying
+the authenticity of others’ work.
+• How AI influences all work, including the evolving boundaries and tightening restrictions around
+intellectual property and copyright.
+StStandarandard 3d 3 
+AI use in Programming. Students will understand the ethical use of AI in coding. 
+• Academic integrity and attribution
+• Know when AI use is appropriate
+• Understand disclosing when you use AI
+• Understanding vs over-reliance on AI
+• Verifying and debugging AI generated code
+• Reviewing the code to make sure there are no coding errors
+• Ethical implication of AI written softwares
+PPerferformance Skillsormance Skills 
+Demonstrate knowledge of current ethical issues dealing with computers and information in society. 
+
+COMPUTER PROGRAMMING 2
+8]Page
+REVISED: JUNE 2025
+SSTRAND 8TRAND 8 
+Students will be aware of career opportunities in the Computer Programming/Software Engineering industry 
+and of its history. 
+StStandarandard 1d 1 
+Investigate career opportunities, trends, and requirements related to computer programming/software 
+engineering careers. 
+• Identify the members of a computer programming/software engineering team: team leader, analyst,
+senior developer, junior developer, and client/subject matter expert
+• Describe work performed by each member of the computer programming/software engineering team
+• Investigate trends and traits associated with computer programming/software engineering careers
+(creativity, technical, leadership, collaborative, problem solving, design, etc.)
+• Discuss related career pathways
+PPerferformance Skillsormance Skills 
+Develop awareness of career opportunities in the computer programming/software engineering industry and 
+of its history. 
+
+COMPUTER PROGRAMMING 2
+9]Page
+REVISED: JUNE 2025
+IndusIndustrtry Ty Tesest Pt Poinoints bts by Stry Strandand 
+Test Name Test # 
+Number of Test Points by Strand 
+Total 
+Points 
+Total 
+Questions
+ 1  2  3  4  5  6  7  8 
+Computer 
+Programming 2 
+C++ 822 
+8 8 9 7 8 3 1 1 
+Number of Questions by Strand 
+1 2 3 4 5 6 7 8 
+8 4 9 3 6 3 1 1 45 35 
+Test Name Test # 
+Number of Test Points by Strand 
+Total 
+Points 
+Total 
+Questions
+ 1  2  3  4  5  6  7  8 
+Computer 
+Programming 2 
+Java 824 
+8 9 9 7 8 3 1 1 
+Number of Questions by Strand 
+1 2 3 4 5 6 7 8 
+8 5 8 3 6 3 1 1 46 35 
+Test Name Test # 
+Number of Test Points by Strand 
+Total 
+Points 
+Total 
+Questions
+ 1  2  3  4  5  6  7  8 
+Computer 
+Programming 2 
+Python 827 
+9 6 9 6 8 3 1 1 
+Number of Questions by Strand 
+1 2 3 4 5 6 7 8 
+9 4 9 2 6 3 1 1 43 35 
+Test Name Test # 
+Number of Test Points by Strand 
+Total 
+Points 
+Total 
+Questions
+ 1  2  3  4  5  6  7  8 
+Computer 
+Programming 2 
+C# 828 
+9 6 9 8 7 3 1 1 
+Number of Questions by Strand 
+1 2 3 4 5 6 7 8 
+9 4 9 4 5 3 1 1 44 36 
+
+COMPUTER PROGRAMMING 2
+10]Page
+REVISED: JUNE 2025
+Computer Programming 2 – VOCABULARY 
+Strand 1: 
+Students will demonstrate static (Array), dynamic (Vector, Array/List, etc.) list structures, and strings. 
+Declaration: Stating the name and data type of a variable. 
+Initialization:  Assignment of an initial value for a variable. 
+Iterate:  Each cycle through a loop 
+Dynamic Array/List:  An Array/List that is able to change its size during program execution. 
+Concatenate: Operation of joining two strings together. 
+Substring: Contiguous sequence of characters within a string. 
+Strand 2: 
+Students will properly use sequential files. 
+Sequential File:  A sequential file contains records organized by the order in which they were entered. The or-
+der of the records is fixed. Records in sequential files can be read or written only sequentially. 
+Strand 3: 
+Create user defined functions using top-down design and functional decomposition. 
+Scope: Determines the accessibility (visibility) of variables. 
+Local Variable:  Only recognized inside the function in which it is declared. 
+Global Variable:  Recognized inside the function in which it is declared. 
+Functional Design:  The process of taking a complex problem and breaking it down into smaller, more manage-
+able parts – typically referred to as functions or modules – that can be reused throughout the code. 
+Arguments:  The variables given to the function for execution. (Inputs) 
+Parameters:  The names listed in the method/function’s definition. (Variables) 
+Return:  A value that is sent back to the user by a method/function. 
+
+COMPUTER PROGRAMMING 2
+11]Page
+REVISED: JUNE 2025
+ 
+ 
+ 
+Strand 4: 
+Students will properly demonstrate object-oriented programming techniques. 
+Method (There are both user defined methods and built in language specific methods.):  A method is a 
+programmed procedure that is defined as part of a class and included in any object of that class. 
+Instance Variables: If the value of a variable varies from object to object, then such variables are called instance 
+variables. 
+Data Members: A class variable or instance variable that holds data associated with a class and its objects. 
+Instantiate Objects: The combined process of “make me a new object” and “get its settings initialized to the 
+factory default settings” is called instantiation. 
+Constructor: A constructor is a special method of class or structure in object-oriented programming that 
+initializes a newly created object of that type. Whenever an object is created, the constructor is called 
+automatically. 
+Strand 5: 
+Students will properly demonstrate code comprehension and debugging techniques. 
+IDE: An integrated development environment (IDE) is software for building applications that combines 
+common developer tools into a single graphical user interface (GUI). 
+Strand 6: 
+Students will apply appropriate programming skills as an effective member of a team demonstrating the 
+ability to collaborate with others. 
+None 
+Strand 7: 
+Students will demonstrate knowledge of current ethical issues dealing with computers and information in a 
+global society. 
+None 
+Strand 8: 
+Students will be aware of career opportunities in the Computer Programming/Software Engineering industry 
+and of its history. 
+None 
+
+COMPUTER PROGRAMMING 2
+12]Page
+REVISED: JUNE 2025
+Skills RSkills Reeffererence Sheeence Sheett 
+Assignment, Display, and Input 
+a = expression Evaluates expression and then assigns a copy of the result to
+the variable a. 
+DISPLAY(expression) Displays the value of (expression) in the console window.
+INPUT( ) Accepts a value from the user and returns the input value. 
+Arithmetic Operators and Numeric Procedures 
+a + b 
+a - b 
+a * b 
+a / b 
+The arithmetic operators +,-,*, and / are used to perform
+arithmetic on a and b. 
+For example, 17 / 5 evaluates to 3.4. 
+The order of operations used in mathematics applies when 
+evaluating expressions. 
+a MODULUS b 
+-or-
+a MOD b
+Evaluates to the remainder when a is divided by b.
+For example, 17 MOD 5 evaluates to 2.
+MODULUS (MOD) has the same precedence as the
+operators. 
+ * and /
+Relational and Boolean Operators 
+NOT condition Evaluates to true if condition is false; otherwise evaluates
+ to false.
+condition1 AND condition2 Evaluates to true if both condition1 and condition2 are
+true; otherwise evaluates to false.
+condition1 OR condition2  Evaluates to true if condition1 is true or if condition2 
+is true or if both condition1 and condition2 are true;
+otherwise evaluates to false.
+FOR(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is executed a certain
+number of times. 
+
+COMPUTER PROGRAMMING 2
+13]Page
+REVISED: JUNE 2025
+WHILE(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is repeated
+until the (condition) evaluates to false.
+IF(condition1)  If (condition1) evaluates to true, the code in
+{ <first block of statements> is executed;
+<first block of statements> if (condition1) evaluates to false, then
+{ (condition2) is tested; if (condition2) evaluates to
+ELSE IF(condition2) true, the code in
+{ <second block of statements> is executed; if
+<second block of statements> both (condition1) and (condition2) evaluate
+}  to false, then the code in <third block of 
+ELSE statements> is executed.
+{
+ <third block of statements> 
+} 
+Procedures and Procedure Calls 
+PROCEDURE procName( )  Defines procName as a procedure that takes no arguments.
+{ The procedure contains <block of statements>.
+<block of statements> 
+} The procedure procName can be called using the following
+notation: 
+procName( ) 

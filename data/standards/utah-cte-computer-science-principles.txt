@@ -1,0 +1,403 @@
+STRANDS AND STANDARDS
+COMPUTER SCIENCE PRINCIPLES
+Learning that works for Utah
+CourCourse Descripse Descriptiontion
+Computer Science Principles is a course that offers students a broad overview of the field of computer science. 
+Through the development of algorithms and programs, students will learn to design and evaluate solutions to 
+real-world problems. They will explore how data is created, transformed, and interpreted to support decision-
+making and innovation. The course also examines the inner workings of computing systems and the impact 
+of computing innovations on society. Students will be encouraged to contribute to a collaborative and ethical 
+computing culture, fostering responsible participation in the digital world.
+  Intended Grade Level 9-12
+  Units of Credit 0.5
+  Core Code 35.02.00.00.035
+  Concurrent Enrollment Core Code 35.02.00.13.035
+  Prerequisite None
+  Skill Certification Test Number 803
+  Skill Certification Cut Score 74%
+  Test Weight 0.5
+  Meets Digital Studies Credit RequirementYes
+  License Area of Concentration CTE and/or Secondary Education 6-12
+  Required Endorsement(s)
+  Endorsement 1 or Information Technology Systems
+  Endorsement 2 or Intro to Computer Science
+  Endorsement 3 or Programming & Software Development
+  Endorsement 4 Web Development
+*These Strands & Standards are framed after the 2023 AP Computer Science
+Principles Course. The AP CSP Exam Descriptions can be found HERE.
+Updated: April 2026
+
+COMPUTER SCIENCE PRINCIPLES
+2]Page
+REVISED: JUNE 2025
+SSTRAND 1TRAND 1 
+Computing and Data 
+Students will analyze how computers process and store data, focusing on analyzing & interpreting data to 
+recognize patterns. 
+StStandarandard 1d 1 
+Hardware/Software 
+• Explain the differences between hardware and software and how they relate to input (ex: microphone,
+fingerprint scanner, sensor, etc.), storage, processing, and output (ex: speakers, monitor, printer, etc.).
+• Explain the differences between hardware and software and how they relate to:
+ -input (ex: microphone, fingerprint scanner, sensors, etc.)
+  -processing (ex: CPU, graphics card etc.)
+ -storage (ex: RAM, hard drive, cloud storage, etc.)
+ -output (ex: speakers, monitor, printer, etc.)
+• Understand the different file sizes (bit, byte, kilobyte, megabyte, gigabyte, terabyte, and petabyte).
+• Discuss the difference between consumer and enterprise (cloud) storage.
+StStandarandard 2d 2 
+Binary Numbers 
+• Calculate the binary (base 2) equivalent of a positive integer (base 10) and vice versa.
+• Compare and order binary numbers.
+StStandarandard 3d 3 
+Data Compression 
+Students should know the difference between and the use cases of Lossy vs. Lossless. 
+• Lossy - Compression algorithm in which some of the data from the original file is lost.
+• Lossless - Compression algorithm in which file size is reduced without any quality loss.
+PPerferformance Skillormance Skill 
+Students will differentiate between hardware and software, convert decimal to binary and binary to decimal, 
+and identify when to use lossy vs. lossless compression. 
+
+COMPUTER SCIENCE PRINCIPLES
+3]Page
+REVISED: JUNE 2025
+SSTRAND 2TRAND 2 
+Creative Development 
+Collaboration is essential in developing computing innovations. Students will construct explanations (design 
+solutions) using evidence-based reasoning. By modeling their innovations as systems with interacting 
+components, students will better understand and be able to communicate how their designs function. 
+StStandarandard 1d 1 
+Collaboration 
+• Explain how collaboration affects the development of a solution.
+• Collaborate in the development of solutions.
+StStandarandard 2d 2 
+Program Function and Purpose 
+• Identify the problem.
+• Investigate the purpose of a program as it relates to solving the problem.
+• Investigate the situation, context, or task.
+• Understand how to break down program specifications into smaller tasks using top-down design
+and pseudocode.
+• Generalize data sources through variables.
+• Understand the uses of different data types (examples: integer, float/double, characters/strings,
+boolean, etc.)
+• Explain how a code segment or program functions.
+StStandarandard 3d 3 
+Identify Different Error Types. 
+• Identify errors in algorithms and programs through testing and debugging.
+• Identify different types of errors such as logic, run-time, and syntax errors.
+PPerferformance Skillormance Skill 
+Students will use problem solving skills and collaboration to explore the purpose of a program and identify 
+errors. 
+
+COMPUTER SCIENCE PRINCIPLES
+REVISED: JUNE 2025
+SSTRAND 3TRAND 3 
+Algorithms and Programming 
+Students will use mathematical, computational thinking and programming language skills to build Algorithms 
+with system structure essential for solving problems and completing tasks. 
+StStandarandard 1d 1 
+Variables and Assignments 
+• Use variables of different data types (examples: integer, float/double, characters/strings, boolean, etc.)
+• Convert data types to other data types.
+• Determine the value of a variable as a result of an assignment.
+StStandarandard 2d 2 
+Mathematical Expressions 
+• Implement arithmetic operators (=, +, -, *, /, and MOD) and order of operations Parentheses,
+Exponents, Multiplication and Division, and Addition and Subtraction (PEMDAS).
+StStandarandard 3d 3 
+Calling and Developing Procedures/Functions/Methods 
+• Write statements to call Procedures/Functions/Methods
+• Determine the result of a Procedures/Functions/Methods
+StStandarandard 4d 4 
+Input / Output 
+• Receive and store user input.
+• Print to console
+• Send to output device
+StStandarandard 5d 5 
+Strings 
+• Evaluate expressions that manipulate strings.
+• String concatenation joins together two or more strings end-to-end to make a new string.
+StStandarandard 6d 6 
+Boolean Expressions 
+• Write and evaluate expressions using relational operators (==, ≠, >, <, ≥, and ≤).
+• Write and evaluate expressions using logical operators (AND, OR, NOT).
+StStandarandard 7d 7 
+Conditionals 
+• Write conditional statements, such as IF statements and ELSE IF statements.
+• Determine the result of conditional statements.
+StStandarandard 8d 8 
+Iteration/Looping 
+• Write iteration statements, such as for loops and while loops.
+• Determine the result of iteration statements.
+PPerferformance Skillormance Skill 
+Students will use algorithms and programming to solve problems and evaluate the results. 
+4]Page JUNE 2025
+
+COMPUTER SCIENCE PRINCIPLES
+5]Page
+REVISED: JUNE 2025
+SSTRAND 4TRAND 4 
+Computer Systems & Networks 
+Students will understand, develop, and model how computer systems and networks transfer data using 
+protocols and the Internet is built on systems and models that use protocols to transfer data. 
+StStandarandard 1d 1 
+Computing Systems: 
+Students will identify a variety of computing systems. 
+• A computing device is a physical artifact that can run a program. Some examples include computers,
+tablets, servers, routers, and smart sensors.
+• A computing system is a group of computing devices and programs working together for a common
+purpose.
+• A computer network is a type of computing system.
+StStandarandard 2d 2 
+Networks & The Internet: 
+• Explain how computing devices work together in a network (Network, Path, Routing, Packets,
+Bandwidth).
+• A network is a group of interconnected computing devices capable of sending or receiving data.
+• A path between two computing devices on a computer network (a sender and a receiver) is a
+sequence of directly connected computing devices that begins at the sender and ends at the
+receiver.
+• Routing is the process of finding a path from sender to receiver.
+• Bandwidth – The bandwidth of a computer network is the maximum amount of data that can be
+sent in a fixed amount of time.
+• Packets contain a chunk of data and metadata used for routing the packet between the origin and
+the destination on the Internet, as well as for data reassembly.
+• Packets may arrive at the destination in order, out of order, or not at all.
+• Explain how the Internet works (Fault Tolerance, Protocols, HTTP , HTTPS).
+• The Internet is a computer network consisting of interconnected networks that use standardized,
+open (nonproprietary) communication protocols.
+• Understand the difference between the Internet and the World Wide Web.
+• The World Wide Web is a system of linked pages, programs, and files.
+• HTTP is a protocol used by the World Wide Web.
+• The World Wide Web uses the Internet.
+PPerferformance Skillormance Skill 
+Students will explain how computer systems and networks, primarily the Internet, work. 
+
+COMPUTER SCIENCE PRINCIPLES
+6]Page
+REVISED: JUNE 2025
+SSTRAND 5TRAND 5 
+Impact of Computing 
+Students will plan and investigate the impacts of computing on societal, economical, and cultural issues to 
+recognize patterns in use. Thus, contributing to a computing culture that is collaborative and ethical. 
+StStandarandard 1d 1 
+Beneficial and Harmful Effects 
+• Explore how an effect of a computing innovation can be both beneficial and harmful.
+• Explore advances in computing that have generated and increased creativity in other fields, such as
+medicine, engineering, communications, and the arts.
+StStandarandard 2d 2 
+Digital Divide and Computing Bias 
+• Explore issues that contribute to the digital divide (demographics, geographics, socioeconomic, equity,
+access, influence).
+• Explore how bias exists in computing innovations.
+StStandarandard 3d 3 
+Legal and Ethical Concerns 
+• Explain how the use of computing can raise legal and ethical concerns.
+• Understand how ease of access and distribution of digitized information raises intellectual property
+concerns regarding ownership, value, and use.
+• Understand the differences between Copyright, Creative Commons, Public Domain, & Trademark
+• Understand how AI impacts the programming field.
+• Explain why you should not use AI to write your code as a beginner programmer.
+• Understand that AI tools can be helpful for debugging code, but it’s important to double-check their
+suggestions using your own programming knowledge.
+StStandarandard 4d 4 
+Safe Computing 
+• Describe the risks to privacy from collecting and storing personal data on a computer system.
+• Permanence of online information
+• Students will understand that all their online behavior and digital communications will have long-
+term ramifications either positive or negative.
+• Explain how computing resources can be protected (password strength) and can be misused.
+• Explain how unauthorized access to computing resources is gained.
+• Understand essential cybersecurity concepts.
+• Malware (adware, trojan horse, virus, ransomware, etc.)
+• Social Engineering (phishing, etc.)
+PPerferformance Skillsormance Skills 
+Students will discuss the benefits and issues of computing. Students will develop and use safe internet 
+practices. 
+
+COMPUTER SCIENCE PRINCIPLES
+7]Page
+REVISED: JUNE 2025
+IndusIndustrtry Ty Tesest Pt Poinoints bts by Stry Strandand 
+Test Name 
+Computer 
+Science 
+Principles 
+Test # 
+803 
+Number of Test Points by Strand 
+1  2  3  4  5 
+12 7 13 10 4 
+Number of Questions by Strand 
+1 2 3 4 5 
+9 5 12 8 4 
+Total 
+Points 
+46 
+Total 
+Questions
+38 
+
+COMPUTER SCIENCE PRINCIPLES
+8]Page
+REVISED: JUNE 2025
+Computer Science Principles Vocabulary 
+Strand 1 - Computing and Data 
+Hardware: Physical components of a computer 
+Software: A program or a collection of programs 
+Input: The information computers get from users, devices, or other computers 
+Output : The information computers give to users, devices, or other computers 
+Storage: Saving information to use in the future 
+Bit: A single binary digit represented as a 0 or 1. 
+Byte: 8 bits = 1 byte 
+Kilobyte: Approximately 1 thousand bytes 
+Megabyte: Approximately 1 million bytes 
+Gigabyte: Approximately 1 billion bytes 
+Terabyte: Approximately 1 trillion bytes 
+Petabyte: Approximately 1 quadrillion bytes 
+Processing: An action a computer performs when it receives data 
+Binary: A base-2 numbering system that computers use to process data 
+Decimal: A base-10 numbering system that humans typically use to process data 
+Lossless Compression: Compression algorithm in which file size is reduced without any quality loss. 
+Lossy Compression: Compression algorithm in which some of the data from the original file is lost. 
+Strand 2 - Creative Development 
+Top-Down Design: A problem-solving approach in which you break a large problem into smaller pieces. 
+Debugging: Finding and fixing problems in an algorithm or program. 
+Logic Error: A logical mistake in the code that produces incorrect output. 
+Syntax Error: Errors which are detected and prevent the program from running. 
+
+9]Page
+REVISED: JUNE 2025
+          COMPUTER SCIENCE PRINCIPLES  
+Run Time Error: An error in the code that occurs while the program is running. 
+Strand 3 - Algorithms and Programming 
+Algorithm: A finite set of instructions that accomplish a task. 
+Assignment Operator: Used to change the value of a variable. 
+Example: score = 10 
+Variable: A named value within a program. 
+String: An ordered sequence of characters. 
+Boolean Value: A data type that is either true or false. 
+Arithmetic operators: Includes addition, subtraction, multiplication, division, and modulus operators. Modulus: 
+An operator that returns the remainder of division 
+Comparison Operators: <, >, ≤, ≥, ==, ≠ indicate a Boolean expression 
+Logical operator
+: NOT, AND, and OR, which evaluate to a Boolean value. 
+Conditional Statement: Decision making based on a Boolean value (IF, ELSE IF, ELSE). 
+Concatenation: Joins together two or more strings to make a new string. 
+Iteration/loops: Part of a program that repeats a specified number of times (FOR loop) or until a given 
+condition is met (WHILE loop). 
+Procedure/Functions/Methods: A named group of programming instructions. 
+Procedure/Function/Method Call: A command that executes a procedure, function, or method. 
+Strand 4 – Computer Systems & Networks 
+Computing Device: A physical artifact that can run a program.  (ex: computer, tablet, server, router, etc.) 
+Computing System: A group of computing devices capable of sending or receiving data. 
+Network: The hardware that connects computers together to transfer data. 
+Internet: A global network of networks. 
+World Wide Web: A collection of information that is accessed via the internet such as web pages or the cloud. 
+
+COMPUTER SCIENCE PRINCIPLES
+10]Page
+REVISED: JUNE 2025
+Path: The connections between devices on a network such as ethernet, fiber optics, WiFi, and cellular. 
+Packet: A chunk of data sent over a network. 
+Bandwidth: The maximum amount of data that can be sent in a fixed amount of time, usually measured in bits 
+per second. 
+Router: A type of computer that forwards data across a network 
+Routing: Routing is the process of finding a path from sender to receiver. 
+Fault Tolerance: A network’s ability to continue operating uninterrupted despite the failure of one or more of 
+its components 
+Protocol: An agreed-upon set of rules for transmitting data. 
+HTTP: HyperText Transfer Protocol - the protocol used for transmitting web pages over the Internet 
+HTTPS: HyperText Transfer Protocol Secure - the protocol used for transmitting encrypted web pages securely 
+over the Internet 
+Strand 5 - Impact of Computing 
+Digital Divide: Differing access to computing devices and the Internet, based on socioeconomic, geographic, or 
+demographic characteristics. 
+Data bias: An error in which certain elements of a data set do not accurately reflect the 
+full population or phenomenon. 
+Malware: Short for “malicious software.” Malware is software designed to cause damage. 
+Adware: Malware that automatically displays or downloads advertisements. 
+Trojan Horse: Malware which appears harmless and pretends to do something useful. 
+Virus: Malware that can copy itself and gain access to a computer in an unauthorized way 
+Ransomware: Malware that blocks access to a computer system until a “ransom” is paid. 
+Social Engineering: Manipulating people into performing certain actions or giving up confidential information. 
+Phishing: A type of social engineering attack that attempts to trick a user into providing 
+personal information. 
+Copyright: An exclusive right that is applied to tangible works 
+
+COMPUTER SCIENCE PRINCIPLES
+11]Page
+REVISED: JUNE 2025
+Creative Commons: Works which copyright is reserved but can be copied 
+Public Domain: Works that are not protected by copyright 
+Trademark: Symbols or words that a company has exclusive rights to use 
+
+COMPUTER SCIENCE PRINCIPLES
+12]Page
+REVISED: JUNE 2025
+ComputComputer Science Principles Skills Rer Science Principles Skills Reeffererence Sheeence Sheett 
+Assignment, Display, and Input 
+a = expression Evaluates expression and then assigns a copy of the result to
+the variable a. 
+DISPLAY(expression) Displays the value of (expression) in the console window.
+INPUT( ) Accepts a value from the user and returns the input value. 
+Arithmetic Operators and Numeric Procedures 
+a + b 
+a - b 
+a * b 
+a / b 
+The arithmetic operators +,-,*, and / are used to perform
+arithmetic on a and b. 
+For example, 17 / 5 evaluates to 3.4. 
+The order of operations used in mathematics applies when 
+evaluating expressions. 
+a MODULUS b 
+-or-
+a MOD b
+Evaluates to the remainder when a is divided by b.
+For example, 17 MOD 5 evaluates to 2.
+MODULUS (MOD) has the same precedence as the
+operators. 
+ * and /
+Relational and Boolean Operators 
+NOT condition Evaluates to true if condition is false; otherwise evaluates
+ to false.
+condition1 AND condition2 Evaluates to true if both condition1 and condition2 are
+true; otherwise evaluates to false.
+condition1 OR condition2  Evaluates to true if condition1 is true or if condition2 
+is true or if both condition1 and condition2 are true;
+otherwise evaluates to false.
+FOR(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is executed a certain
+number of times. 
+
+COMPUTER SCIENCE PRINCIPLES
+13]Page
+REVISED: JUNE 2025
+WHILE(condition) 
+{
+ <block of statements> 
+} 
+The code in <block of statements> is repeated
+until the (condition) evaluates to false.
+IF(condition1)  If (condition1) evaluates to true, the code in
+{ <first block of statements> is executed;
+<first block of statements> if (condition1) evaluates to false, then
+{ (condition2) is tested; if (condition2) evaluates to
+ELSE IF(condition2) true, the code in
+{ <second block of statements> is executed; if
+<second block of statements> both (condition1) and (condition2) evaluate
+}  to false, then the code in <third block of 
+ELSE statements> is executed.
+{
+ <third block of statements> 
+} 
+Procedures and Procedure Calls 
+PROCEDURE procName( )  Defines procName as a procedure that takes no arguments.
+{ The procedure contains <block of statements>.
+<block of statements> 
+} The procedure procName can be called using the following
+notation: 
+procName( ) 
