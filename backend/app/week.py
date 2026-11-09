@@ -35,7 +35,7 @@ router = APIRouter()
 
 
 def class_codes() -> set[str]:
-    return {c.strip() for c in os.environ.get("HOMEROOM_CLASS_CODES", "demo").split(",") if c.strip()}
+    return {c.strip().lower() for c in os.environ.get("HOMEROOM_CLASS_CODES", "demo").split(",") if c.strip()}
 
 
 def label_for_class(code: str) -> str:

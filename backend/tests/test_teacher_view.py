@@ -84,7 +84,7 @@ def test_only_known_class_codes_become_labels(counter, typed, label):
 
 
 def test_class_codes_come_from_the_environment(counter, monkeypatch):
-    monkeypatch.setenv("HOMEROOM_CLASS_CODES", "demo, period-3")
+    monkeypatch.setenv("HOMEROOM_CLASS_CODES", "demo, Period-3")
     get_week(StubES([ONE_STEP_TALK], kiosks=[]), state="Utah", courses="fx-intro-cs", class_code="period-3")
     assert counter.calls[0][1]["class_code"] == "period-3"
 
