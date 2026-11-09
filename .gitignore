@@ -7,3 +7,6 @@ node_modules/
 
 # Standards PDFs are downloaded at load time. Never commit them or their text (public repo, CSTA is CC BY-NC-SA).
 data/standards/cache/
+
+# Tagger state for an in-flight Message Batch (resumes an interrupted run); never committed.
+data/.tags-batch.json
