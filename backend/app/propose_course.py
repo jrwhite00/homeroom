@@ -1,10 +1,11 @@
 """Open a course pull request by hand, the same way a student-confirmed match does.
 
-    cd backend && GITHUB_TOKEN=$(gh auth token) python -m app.propose_course \
+    cd backend && python -m app.propose_course \
         --state Utah --course "Computer Programming 1" --standard "Utah CTE Computer Programming 1 strands" \
         --teaches programming-basics,containers --reason "programming-basics=Variables, loops and functions."
 
-The file says `added by: James`. The token is read from GITHUB_TOKEN and never printed.
+The file says `added by: James`. COURSE_PROPOSAL_GITHUB_TOKEN must contain a repository-scoped token,
+never a personal token, and is never printed.
 """
 from __future__ import annotations
 

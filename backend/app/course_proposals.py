@@ -26,8 +26,11 @@ from app.github import GitHub, GitHubError
 
 STUDENT_ADDED_BY = "Homeroom, after a student confirmed a match"
 MAX_CONCEPTS = 4
+MAX_OPEN_COURSE_PRS = 5
+MAX_LOCAL_PROPOSALS = 20
 LOCAL_DIR = Path(__file__).resolve().parents[2] / "data" / "proposed-courses"
 FOOTER = "A teacher must approve before this merges."
+LIMIT_MESSAGE = "Course proposals are full right now. You can still view your schedule."
 
 
 class ProposalError(ValueError):
@@ -105,6 +108,17 @@ def known_concepts(gh: GitHub) -> set[str]:
     return {i["name"][:-5] for i in items if i["name"].endswith(".yaml")}
 
 
+def open_course_pr_count(gh: GitHub) -> int:
+    """Count every open course/* pull request, following GitHub's pagination."""
+    count, page = 0, 1
+    while True:
+        pulls = gh.request("GET", f"/pulls?state=open&per_page=100&page={page}")
+        count += sum(pull.get("head", {}).get("ref", "").startswith("course/") for pull in pulls)
+        if len(pulls) < 100:
+            return count
+        page += 1
+
+
 def open_pull_request(gh: GitHub, p: Proposal) -> dict:
     """Open (or find) the pull request for this course. Raises GitHubError if GitHub fails."""
     owner = gh.repo.split("/")[0]
@@ -120,6 +134,8 @@ def open_pull_request(gh: GitHub, p: Proposal) -> dict:
     unknown = sorted(set(p.slugs) - known_concepts(gh))
     if unknown:
         raise ProposalError("These concepts aren't in the curriculum yet: " + ", ".join(unknown) + ".")
+    if open_course_pr_count(gh) >= MAX_OPEN_COURSE_PRS:
+        return {"status": "limit_reached", "url": None, "number": None, "message": LIMIT_MESSAGE}
     main_sha = gh.request("GET", "/git/ref/heads/main")["object"]["sha"]
     try:
         gh.request("POST", "/git/refs", {"ref": f"refs/heads/{branch(p)}", "sha": main_sha})
@@ -138,9 +154,17 @@ def open_pull_request(gh: GitHub, p: Proposal) -> dict:
     return {"status": "opened", "url": pr["html_url"], "number": pr["number"]}
 
 
+class ProposalLimitReached(Exception):
+    """The local proposal fallback has reached its storage cap."""
+
+
 def save_locally(p: Proposal, directory: Path = LOCAL_DIR) -> Path:
-    directory.mkdir(parents=True, exist_ok=True)
     target = directory / file_name(p)
+    if not target.exists() and directory.exists():
+        file_count = sum(item.is_file() for item in directory.iterdir())
+        if file_count >= MAX_LOCAL_PROPOSALS:
+            raise ProposalLimitReached
+    directory.mkdir(parents=True, exist_ok=True)
     target.write_text(course_file(p), encoding="utf-8")
     return target
 
@@ -155,5 +179,8 @@ def propose(gh: GitHub, p: Proposal, local_dir: Path | None = None) -> dict:
         unknown = sorted(set(p.slugs) - {c["slug"] for c in read_concepts()})
         if unknown:
             raise ProposalError("These concepts aren't in the curriculum yet: " + ", ".join(unknown) + ".")
-        save_locally(p, local_dir or LOCAL_DIR)
+        try:
+            save_locally(p, local_dir or LOCAL_DIR)
+        except ProposalLimitReached:
+            return {"status": "limit_reached", "url": None, "number": None, "message": LIMIT_MESSAGE}
         return {"status": "saved_locally", "url": None, "number": None, "file": file_name(p)}

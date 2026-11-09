@@ -1,7 +1,7 @@
 """A small GitHub REST client over the standard library.
 
-The token comes from GITHUB_TOKEN (in the cluster, from a Kubernetes secret). It is only ever sent as
-a header: never logged, printed, or included in an error message.
+The API token comes from COURSE_PROPOSAL_GITHUB_TOKEN, provisioned as a repository-scoped secret. It
+is only ever sent as a header: never logged, printed, or included in an error message.
 """
 from __future__ import annotations
 
@@ -28,7 +28,8 @@ class GitHub:
 
     @classmethod
     def from_env(cls) -> "GitHub":
-        return cls(os.environ.get("GITHUB_REPO", "jrwhite00/homeroom"), os.environ.get("GITHUB_TOKEN"))
+        return cls(os.environ.get("GITHUB_REPO", "jrwhite00/homeroom"),
+                   os.environ.get("COURSE_PROPOSAL_GITHUB_TOKEN"))
 
     def request(self, method: str, path: str, body: dict | None = None) -> dict | list:
         if not self._token:

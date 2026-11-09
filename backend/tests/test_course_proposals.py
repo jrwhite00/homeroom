@@ -6,7 +6,7 @@ import urllib.error
 import pytest
 from fastapi.testclient import TestClient
 
-from app import course_proposals, propose_course
+from app import course_proposals, courses_api, propose_course
 from app.course_proposals import FOOTER, Proposal
 from app.courses_api import get_github
 from app.github import GitHub, GitHubError
@@ -27,6 +27,11 @@ class StubGitHub(GitHub):
         self.calls.append((method, path))
         if self.fail:
             raise GitHubError("could not reach GitHub: URLError")
+        if method == "GET" and path.startswith("/pulls?state=open&per_page=100&page="):
+            page = int(path.rsplit("=", 1)[1])
+            open_pulls = [p for p in self.pulls if p["state"] == "open"]
+            start = (page - 1) * 100
+            return [{"head": {"ref": p["head"]}} for p in open_pulls[start:start + 100]]
         if method == "GET" and path.startswith("/pulls?state=open&head=jrwhite00:"):
             head = path.split(":", 1)[1]
             return [p for p in self.pulls if p["head"] == head and p["state"] == "open"]
@@ -64,6 +69,7 @@ PROPOSAL = {"state": "Utah", "course": "Computer Programming 1", "standard": "Ut
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(course_proposals, "LOCAL_DIR", tmp_path / "proposed")
+    monkeypatch.setattr(courses_api, "_client_proposals", {})
     gh = StubGitHub()
     app.dependency_overrides[get_github] = lambda: gh
     yield TestClient(app), gh, tmp_path / "proposed"
@@ -97,6 +103,19 @@ def test_one_open_pull_request_per_course(client):
     first = c.post("/courses/propose", json=PROPOSAL).json()
     second = c.post("/courses/propose", json=PROPOSAL).json()
     assert second["status"] == "already_open" and second["url"] == first["url"] and len(gh.pulls) == 1
+
+
+def test_fifth_open_course_pull_request_is_the_limit(client):
+    c, gh, _ = client
+    gh.pulls = [{"head": f"course/existing-{n}", "state": "open"} for n in range(5)]
+
+    response = c.post("/courses/propose", json=PROPOSAL)
+
+    assert response.status_code == 202
+    assert response.json() == {"status": "limit_reached", "url": None, "number": None,
+                               "message": course_proposals.LIMIT_MESSAGE, "show_schedule": True}
+    assert not any(method in ("POST", "PUT") for method, _ in gh.calls)
+    assert gh.branches == {"main"}
 
 
 def test_course_already_on_main_opens_nothing(client):
@@ -137,6 +156,40 @@ def test_github_failure_saves_file_locally_and_still_shows_schedule(client):
     assert (local / "utah-computer-programming-1.yaml").read_text(encoding="utf-8").startswith("course: Computer Programming 1")
 
 
+def test_local_proposal_cap_returns_202_without_writing(client, monkeypatch):
+    c, gh, local = client
+    gh.fail = True
+    local.mkdir()
+    for n in range(20):
+        (local / f"proposal-{n}.yaml").write_text("existing", encoding="utf-8")
+    monkeypatch.setattr("app.curriculum.read_concepts", lambda: [{"slug": "programming-basics"}, {"slug": "containers"}])
+
+    response = c.post("/courses/propose", json=PROPOSAL)
+
+    assert response.status_code == 202 and response.json() == {
+        "status": "limit_reached", "url": None, "number": None,
+        "message": course_proposals.LIMIT_MESSAGE, "show_schedule": True,
+    }
+    assert len(list(local.iterdir())) == 20
+    assert not (local / "utah-computer-programming-1.yaml").exists()
+
+
+def test_three_proposals_per_client_per_minute(client):
+    c, gh, _ = client
+    results = [c.post("/courses/propose", json={**PROPOSAL, "course": f"Programming {n}"}) for n in range(3)]
+    blocked = c.post("/courses/propose", json={**PROPOSAL, "course": "Programming fourth"})
+
+    assert all(response.status_code == 202 and response.json()["status"] == "opened" for response in results)
+    assert blocked.status_code == 202
+    assert blocked.json() == {"status": "rate_limited",
+                              "message": "Please wait a minute before suggesting another course.",
+                              "show_schedule": True}
+    other_client = TestClient(app, client=("198.51.100.9", 12345))
+    other_response = other_client.post("/courses/propose", json={**PROPOSAL, "course": "Programming elsewhere"})
+    assert other_response.status_code == 202 and other_response.json()["status"] == "opened"
+    assert len(gh.pulls) == 4
+
+
 def test_github_failure_rejects_concepts_missing_from_local_curriculum(client, monkeypatch):
     c, gh, local = client
     gh.fail = True
@@ -165,6 +218,15 @@ def test_script_opens_same_pull_request_added_by_james(capsys):
     assert pr["body"].endswith(FOOTER)
     assert gh.files[("course/utah-web-development-1", "curriculum/courses/utah-web-development-1.yaml")].endswith("added by: James\n")
     assert "Opened https://github.com/jrwhite00/homeroom/pull/10" in capsys.readouterr().out
+
+
+def test_from_env_uses_only_the_repository_scoped_token(monkeypatch):
+    monkeypatch.delenv("COURSE_PROPOSAL_GITHUB_TOKEN", raising=False)
+    monkeypatch.setenv("GITHUB_TOKEN", "personal-token-must-not-be-used")
+    assert GitHub.from_env()._token is None
+
+    monkeypatch.setenv("COURSE_PROPOSAL_GITHUB_TOKEN", "repository-scoped-token")
+    assert GitHub.from_env()._token == "repository-scoped-token"
 
 
 def test_no_token_means_no_request_and_token_never_in_errors(monkeypatch):

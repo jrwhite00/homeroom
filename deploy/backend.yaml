@@ -30,6 +30,12 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: homeroom-backend
+            - name: COURSE_PROPOSAL_GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: course-proposal-github-token
+                  key: token
+                  optional: true
           readinessProbe:
             httpGet:
               path: /healthz
