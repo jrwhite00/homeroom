@@ -260,4 +260,4 @@ The hackathon build window was 11:00-17:30 America/Denver on November 9, 2026. E
 - **This repository:** created at 10:10 with only a one-line README.
 
 ## AI use
-
+Claude code was used to help write most PRs, Standards and course mappings were hand made with Gitar reviewing them for changes that needs to be made to DB tables. For design decisions A.I had n only a conversational role, all design was done with the purposeful intent of our team (humans).
