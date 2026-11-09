@@ -1,0 +1,50 @@
+{
+  "apiVersion": "openslo/v1",
+  "kind": "SLO",
+  "metadata": {
+    "name": "99% of students placed in at least three talks a day",
+    "labels": {
+      "dash0.com/origin": "homeroom-three-talks-a-day"
+    }
+  },
+  "spec": {
+    "budgetingMethod": "Occurrences",
+    "objectives": [
+      {
+        "target": 0.99
+      }
+    ],
+    "indicator": {
+      "metadata": {
+        "name": "homeroom-three-talks-a-day-sli"
+      },
+      "spec": {
+        "ratioMetric": {
+          "counter": false,
+          "good": {
+            "metricSource": {
+              "type": "Prometheus",
+              "spec": {
+                "query": "sum({otel_metric_name=\"homeroom.student_days\", placed_3_or_more=\"true\"})"
+              }
+            }
+          },
+          "total": {
+            "metricSource": {
+              "type": "Prometheus",
+              "spec": {
+                "query": "sum({otel_metric_name=\"homeroom.student_days\"})"
+              }
+            }
+          }
+        }
+      }
+    },
+    "timeWindow": [
+      {
+        "duration": "4w",
+        "isRolling": true
+      }
+    ]
+  }
+}

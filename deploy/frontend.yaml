@@ -31,6 +31,13 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: homeroom-frontend
+            # Browser monitoring (@dash0/sdk-web). Optional: without the secret the page sends nothing.
+            - name: DASH0_WEB_URL
+              valueFrom:
+                secretKeyRef: {name: homeroom-dash0-web, key: url, optional: true}
+            - name: DASH0_WEB_TOKEN
+              valueFrom:
+                secretKeyRef: {name: homeroom-dash0-web, key: token, optional: true}
           readinessProbe:
             httpGet:
               path: /

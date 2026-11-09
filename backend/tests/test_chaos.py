@@ -4,8 +4,9 @@ from collections import Counter
 
 import pytest
 from fastapi.testclient import TestClient
+from opentelemetry.trace import INVALID_SPAN_CONTEXT
 
-import app.main as main_module
+import app.telemetry as telemetry_module
 from app import chaos, loadgen
 from app.main import app
 from app.search import get_es
@@ -17,6 +18,12 @@ class FakeSpan:
 
     def set_attribute(self, key, value):
         self.attributes[key] = value
+
+    def get_span_context(self):  # the real tracer asks the current span for its parent context
+        return INVALID_SPAN_CONTEXT
+
+    def is_recording(self):
+        return False
 
 
 @pytest.fixture
@@ -31,8 +38,8 @@ def spans(monkeypatch):
         started.append((name, span))
         yield span
 
-    monkeypatch.setattr(chaos.trace, "get_current_span", lambda: current)
-    monkeypatch.setattr(main_module.trace, "get_current_span", lambda: current)
+    monkeypatch.setattr(chaos.trace, "get_current_span", lambda *a, **k: current)
+    monkeypatch.setattr(telemetry_module.trace, "get_current_span", lambda *a, **k: current)
     monkeypatch.setattr(chaos.tracer, "start_as_current_span", start)
     monkeypatch.setattr(chaos.time, "sleep", lambda s: started.append(("slept", s)))
     yield current, started
