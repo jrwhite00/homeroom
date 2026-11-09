@@ -1,0 +1,18 @@
+{
+  "field": "concept_vec",
+  "similarity": "l2_norm",
+  "dims": [
+    "computation-models",
+    "containers",
+    "cybersecurity",
+    "data-and-databases",
+    "digital-system-design",
+    "linux-command-line",
+    "machine-learning",
+    "networking-basics",
+    "object-oriented-programming",
+    "parallel-programming",
+    "programming-basics",
+    "scaling-and-reliability"
+  ]
+}
