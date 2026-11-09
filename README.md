@@ -43,3 +43,31 @@ kubectl -n homeroom create secret generic homeroom-chaos --from-literal=token="$
 TOKEN=$(kubectl -n homeroom get secret homeroom-chaos -o jsonpath='{.data.token}' | base64 -d)
 curl -X POST http://homeroom.localhost:18080/api/chaos -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"enabled": true}'
 ```
+
+## Observability (Dash0)
+
+The Dash0 operator auto-instruments the backend. On top of that, the backend adds:
+
+- **Spans:**
+  - `homeroom.search`, with the mode, whether translation was used, the concepts it translated to, and the result count
+  - `homeroom.scheduling`, around placements, with counts of placed and pending student hours
+  - `homeroom.readiness`, for each readiness check: the talk and how many concepts the student knows
+- **Metrics:**
+  - `homeroom.http.requests` (a counter) and `homeroom.http.duration` (a histogram), both by route, status class, `simulated` and `induced`
+  - `homeroom.students.pending`
+  - `homeroom.student_days`, split by whether the student got at least three talks that day
+
+No span, metric or log carries a student identifier.
+
+**Targets** (Dash0 SLOs, rolling 4 weeks):
+
+- 99% of schedule requests (`/week`) finish in under 2 seconds.
+- 99% of students are placed in at least three talks a day.
+
+**Dashboard and targets live in the repo** under `observability/dash0/`. `python -m app.dash0_sync push` uploads them, and `python -m app.dash0_sync export` writes the live dashboard back.
+
+**Browser monitoring** uses `@dash0/sdk-web` on the student page. Its endpoint and ingest-only token come from the `homeroom-dash0-web` secret at runtime, never from the repo:
+
+```
+kubectl -n homeroom create secret generic homeroom-dash0-web --from-literal=url=<OTLP HTTP endpoint> --from-literal=token=<browser token>
+```

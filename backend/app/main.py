@@ -1,22 +1,18 @@
-from fastapi import FastAPI, Request
-from opentelemetry import trace
+from fastapi import FastAPI
 
+from app import telemetry
 from app.chaos import router as chaos_router
+from app.placements_api import refresh_gauges
 from app.placements_api import router as placements_router
+from app.search import get_es
 from app.search import router as search_router
 
 app = FastAPI(title="Homeroom")
 app.include_router(search_router)
 app.include_router(placements_router)
 app.include_router(chaos_router)
-
-
-@app.middleware("http")
-async def label_simulated(request: Request, call_next):
-    """Requests from the load generator are simulated; say so on their span."""
-    if request.headers.get("x-homeroom-simulated"):
-        trace.get_current_span().set_attribute("simulated", True)
-    return await call_next(request)
+# Request metrics, simulated=true on load generator spans, and the students-pending gauges.
+telemetry.install(app, refresh=lambda: refresh_gauges(get_es()))
 
 
 @app.get("/healthz")

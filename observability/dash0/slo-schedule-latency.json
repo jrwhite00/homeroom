@@ -1,0 +1,50 @@
+{
+  "apiVersion": "openslo/v1",
+  "kind": "SLO",
+  "metadata": {
+    "name": "99% of schedule requests under 2 seconds",
+    "labels": {
+      "dash0.com/origin": "homeroom-schedule-latency"
+    }
+  },
+  "spec": {
+    "budgetingMethod": "Occurrences",
+    "objectives": [
+      {
+        "target": 0.99
+      }
+    ],
+    "indicator": {
+      "metadata": {
+        "name": "homeroom-schedule-latency-sli"
+      },
+      "spec": {
+        "ratioMetric": {
+          "counter": false,
+          "good": {
+            "metricSource": {
+              "type": "Prometheus",
+              "spec": {
+                "query": "histogram_fraction(0, 2, sum(increase({otel_metric_name=\"homeroom.http.duration\", http_route=\"/week\"}[5m]))) * histogram_count(sum(increase({otel_metric_name=\"homeroom.http.duration\", http_route=\"/week\"}[5m])))"
+              }
+            }
+          },
+          "total": {
+            "metricSource": {
+              "type": "Prometheus",
+              "spec": {
+                "query": "histogram_count(sum(increase({otel_metric_name=\"homeroom.http.duration\", http_route=\"/week\"}[5m])))"
+              }
+            }
+          }
+        }
+      }
+    },
+    "timeWindow": [
+      {
+        "duration": "4w",
+        "isRolling": true
+      }
+    ]
+  }
+}

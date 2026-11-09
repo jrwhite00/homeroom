@@ -4,9 +4,10 @@ from collections import Counter
 
 import pytest
 from fastapi.testclient import TestClient
+from opentelemetry.trace import INVALID_SPAN_CONTEXT
 
-import app.main as main_module
-from app import chaos, loadgen
+import app.telemetry as telemetry_module
+from app import chaos, loadgen, search
 from app.main import app
 from app.search import get_es
 
@@ -17,6 +18,12 @@ class FakeSpan:
 
     def set_attribute(self, key, value):
         self.attributes[key] = value
+
+    def get_span_context(self):  # the real tracer asks the current span for its parent context
+        return INVALID_SPAN_CONTEXT
+
+    def is_recording(self):
+        return False
 
 
 @pytest.fixture
@@ -31,8 +38,8 @@ def spans(monkeypatch):
         started.append((name, span))
         yield span
 
-    monkeypatch.setattr(chaos.trace, "get_current_span", lambda: current)
-    monkeypatch.setattr(main_module.trace, "get_current_span", lambda: current)
+    monkeypatch.setattr(chaos.trace, "get_current_span", lambda *a, **k: current)
+    monkeypatch.setattr(telemetry_module.trace, "get_current_span", lambda *a, **k: current)
     monkeypatch.setattr(chaos.tracer, "start_as_current_span", start)
     monkeypatch.setattr(chaos.time, "sleep", lambda s: started.append(("slept", s)))
     yield current, started
@@ -68,14 +75,28 @@ def test_flipping_needs_a_configured_token(client, monkeypatch):
 
 def test_on_adds_800ms_to_search_and_marks_spans_induced(client, monkeypatch, spans):
     current, started = spans
+    search_spans = []
+
+    @contextlib.contextmanager
+    def start_search(name, attributes=None):
+        span = FakeSpan()
+        span.attributes.update(attributes or {})
+        search_spans.append((name, span))
+        yield span
+
+    monkeypatch.setattr(search.tracer, "start_as_current_span", start_search)
     monkeypatch.setenv("CHAOS_TOKEN", "s3cret")
     r = client.post("/chaos", json={"enabled": True}, headers={"Authorization": "Bearer s3cret"})
     assert r.json()["enabled"] is True
-    body = client.get("/search", params={"q": "autoscaling"}).json()
+    response = client.get("/search", params={"q": "autoscaling"})
+    body = response.json()
     assert ("slept", 0.8) in started
     assert current.attributes["induced"] is True
     name, delay_span = started[0]
     assert name == "chaos.delay" and delay_span.attributes["induced"] is True
+    search_name, search_span = search_spans[0]
+    assert search_name == "homeroom.search" and search_span.attributes["induced"] is True
+    assert response.headers["x-homeroom-induced"] == "true"
     assert body["induced_delay"]["simulated"] is True
 
 

@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@dash0/sdk-web": "0.28.3",
     "next": "16.4.5",
     "react": "19.3.1",
     "react-dom": "19.3.1"

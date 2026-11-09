@@ -1,0 +1,236 @@
+{
+  "kind": "Dashboard",
+  "metadata": {
+    "annotations": {},
+    "dash0Extensions": {
+      "dataset": "default",
+      "id": "homeroom-overview"
+    },
+    "labels": {
+      "dash0.com/source": "api"
+    },
+    "name": "Homeroom"
+  },
+  "spec": {
+    "display": {
+      "name": "Homeroom"
+    },
+    "duration": "30m",
+    "layouts": [
+      {
+        "kind": "Grid",
+        "spec": {
+          "items": [
+            {
+              "content": {
+                "$ref": "#/spec/panels/live_backend"
+              },
+              "height": 6,
+              "width": 24,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/requests"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 0,
+              "y": 6
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/search_p95"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 12,
+              "y": 6
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/week_under_2s"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 0,
+              "y": 14
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/pending"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 12,
+              "y": 14
+            },
+            {
+              "content": {
+                "$ref": "#/spec/panels/three_a_day"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 0,
+              "y": 22
+            }
+          ]
+        }
+      }
+    ],
+    "panels": {
+      "live_backend": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Backend requests per second (auto-instrumented, live now)"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "sum by (http_route) (rate({otel_metric_name=\"http.server.request.duration\", service_name=\"homeroom-backend\"}[1m]))"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "pending": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Students pending (student hours kube-scheduler left Pending)"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "sum by (class) ({otel_metric_name=\"homeroom.students.pending\"})"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "requests": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Requests per second by route (simulated split)"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "sum by (http_route, simulated) (rate({otel_metric_name=\"homeroom.http.requests\"}[1m]))"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "search_p95": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "/search p95 latency (s), induced = chaos switch"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "histogram_quantile(0.95, sum by (induced) (rate({otel_metric_name=\"homeroom.http.duration\", http_route=\"/search\"}[1m])))"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "three_a_day": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Student-days with at least three talks placed (target 99%)"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "sum({otel_metric_name=\"homeroom.student_days\", placed_3_or_more=\"true\"}) / sum({otel_metric_name=\"homeroom.student_days\"})"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "week_under_2s": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Schedule (/week) requests under 2 s (target 99%)"
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "PrometheusTimeSeriesQuery",
+                  "spec": {
+                    "query": "histogram_fraction(0, 2, sum(rate({otel_metric_name=\"homeroom.http.duration\", http_route=\"/week\"}[5m])))"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "refreshInterval": "30s"
+  }
+}
