@@ -7,6 +7,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
+# James's readiness rule lives beside app/ and is imported as `readiness`.
+COPY readiness.py ./
 
 RUN useradd --uid 10001 --no-create-home homeroom
 USER 10001
