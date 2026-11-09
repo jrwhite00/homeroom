@@ -95,9 +95,12 @@ export default function StudentPage() {
 
   return (
     <main className={s.main}>
-      <h1>Homeroom</h1>
-      <p className={s.lead}>Pick your state and the classes you&apos;ve taken. We&apos;ll sort this week&apos;s KubeCon talks
-        by whether you&apos;re ready for them.</p>
+      <header className={s.hero}>
+        <h1>Homeroom</h1>
+        <p className={s.lead}>Pick your state and the classes you&apos;ve taken. We&apos;ll sort this week&apos;s KubeCon talks
+          by whether you&apos;re ready for them.</p>
+      </header>
+      <div className={s.content}>
       <details className={s.decoder}>
         <summary>What&apos;s a concept?</summary>
         <p>A concept is one idea a talk expects you to know already, like &quot;containers&quot; (a way to package an
@@ -162,6 +165,7 @@ export default function StudentPage() {
       <p role="status" aria-live="polite" className={s.visuallyHidden}>{status}</p>
 
       {week && <Week week={week} headingRef={weekHeading} />}
+      </div>
     </main>
   );
 }
@@ -343,7 +347,7 @@ function Week({ week, headingRef }) {
       </p>
       {week.messages.map((m) => <p key={m} className={s.note}>{m}</p>)}
       {GROUP_ORDER.map((g) => (
-        <details key={g} className={s.group} open={g === "ready"}>
+        <details key={g} className={s.group} data-group={g} open={g === "ready"}>
           <summary>
             <h3 className={s.groupTitle}>{week.labels[g]} <span className={s.count}>({week.counts[g]} talks)</span></h3>
           </summary>
@@ -398,9 +402,11 @@ function Talk({ talk, group }) {
   const sg = talk.suggestion;
   return (
     <li className={s.talk}>
-      <span className={s.time}>{timeOf(talk.starts_at)}</span>{" "}
-      <strong><a href={`/talks/${encodeURIComponent(talk.id)}`} className={s.talkLink}>{talk.title}</a></strong>
-      {talk.room && <span className={s.room}> · {talk.room}</span>}
+      <p className={s.meta}>
+        {talk.starts_at && <span className={s.time}>{timeOf(talk.starts_at)}</span>}
+        {talk.room && <span className={s.room}>{talk.room}</span>}
+      </p>
+      <strong className={s.talkTitle}><a href={`/talks/${encodeURIComponent(talk.id)}`} className={s.talkLink}>{talk.title}</a></strong>
       {talk.missing.length > 0 && (
         <p className={s.missing}>You&apos;d need: {talk.missing.join(", ")}.</p>
       )}
