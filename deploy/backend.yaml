@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: backend
     app.kubernetes.io/part-of: homeroom
 spec:
-  replicas: 1
+  # No replicas field: the HorizontalPodAutoscaler below owns the count (fixed at one until process-local state is shared).
   selector:
     matchLabels:
       app.kubernetes.io/name: backend
@@ -17,8 +17,21 @@ spec:
         app.kubernetes.io/name: backend
         app.kubernetes.io/part-of: homeroom
     spec:
+      automountServiceAccountToken: false  # no container here calls the Kubernetes API
       securityContext:
         runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      # Spread replicas across real nodes. ScheduleAnyway: the kind cluster has one worker, and
+      # Honor skips the tainted KWOK talk nodes so they don't count as places to spread to.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          nodeTaintsPolicy: Honor
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: backend
       containers:
         - name: backend
           # Built locally and imported into the kind nodes; see Commands in CLAUDE.md.
@@ -49,10 +62,24 @@ spec:
             httpGet:
               path: /healthz
               port: http
+            periodSeconds: 5
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            # Course proposals fall back to files here when there's no GitHub token.
+            - {name: proposed-courses, mountPath: /data/proposed-courses}
           resources:
             requests:
               cpu: 50m
@@ -60,6 +87,9 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
+      volumes:
+        - {name: tmp, emptyDir: {}}
+        - {name: proposed-courses, emptyDir: {}}
 ---
 apiVersion: v1
 kind: Service
@@ -76,3 +106,42 @@ spec:
     - name: http
       port: 80
       targetPort: http
+---
+# Keep one backend replica until process-local chaos-switch and rate-limit state is shared.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend
+  namespace: homeroom
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: homeroom
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+# Voluntary disruptions (node drains, upgrades) take down at most one backend pod at a time.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend
+  namespace: homeroom
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: homeroom
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend

@@ -22,8 +22,11 @@ spec:
         app.kubernetes.io/part-of: homeroom
         homeroom.dev/simulated: "true"
     spec:
+      automountServiceAccountToken: false  # no container here calls the Kubernetes API
       securityContext:
         runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: loadgen
           # Same image as the backend; it only runs the loadgen module.
@@ -37,6 +40,13 @@ spec:
               value: "2"
             - name: OTEL_SERVICE_NAME
               value: homeroom-loadgen
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
           resources:
             requests:
               cpu: 10m
@@ -44,3 +54,5 @@ spec:
             limits:
               cpu: 200m
               memory: 128Mi
+      volumes:
+        - {name: tmp, emptyDir: {}}
