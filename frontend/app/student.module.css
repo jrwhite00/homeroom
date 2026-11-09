@@ -313,11 +313,16 @@
   display: inline-block;
   padding: 0.05rem 0.55rem;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--navy);
+  background: var(--unknown);
+  color: #fff;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+/* The pill takes its group's color, so a talk's group shows even when its section is closed. */
+.group[data-group="ready"] .time { background: var(--ready); }
+.group[data-group="one_step"] .time { background: var(--one-step); }
+.group[data-group="not_yet"] .time { background: var(--not-yet); }
 
 .room {
   color: var(--muted);
