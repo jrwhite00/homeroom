@@ -74,9 +74,13 @@ def search_words(concept: dict) -> str:
     return " ".join([concept.get("concept", "")] + list(concept.get("technical_words") or []))
 
 
-def beginner_talk(es: ES, slug: str, concept: dict) -> dict | None:
+def beginner_talk(es: ES, slug: str, concept: dict, before: str | None) -> dict | None:
+    if before is None:
+        return None
     query = {"bool": {"must": [{"multi_match": {"query": search_words(concept), "fields": ["title", "abstract"]}}],
-                      "filter": [talk_filter(), {"term": {"level": "Beginner"}}],
+                      "filter": [talk_filter(), {"term": {"level": "Beginner"}},
+                                 {"term": {"assumes_status": "tagged"}},
+                                 {"range": {"starts_at": {"lt": before}}}],
                       "must_not": [{"term": {"assumes": slug}}]}}
     hits = es.search(SESSIONS, {"size": 1, "query": query, "_source": ["title", "starts_at", "room"]})
     hits = hits.get("hits", {}).get("hits", [])
@@ -97,9 +101,9 @@ def project_booth(es: ES, concept: dict) -> dict | None:
             "starts_at": k.get("starts_at"), "ends_at": k.get("ends_at"), "room": k.get("room_short")}
 
 
-def suggestion(es: ES, slug: str, concepts: dict[str, dict]) -> dict | None:
+def suggestion(es: ES, slug: str, concepts: dict[str, dict], before: str | None) -> dict | None:
     concept = concepts.get(slug, {"concept": slug})
-    found = beginner_talk(es, slug, concept) or project_booth(es, concept)
+    found = beginner_talk(es, slug, concept, before) or project_booth(es, concept)
     if found:
         found["covers"] = concept_name(concepts, slug)
     return found
@@ -111,16 +115,17 @@ def build_week(es: ES, state: str, course_slugs: list[str]) -> dict:
     knows = {slug for c in courses for slug in c.get("teaches", [])}
     concepts = concept_table(es)
     groups: dict[str, list[dict]] = {g: [] for g in GROUPS}
-    suggestions: dict[str, dict | None] = {}
+    suggestions: dict[tuple[str, str | None], dict | None] = {}
     for talk in all_talks(es):
         group, missing = readiness(talk_assumes(talk), knows)
         item = {"id": talk.get("id"), "title": talk.get("title"), "starts_at": talk.get("starts_at"),
                 "room": talk.get("room"), "level": talk.get("level"),
                 "missing": [concept_name(concepts, m) for m in missing]}
         if group == ONE_STEP:
-            if missing[0] not in suggestions:
-                suggestions[missing[0]] = suggestion(es, missing[0], concepts)
-            item["suggestion"] = suggestions[missing[0]]
+            suggestion_key = (missing[0], talk.get("starts_at"))
+            if suggestion_key not in suggestions:
+                suggestions[suggestion_key] = suggestion(es, missing[0], concepts, talk.get("starts_at"))
+            item["suggestion"] = suggestions[suggestion_key]
         groups[group].append(item)
     return {
         "state": state,
@@ -140,9 +145,9 @@ def week(state: str = Query(..., min_length=1), courses: str = Query("", descrip
     with tracer.start_as_current_span("homeroom.week") as span:  # counts only, never the student
         try:
             body = build_week(es, state, slugs)
-        except ESError as e:
+        except ESError:
             span.set_attribute("week.error", True)
-            raise HTTPException(status_code=502, detail=f"search backend unavailable: {e}") from e
+            raise HTTPException(status_code=502, detail="Your week is unavailable right now.") from None
         span.set_attribute("week.courses_known", len(body["courses"]))
         span.set_attribute("week.concepts_known", len(body["knows"]))
         for group, n in body["counts"].items():

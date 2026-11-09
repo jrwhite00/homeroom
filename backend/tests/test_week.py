@@ -1,4 +1,6 @@
 """GET /week against a fixture concept table and a stubbed Elasticsearch (nothing in curriculum/)."""
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -32,7 +34,8 @@ NOTHING_ASSUMED = talk("2", "Welcome keynote", [])
 ONE_STEP_TALK = talk("3", "Shipping apps with containers", ["programming-basics", "containers"])
 NOT_YET_TALK = talk("4", "Autoscaling containers at 10k pods", ["containers", "scaling-and-reliability"])
 UNTAGGED = talk("5", "A talk the tagger hasn't reached")
-BEGINNER = talk("6", "Containers 101", [], level="Beginner", abstract="What a Docker container image is")
+BEGINNER = talk("6", "Containers 101", [], level="Beginner", starts="2026-11-10T10:00:00-07:00",
+                abstract="What a Docker container image is")
 SCALING_ONE_STEP = talk("7", "Balancing load", ["scaling-and-reliability", "networking-basics"],
                         starts="2026-11-10T09:00:00-07:00")
 KIOSKS = [{"project": "Helm", "kiosk": "P-1A"}, {"project": "Autoscaling working group", "kiosk": "P-2B",
@@ -62,9 +65,15 @@ class StubES:
         elif index == "sessions":  # beginner-talk lookup
             q = body["query"]["bool"]
             want = words(q["must"][0]["multi_match"]["query"])
-            level = q["filter"][1]["term"]["level"]
+            filters = q["filter"]
+            level = next(f["term"]["level"] for f in filters if "level" in f.get("term", {}))
+            assert {"term": {"assumes_status": "tagged"}} in filters
+            before = next(f["range"]["starts_at"]["lt"] for f in filters if "range" in f)
+            before = datetime.fromisoformat(before)
             not_assumed = q["must_not"][0]["term"]["assumes"]
-            docs = [t for t in self.talks if t["level"] == level and not_assumed not in t.get("assumes", [])
+            docs = [t for t in self.talks if t["level"] == level and t.get("assumes_status") == "tagged"
+                    and datetime.fromisoformat(t["starts_at"]) < before
+                    and not_assumed not in t.get("assumes", [])
                     and want & words(t["title"] + " " + t["abstract"])]
         else:  # kiosks
             want = words(body["query"]["match"]["project"])
@@ -101,7 +110,7 @@ def test_concepts_come_from_the_courses_teaches_field(week):
 
 
 def test_ready_group(week):
-    assert titles(week, "ready") == ["Writing your first operator", "Welcome keynote", "Containers 101"]
+    assert titles(week, "ready") == ["Containers 101", "Writing your first operator", "Welcome keynote"]
     assert all(t["missing"] == [] for t in week["groups"]["ready"])
 
 
@@ -132,6 +141,24 @@ def test_one_step_talk_suggests_a_beginner_talk_for_the_missing_concept(week):
                  "room": "Room 6", "covers": "Containers"}
 
 
+def test_untagged_beginner_talk_is_not_suggested():
+    untagged = talk("9", "Containers 101", [], level="Beginner", abstract="Docker container image")
+    untagged["assumes_status"] = "unknown"
+    body = get_week(StubES([ONE_STEP_TALK, untagged], kiosks=[]), **STUDENT).json()
+    (target,) = body["groups"]["one_step"]
+    assert target["suggestion"] is None
+
+
+def test_beginner_talk_must_start_before_the_target():
+    at_same_time = talk("9", "Containers before deployment", [], level="Beginner",
+                        starts=ONE_STEP_TALK["starts_at"], abstract="Docker container image")
+    later = talk("10", "Containers after deployment", [], level="Beginner",
+                 starts="2026-11-10T12:00:00-07:00", abstract="Docker container image")
+    body = get_week(StubES([ONE_STEP_TALK, at_same_time, later], kiosks=[]), **STUDENT).json()
+    (target,) = body["groups"]["one_step"]
+    assert target["suggestion"] is None
+
+
 def test_no_beginner_talk_falls_back_to_a_project_booth(week):
     by_title = {t["title"]: t for t in week["groups"]["one_step"]}
     s = by_title["Balancing load"]["suggestion"]
@@ -139,10 +166,18 @@ def test_no_beginner_talk_falls_back_to_a_project_booth(week):
     assert s["covers"] == "Scaling and reliability"
 
 
-def test_suggestions_are_looked_up_once_per_concept():
+def test_suggestions_are_looked_up_once_per_concept_and_start_time():
     stub = StubES(ALL + [talk("8", "More containers", ["programming-basics", "containers"])])
     get_week(stub, **STUDENT)
-    assert stub.calls.count("sessions") == 1 + 2  # all talks once, then one beginner lookup per missing concept
+    assert stub.calls.count("sessions") == 1 + 2  # all talks once, then one lookup per concept and start time
+
+
+def test_suggestions_are_looked_up_separately_for_a_later_target():
+    later_target = talk("8", "More containers", ["programming-basics", "containers"],
+                        starts="2026-11-10T12:00:00-07:00")
+    stub = StubES(ALL + [later_target])
+    get_week(stub, **STUDENT)
+    assert stub.calls.count("sessions") == 1 + 3  # containers at 11:00 and 12:00, and scaling at 09:00
 
 
 def test_unknown_course_is_explained_in_plain_words():
@@ -160,9 +195,10 @@ def test_everything_unknown_before_tagging():
     assert body["counts"] == {"ready": 0, "one_step": 0, "not_yet": 0, "unknown": 2}
 
 
-def test_elasticsearch_down_is_a_502():
+def test_elasticsearch_down_is_a_502_without_backend_details():
     r = get_week(StubES(ALL, fail=True), **STUDENT)
     assert r.status_code == 502
+    assert r.json()["detail"] == "Your week is unavailable right now."
 
 
 def test_state_is_required():
