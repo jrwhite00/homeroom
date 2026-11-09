@@ -7,6 +7,7 @@ The key is only ever sent as a header. It is never logged or included in errors.
 """
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import urllib.error
@@ -38,5 +39,10 @@ class ES:
                 return json.loads(resp.read())
         except urllib.error.HTTPError as e:
             raise ESError(f"search on {index} returned HTTP {e.code}: {e.read().decode()[:500]}") from None
-        except (urllib.error.URLError, TimeoutError) as e:
+        except (urllib.error.URLError, OSError, http.client.HTTPException) as e:
+            # URLError only wraps errors from sending the request. A dropped connection or a
+            # short read while receiving the response raises OSError or HTTPException instead.
+            # TimeoutError is an OSError.
             raise ESError(f"could not reach Elasticsearch at {self.url}: {e}") from None
+        except ValueError:
+            raise ESError(f"search on {index} returned a response that is not JSON") from None
