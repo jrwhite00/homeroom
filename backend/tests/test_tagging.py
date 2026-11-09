@@ -185,6 +185,24 @@ def test_retry_unknown_resends_only_unknown(setup):
     assert [r["custom_id"] for r in setup.batches.created[-1]] == ["102"]
 
 
+def test_apply_only_ignores_stale_cached_tags(setup):
+    concepts = tag_sessions.read_concepts(setup.tags.parent / "curriculum")
+    fingerprint = table_fingerprint(concepts)
+    stale = entry_from_result("succeeded", answer(("scaling", "Stale tag.")), None, "old-key",
+                              tag_sessions.DEFAULT_MODEL, SLUGS)
+    current_key = cache_key(SESSIONS[1], fingerprint, tag_sessions.DEFAULT_MODEL)
+    current = entry_from_result("succeeded", answer(("containers", "Current tag.")), None, current_key,
+                                tag_sessions.DEFAULT_MODEL, SLUGS)
+    setup.tags.write_text(json.dumps({"101": stale, "102": current}), encoding="utf-8")
+
+    assert tag_sessions.main(setup.args + ["--apply-only"]) == 0
+
+    assert setup.batches.created == []
+    assert setup.es.updates["101"] == {"assumes": None, "assumes_reason": None, "assumes_status": "unknown"}
+    assert setup.es.updates["102"] == {"assumes": ["containers"], "assumes_reason": ["Current tag."],
+                                        "assumes_status": "tagged"}
+
+
 def test_interrupted_run_resumes_saved_batch_instead_of_paying_twice(setup):
     setup.state.write_text(json.dumps({"batch_id": "batch_1", "requests": {
         "101": {"session_id": "101", "key": "old"}, "102": {"session_id": "102", "key": "old"}}}))
