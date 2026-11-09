@@ -10,11 +10,14 @@ a project booth (kiosks index) whose project matches the concept's technical wor
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+import os
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.es import ES, ESError
 from app.search import get_es, talk_filter
-from app.telemetry import tracer
+from app.telemetry import record_missing_concepts, tracer
 from readiness import NOT_YET, ONE_STEP, READY, UNKNOWN, readiness
 
 SESSIONS, COURSES, CONCEPTS, KIOSKS = "sessions", "courses", "concepts", "kiosks"
@@ -23,7 +26,23 @@ LABELS = {READY: "Ready", ONE_STEP: "One step away", NOT_YET: "Not yet", UNKNOWN
 TALK_SOURCE = ["id", "title", "starts_at", "room", "level", "assumes", "assumes_status"]
 MAX_TALKS = 2000
 
+# Classes a teacher has set up. A class code is a label on homeroom_missing_concept, so only known codes
+# are used as they are; anything else (a typo, or a name typed by mistake) is counted as "other".
+CLASS_CODE = re.compile(r"^[a-z0-9][a-z0-9-]{0,31}$")
+NO_CLASS, OTHER_CLASS = "none", "other"
+
 router = APIRouter()
+
+
+def class_codes() -> set[str]:
+    return {c.strip() for c in os.environ.get("HOMEROOM_CLASS_CODES", "demo").split(",") if c.strip()}
+
+
+def label_for_class(code: str) -> str:
+    code = code.strip().lower()
+    if not code:
+        return NO_CLASS
+    return code if CLASS_CODE.match(code) and code in class_codes() else OTHER_CLASS
 
 
 def split_slugs(slugs: str) -> list[str]:
@@ -113,7 +132,10 @@ def suggestion(es: ES, slug: str, concepts: dict[str, dict], before: str | None)
     return found
 
 
-def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | None = None) -> dict:
+def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | None = None,
+               one_step_concepts: set[str] | None = None) -> dict:
+    """The week, sorted into groups. one_step_concepts, if given, collects the concept slugs that keep
+    the student one step away from at least one talk."""
     state = " ".join(state.split()).title()  # "utah" and "Utah" are the same state
     courses, unknown = find_courses(es, state, course_slugs) if course_slugs else ([], [])
     concepts = concept_table(es)
@@ -127,6 +149,8 @@ def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | 
                 "room": talk.get("room"), "level": talk.get("level"),
                 "missing": [concept_name(concepts, m) for m in missing]}
         if group == ONE_STEP:
+            if one_step_concepts is not None:
+                one_step_concepts.add(missing[0])
             suggestion_key = (missing[0], talk.get("starts_at"))
             if suggestion_key not in suggestions:
                 suggestions[suggestion_key] = suggestion(es, missing[0], concepts, talk.get("starts_at"))
@@ -145,12 +169,15 @@ def build_week(es: ES, state: str, course_slugs: list[str], ticked: list[str] | 
 
 
 @router.get("/week")
-def week(state: str = Query(..., min_length=1), courses: str = Query("", description="comma-separated course slugs"),
+def week(request: Request, state: str = Query(..., min_length=1),
+         courses: str = Query("", description="comma-separated course slugs"),
          concepts: str = Query("", description="comma-separated concept slugs ticked on the checklist"),
+         class_code: str = Query("", max_length=64, description="the class code a teacher gave out, if any"),
          es: ES = Depends(get_es)) -> dict:
     with tracer.start_as_current_span("homeroom.week") as span:  # counts only, never the student
+        one_step: set[str] = set()
         try:
-            body = build_week(es, state, split_slugs(courses), split_slugs(concepts))
+            body = build_week(es, state, split_slugs(courses), split_slugs(concepts), one_step)
         except ESError:
             span.set_attribute("week.error", True)
             raise HTTPException(status_code=502, detail="Your week is unavailable right now.") from None
@@ -158,4 +185,6 @@ def week(state: str = Query(..., min_length=1), courses: str = Query("", descrip
         span.set_attribute("week.concepts_known", len(body["knows"]))
         for group, n in body["counts"].items():
             span.set_attribute(f"week.{group}", n)
+        simulated = bool(request.headers.get("x-homeroom-simulated"))
+        record_missing_concepts(one_step, label_for_class(class_code), simulated)
         return body
