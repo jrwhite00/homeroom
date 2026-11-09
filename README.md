@@ -218,7 +218,7 @@ Browser monitoring (`@dash0/sdk-web`) reads its endpoint and ingest-only token f
 Every hour of a student's week is a pod, so a student who can't get into any talk that hour shows up in Radar as a pod that couldn't be scheduled.
 
 - **Who's stuck:** open the scheduling issues for a class's namespace (`class-<name>`) to see how many students are having trouble finding sessions right now, and in which hours.
-- **What if we cancel this talk?** Open the talk's node (`talk-<session id>`) and look at its drain plan. It lists the students who'd be bumped. Nothing changes until someone runs `placer cancel`.
+- **What if we cancel this talk?** Open the talk's node (`talk-<session id>`) and look at its drain plan. It lists the students who'd be bumped. Nothing changes until someone runs `cd backend && python -m app.placer cancel talk-<session id>`.
 
 Radar shows students by pod name, which is a pseudonym plus the time slot. Its messages are Kubernetes' own ("untolerated taint"), so they don't say which concept is missing. Homeroom works that out and tells the student in plain words.
 
