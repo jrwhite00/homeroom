@@ -14,8 +14,10 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
+from app import chaos
+from app.telemetry import tracer
 from app.es import ES, ESError
 from app.translate import translate as translate_question
 
@@ -88,11 +90,24 @@ def translated_text(es: ES, q: str, concepts_index: str = "concepts") -> tuple[s
 
 
 @router.get("/search")
-def search(q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid", translate: bool = False,
-           es: ES = Depends(get_es)) -> dict:
-    text, translation = translated_text(es, q) if translate else (q, None)
-    try:
-        results = run(es, text, mode)
-    except ESError:
-        raise HTTPException(status_code=502, detail="Search is unavailable right now.") from None
-    return {"q": q, "mode": mode, "translated": translation, "results": results}
+def search(response: Response, q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid",
+           translate: bool = False, es: ES = Depends(get_es)) -> dict:
+    induced = chaos.apply_delay()  # marks the server span induced=true
+    if induced:
+        response.headers["x-homeroom-induced"] = "true"
+    with tracer.start_as_current_span("homeroom.search", attributes={"search.mode": mode,
+                                                                      "search.translate": translate,
+                                                                      **({"induced": True} if induced else {})}) as span:
+        text, translation = translated_text(es, q) if translate else (q, None)
+        if translation:
+            span.set_attribute("search.translated_concepts", translation["concepts"])
+        try:
+            results = run(es, text, mode)
+        except ESError:
+            span.set_attribute("search.error", "elasticsearch")
+            raise HTTPException(status_code=502, detail="Search is unavailable right now.") from None
+        span.set_attribute("search.result_count", len(results))
+    body = {"q": q, "mode": mode, "translated": translation, "results": results}
+    if induced:
+        body["induced_delay"] = chaos.status()
+    return body

@@ -30,10 +30,19 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: homeroom-backend
-            - name: COURSE_PROPOSAL_GITHUB_TOKEN
+            # The chaos switch's token. Optional: without the secret the switch can't be flipped.
+            - name: CHAOS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: course-proposal-github-token
+                  name: homeroom-chaos
+                  key: token
+                  optional: true
+            # Course proposals open pull requests with a repo-scoped token. Optional: without the
+            # secret, proposals are saved to data/proposed-courses/ instead.
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: homeroom-github
                   key: token
                   optional: true
           readinessProbe:
