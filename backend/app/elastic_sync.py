@@ -116,8 +116,8 @@ def sync_connector(kb: Kibana, connector: dict, dry_run: bool, rotate_key: bool)
         return "unchanged"
     if dry_run:
         return "update"
-    # Kibana keeps the stored secret on an update, so the key is only sent when rotating it.
-    body = {**wanted, "secrets": connector_secrets(connector)} if rotate_key else wanted
+    # Kibana replaces stored secrets with the request's (default {}), so the key must be resent on every update.
+    body = {**wanted, "secrets": connector_secrets(connector)}
     status, res = kb.request("PUT", f"{CONNECTORS}/{cid}", body)
     return check(status, res, f"connector {cid}", "updated")
 

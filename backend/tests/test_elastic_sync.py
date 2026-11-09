@@ -176,9 +176,8 @@ def copy_definitions(tmp_path):
     return target
 
 
-def test_connector_config_change_needs_no_key(kb, monkeypatch, tmp_path):
+def test_connector_config_change_resends_key(kb, tmp_path):
     push(kb)
-    monkeypatch.delenv("ANTHROPIC_API_KEY")
     directory = copy_definitions(tmp_path)
     connector_file = directory / "connector.json"
     connector = json.loads(connector_file.read_text(encoding="utf-8"))
@@ -187,7 +186,8 @@ def test_connector_config_change_needs_no_key(kb, monkeypatch, tmp_path):
     kb.calls.clear()
     assert push(kb, directory=directory)["connector homeroom-claude"] == "updated"
     _, path, body = next(c for c in kb.calls if c[0] == "PUT")
-    assert path == f"{CONNECTORS}/homeroom-claude" and "secrets" not in body
+    assert path == f"{CONNECTORS}/homeroom-claude"
+    assert body["secrets"] == {"providerSecrets": {"api_key": KEY}}
 
 
 def test_day_tools_return_the_tag_status_and_accept_concept_names():
