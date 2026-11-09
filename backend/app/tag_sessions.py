@@ -125,13 +125,16 @@ def collect(client, batch_id: str, state: dict, model: str, slugs: set[str], tag
     return n
 
 
-def apply_to_index(es: ES, sessions: list[dict], tags: dict) -> None:
+def apply_to_index(es: ES, sessions: list[dict], tags: dict, fingerprint: str, model: str) -> None:
     es.request("PUT", f"/{INDEX}/_mapping", {"properties": {
         "assumes": {"type": "keyword"}, "assumes_reason": {"type": "text"}, "assumes_status": {"type": "keyword"}}})
     lines = []
     for s in sessions:
+        entry = tags.get(s["id"])
+        if entry and entry["key"] != cache_key(s, fingerprint, model):
+            entry = None  # stale: tagged against a different concept table, model, or talk text
         lines.append(json.dumps({"update": {"_index": INDEX, "_id": s["id"]}}))
-        lines.append(json.dumps({"doc": session_update(tags.get(s["id"]))}))
+        lines.append(json.dumps({"doc": session_update(entry)}))
     for i in range(0, len(lines), 400):
         res = es.request("POST", "/_bulk", "\n".join(lines[i:i + 400]) + "\n", ndjson=True, timeout=300)
         if res.get("errors"):
@@ -210,7 +213,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"stored {stored} results in {args.tags}")
 
     try:
-        apply_to_index(es, sessions, tags)
+        apply_to_index(es, sessions, tags, fingerprint, args.model)
         tagged = count(es, {"term": {"assumes_status": "tagged"}})
         unknown = count(es, {"term": {"assumes_status": "unknown"}})
         total = count(es)
