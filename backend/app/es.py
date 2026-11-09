@@ -1,7 +1,7 @@
 """A small Elasticsearch client over the standard library.
 
 Connection comes from the environment:
-    ES_URL      default http://localhost:9200 (falls back to ES_LOCAL_URL)
+    ES_URL      default http://127.0.0.1:9200 (falls back to ES_LOCAL_URL)
     ES_API_KEY  (falls back to ES_LOCAL_API_KEY, the name start-local uses)
 The key is only ever sent as a header. It is never logged or included in errors.
 """
@@ -11,7 +11,20 @@ import http.client
 import json
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
+
+DEFAULT_URL = "http://127.0.0.1:9200"
+
+
+def loopback(url: str) -> str:
+    """Use 127.0.0.1 for localhost. On Windows "localhost" tries IPv6 (::1) first, and start-local's
+    Elasticsearch listens only on 127.0.0.1, so every request waited about 2 s for the fallback."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.hostname != "localhost":
+        return url
+    netloc = parts.netloc.replace("localhost", "127.0.0.1", 1)
+    return urllib.parse.urlunsplit(parts._replace(netloc=netloc))
 
 
 class ESError(Exception):
@@ -20,7 +33,7 @@ class ESError(Exception):
 
 class ES:
     def __init__(self, url: str, api_key: str | None = None, timeout: float = 10):
-        self.url = url.rstrip("/")
+        self.url = loopback(url).rstrip("/")
         self.timeout = timeout
         self._headers = {"Content-Type": "application/json"}
         if api_key:
@@ -28,7 +41,7 @@ class ES:
 
     @classmethod
     def from_env(cls) -> "ES":
-        return cls(os.environ.get("ES_URL") or os.environ.get("ES_LOCAL_URL") or "http://localhost:9200",
+        return cls(os.environ.get("ES_URL") or os.environ.get("ES_LOCAL_URL") or DEFAULT_URL,
                    os.environ.get("ES_API_KEY") or os.environ.get("ES_LOCAL_API_KEY"))
 
     def request(self, method: str, path: str, body: dict | str | None = None, ndjson: bool = False,
