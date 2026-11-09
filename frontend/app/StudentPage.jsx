@@ -403,7 +403,7 @@ function Talk({ talk, group }) {
   return (
     <li className={s.talk}>
       <p className={s.meta}>
-        <span className={s.time}>{timeOf(talk.starts_at)}</span>
+        {talk.starts_at && <span className={s.time}>{timeOf(talk.starts_at)}</span>}
         {talk.room && <span className={s.room}>{talk.room}</span>}
       </p>
       <strong className={s.talkTitle}><a href={`/talks/${encodeURIComponent(talk.id)}`} className={s.talkLink}>{talk.title}</a></strong>
