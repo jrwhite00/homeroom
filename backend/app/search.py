@@ -92,12 +92,12 @@ def translated_text(es: ES, q: str, concepts_index: str = "concepts") -> tuple[s
 @router.get("/search")
 def search(response: Response, q: str = Query(min_length=1, max_length=500), mode: Mode = "hybrid",
            translate: bool = False, es: ES = Depends(get_es)) -> dict:
+    induced = chaos.apply_delay()  # marks the server span induced=true
+    if induced:
+        response.headers["x-homeroom-induced"] = "true"
     with tracer.start_as_current_span("homeroom.search", attributes={"search.mode": mode,
-                                                                      "search.translate": translate}) as span:
-        induced = chaos.apply_delay()  # simulated 800 ms when the chaos switch is on; spans get induced=true
-        if induced:
-            span.set_attribute("induced", True)
-            response.headers["x-homeroom-induced"] = "true"
+                                                                      "search.translate": translate,
+                                                                      **({"induced": True} if induced else {})}) as span:
         text, translation = translated_text(es, q) if translate else (q, None)
         if translation:
             span.set_attribute("search.translated_concepts", translation["concepts"])

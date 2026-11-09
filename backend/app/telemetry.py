@@ -122,7 +122,12 @@ def install(app, refresh=None) -> None:
         if simulated:
             span.set_attribute("simulated", True)
         start = time.perf_counter()
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception:
+            route = getattr(request.scope.get("route"), "path", "unmatched")
+            record_request(route, request.method, 500, time.perf_counter() - start, simulated, False)
+            raise
         route = getattr(request.scope.get("route"), "path", "unmatched")
         induced = response.headers.get("x-homeroom-induced") == "true"
         record_request(route, request.method, response.status_code, time.perf_counter() - start, simulated, induced)

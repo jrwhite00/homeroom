@@ -73,6 +73,25 @@ def test_request_metrics_use_the_route_template_and_labels(client, metrics):
     assert "autoscaling" not in json.dumps(attrs)
 
 
+def test_unhandled_exception_records_500_request_metrics(metrics):
+    from fastapi import FastAPI
+
+    failing_app = FastAPI()
+    telemetry.install(failing_app)
+
+    @failing_app.get("/failure")
+    def fail():
+        raise RuntimeError("expected test failure")
+
+    response = TestClient(failing_app, raise_server_exceptions=False).get("/failure")
+    assert response.status_code == 500
+    counter, histogram = metrics
+    (value, attrs), = counter.points
+    assert value == 1 and attrs == {"http.route": "/failure", "http.request.method": "GET", "http.status_class": "5xx",
+                                    "simulated": False, "induced": False}
+    assert histogram.points[0][0] >= 0
+
+
 def test_search_span_has_useful_attributes(client, spans):
     client.get("/search", params={"q": "autoscaling", "mode": "keyword"})
     name, span = next(s for s in spans if s[0] == "homeroom.search")
