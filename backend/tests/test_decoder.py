@@ -33,6 +33,12 @@ def test_case_insensitive_whole_words_with_plurals():
                              ("docker", ["containers"])]
 
 
+def test_vowel_y_terms_allow_regular_s_plural():
+    table = TABLE + [{"slug": "keys", "concept": "Keys", "definition": "Small metal objects",
+                      "technical_words": ["key"]}]
+    assert decoded(decode("Copy the keys.", table)) == [("keys", ["keys"])]
+
+
 def test_longer_technical_words_win_over_overlapping_shorter_ones():
     assert decoded(decode("Build a container  image.", TABLE)) == [("container  image", ["containers"])]
 

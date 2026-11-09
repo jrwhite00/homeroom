@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 // The jargon decoder. Renders text segments from the backend; a decoded term shows its concept's
 // definition from the teachers' concept table, word for word. Nothing here writes a definition.
@@ -8,12 +8,17 @@ import { useId, useState } from "react";
 function Term({ text, concepts }) {
   const [open, setOpen] = useState(false);
   const id = useId();
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
   return (
     <span style={{ position: "relative", display: "inline" }}
           onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <button type="button" aria-describedby={id} aria-expanded={open}
               onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}
-              onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
               style={{ font: "inherit", color: "inherit", background: "none", border: 0, padding: 0, cursor: "help",
                        borderBottom: "2px dotted #3b6fb6" }}>
         {text}

@@ -41,8 +41,9 @@ def term_index(concepts: list[dict]) -> dict[str, list[dict]]:
 def _term_regex(term: str) -> str:
     """One technical word as a regex: any run of spaces between words, and an optional plural."""
     *head, last = term.split()
-    stem = r"\s+".join(re.escape(part) for part in head + [last[:-1] if last.endswith("y") else last])
-    plural = "(?:y|ies)" if last.endswith("y") else "(?:e?s)?"
+    y_plural = len(last) > 1 and last[-1].lower() == "y" and last[-2].lower() not in "aeiou"
+    stem = r"\s+".join(re.escape(part) for part in head + [last[:-1] if y_plural else last])
+    plural = "(?:y|ies)" if y_plural else "(?:e?s)?"
     return stem + plural
 
 
