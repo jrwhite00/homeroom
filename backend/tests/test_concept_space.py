@@ -16,7 +16,7 @@ COURSES = [{"slug": "fx-cs", "state": "Utah", "teaches": ["programming-basics", 
 def session(id_, title, assumes=None, abstract=""):
     s = {"id": id_, "title": title, "abstract": abstract, "track": ["Observability"]}
     if assumes is not None:
-        s.update(assumes=assumes, assumes_status="tagged", concept_vec=concept_space.vector(assumes, DIMS))
+        s.update(assumes=assumes, assumes_status="tagged")
     return s
 
 
@@ -101,6 +101,8 @@ def test_easier_zeroes_the_students_missing_concepts():
 def test_easier_blends_knn_and_semantic_with_rrf_and_skips_the_hard_concepts():
     stub = StubES([READY_OBS, ONE_STEP, NOT_YET])
     body = call("/easier", stub, talk_id="1", state="utah", courses="fx-cs").json()
+    talk_query = next(b for _, b in stub.bodies if b.get("query", {}).get("term", {}).get("id") == "1")
+    assert "abstract" in talk_query["_source"] and "concept_vec" not in talk_query["_source"]
     _, q = next((i, b) for i, b in stub.bodies if "retriever" in b)
     knn, standard = q["retriever"]["rrf"]["retrievers"]
     assert knn["knn"]["k"] == 10 and knn["knn"]["num_candidates"] == 100

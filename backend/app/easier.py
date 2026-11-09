@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.concept_space import DIMS_FILE, FIELD, index_dims, load_dims, vector
+from app.concept_space import DIMS_FILE, FIELD, index_dims, load_dims, talk_vector, vector
 from app.es import ES, ESError
 from app.search import get_es, talk_filter
 from app.telemetry import tracer
@@ -102,7 +102,7 @@ def result(hit: dict, knows: set[str], concepts: dict[str, dict]) -> dict:
 
 def get_talk(es: ES, talk_id: str) -> dict:
     res = es.search(SESSIONS, {"size": 1, "query": {"term": {"id": talk_id}},
-                               "_source": SOURCE + ["abstract", FIELD]})
+                               "_source": SOURCE + ["abstract"]})
     hits = res.get("hits", {}).get("hits", [])
     if not hits:
         raise HTTPException(status_code=404, detail="We couldn't find that talk.")
@@ -112,14 +112,15 @@ def get_talk(es: ES, talk_id: str) -> dict:
 def build_easier(es: ES, talk_id: str, state: str, courses: str) -> dict:
     dims = dims_for(es)
     talk = get_talk(es, talk_id)
-    if talk.get(FIELD) is None:
+    talk_vec = talk_vector(talk, dims)
+    if talk_vec is None:
         raise HTTPException(status_code=409, detail="This talk hasn't been sorted yet, so we can't find easier ones.")
     knows, messages = student(es, state, courses)
     concepts = concept_table(es)
     group, missing = readiness(talk_assumes(talk), knows)
     pool = es.search(SESSIONS, topic_query(talk, candidates_filter(talk.get("id"), missing)))
     topic_ids = [h["_source"]["id"] for h in pool.get("hits", {}).get("hits", [])]
-    res = es.search(SESSIONS, easier_query(talk, easier_vector(talk[FIELD], dims, knows), missing, topic_ids))
+    res = es.search(SESSIONS, easier_query(talk, easier_vector(talk_vec, dims, knows), missing, topic_ids))
     return {"talk": {"id": talk.get("id"), "title": talk.get("title"), "group": group,
                      "missing": [concept_name(concepts, m) for m in missing]},
             "messages": messages,
