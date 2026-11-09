@@ -1,6 +1,8 @@
 -r requirements.txt
 pytest==9.2.0
 httpx2==2.16.0
+# Tagger only (python -m app.tag_sessions); the web app never imports it.
+anthropic==2.7.0
 # Load time only (app.load_standards), not in the image. pypdf extracts the standards PDFs;
 # cryptography opens the encrypted Utah 6-12 PDF; fonttools decodes the CSTA fonts.
 pypdf==7.0.0
