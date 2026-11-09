@@ -1,0 +1,3 @@
+concept: Object-oriented programming
+definition: Organizing a program into objects that bundle information with the actions that use it, so new kinds of objects can reuse and build on existing ones
+technical words: object-oriented programming, OOP, class, object, method, inheritance, polymorphism, encapsulation
