@@ -1,0 +1,21 @@
+{
+  "id": "homeroom.course.concepts",
+  "type": "esql",
+  "description": "The concepts a known course teaches, for a state. Use it first when the student names a class they took.",
+  "configuration": {
+    "query": "FROM courses | WHERE TO_LOWER(state) == TO_LOWER(?state) AND TO_LOWER(course) == TO_LOWER(?course) | KEEP course, state, teaches",
+    "params": {
+      "state": {
+        "type": "string",
+        "description": "The US state, for example Utah."
+      },
+      "course": {
+        "type": "string",
+        "description": "The course name as the student wrote it, for example Exploring Computer Science."
+      }
+    }
+  },
+  "tags": [
+    "homeroom"
+  ]
+}

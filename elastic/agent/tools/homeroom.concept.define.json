@@ -1,0 +1,17 @@
+{
+  "id": "homeroom.concept.define",
+  "type": "esql",
+  "description": "The plain-language definition of a concept, written by a teacher. Use it to explain a concept a talk needs.",
+  "configuration": {
+    "query": "FROM concepts | WHERE slug == TO_LOWER(?concept) OR TO_LOWER(concept) == TO_LOWER(?concept) | KEEP slug, concept, definition",
+    "params": {
+      "concept": {
+        "type": "string",
+        "description": "A concept slug or name, for example containers."
+      }
+    }
+  },
+  "tags": [
+    "homeroom"
+  ]
+}
