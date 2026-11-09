@@ -200,7 +200,7 @@ def test_ticked_concepts_count_like_a_course():
 def test_unknown_ticked_concept_is_explained_and_not_counted():
     body = get_week(StubES(ALL), state="Utah", concepts="no-such-concept").json()
     assert body["knows"] == []
-    assert body["messages"] == ['We don\'t know the concept "no-such-concept", so it isn\'t counted.']
+    assert body["messages"] == ['We don\'t know the concept "no-such-concept" yet, so it isn\'t counted. Pick it again from the list.']
 
 
 def test_everything_unknown_before_tagging():

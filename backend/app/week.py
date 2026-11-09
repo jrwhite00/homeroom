@@ -51,10 +51,6 @@ def unknown_course_message(slug: str, state: str) -> str:
             "Check the spelling, or ask a teacher to add it.")
 
 
-def unknown_concept_message(slug: str) -> str:
-    return f"We don't know the concept \"{slug}\", so it isn't counted."
-
-
 def concept_table(es: ES) -> dict[str, dict]:
     res = es.search(CONCEPTS, {"size": 500, "query": {"match_all": {}},
                                "_source": ["slug", "concept", "technical_words"]})
