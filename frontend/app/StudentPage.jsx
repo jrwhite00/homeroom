@@ -361,7 +361,7 @@ function Week({ week, headingRef }) {
       ))}
       <p className={s.small}>Times are Mountain Time (Salt Lake City). Open &quot;What&apos;s this talk about?&quot; to read
         a talk&apos;s description, with technical words explained.</p>
-      {/* The demo class placed by the placer: Maya is a fictional student, a pseudonym only. */}
+      <p className={s.small}>Below is an example: how Kubernetes places the week of Maya, a made-up demo student. It isn&apos;t your week.</p>
       <KubeView classId="demo" student="maya" />
     </section>
   );
@@ -376,6 +376,7 @@ function About({ id }) {
   const onToggle = (e) => {
     if (!e.currentTarget.open || asked.current) return;
     asked.current = true;
+    setError(null);
     fetch(`/api/talks/${encodeURIComponent(id)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setTalk)
