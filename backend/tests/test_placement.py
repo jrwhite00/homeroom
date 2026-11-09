@@ -200,7 +200,7 @@ def test_controller_waits_for_failed_pod_deletion(monkeypatch):
     placer.reconcile(kube, es, "demo")
 
     delete_call = next(call for call in kube.calls if call[:2] == ("delete", "pod"))
-    assert delete_call == ("delete", "pod", "maya-test-0000", "-n", "class-demo")
+    assert delete_call == ("delete", "pod", "maya-test-0000", "-n", "class-demo", "--wait=true", "--timeout=30s")
 
 
 def test_cancel_and_uncancel_use_the_noexecute_taint():
@@ -274,7 +274,7 @@ def test_watch_continues_after_create_races_with_an_already_existing_pod(monkeyp
     out, err = capsys.readouterr()
     assert sum(call[0] == "create" for call in kube.calls) - creates_before_watch == 1
     assert "placements=1" in out
-    assert "controller pass failed: Kubernetes operation failed" in err
+    assert "error: reconcile pass failed (KubeError)" in err
     assert "maya" not in err
 
 

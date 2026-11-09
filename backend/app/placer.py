@@ -125,7 +125,7 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
         pod = pods.get(name)
         if pod is None or pod.get("status", {}).get("phase") == "Failed":
             if pod is not None:
-                kube.run("delete", "pod", name, "-n", ns)
+                kube.run("delete", "pod", name, "-n", ns, "--wait=true", "--timeout=30s")
             kube.run("create", "-f", "-", stdin=json.dumps(student_pod(d["student"], d["slot"], d["knows"], class_name)))
             counts["recreated"] += 1
     if counts["recreated"]:
@@ -229,15 +229,11 @@ def main(argv: list[str] | None = None, kube: Kubectl | None = None, es: ES | No
             while True:
                 try:
                     counts = reconcile(kube, es, args.class_name, names)
-                except (KubeError, ESError) as e:
-                    system = "Kubernetes" if isinstance(e, KubeError) else "Elasticsearch"
-                    print(f"controller pass failed: {system} operation failed", file=sys.stderr, flush=True)
-                    if args.once:
-                        return 1
-                else:
                     print(" ".join(f"{k}={v}" for k, v in counts.items()), flush=True)
-                    if args.once:
-                        break
+                except (KubeError, ESError) as e:
+                    print(f"error: reconcile pass failed ({type(e).__name__})", file=sys.stderr, flush=True)
+                if args.once:
+                    break
                 time.sleep(args.interval)
     except (KubeError, ESError, ValueError) as e:
         message = str(e) if isinstance(e, (KubeError, ValueError)) else "Elasticsearch operation failed"
