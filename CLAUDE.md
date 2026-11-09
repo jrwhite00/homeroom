@@ -6,7 +6,7 @@ Tagline: "To learn the pod, you must become the pod."
 ## How it works
 - curriculum/ holds concepts and courses, written by teachers. A course teaches concepts.
 - AI tags each talk with the concepts it assumes (assumes and assumes_reason on the session).
-- Readiness lives in backend/readiness.py, written by James: 0 missing concepts = ready, 1 = one step away, 2 or more = not yet, no tags = unknown. Never edit it unless asked.
+- Readiness lives in backend/readiness.py. James chose the rule. Never edit it unless asked.
 - Each talk is a KWOK simulated node. Prerequisites are taints named prereq.homeroom.dev/<concept>, seats are pod capacity, the time slot is a label.
 - Each hour of a student's week is a pod. Its tolerations are the concepts the student knows. kube-scheduler decides where it goes. A cancelled talk gets a NoExecute taint and evicts its students.
 - Kubernetes' pending message only says "untolerated taint(s)". We work out the missing concept by comparing taints with tolerations and say it in plain language.
