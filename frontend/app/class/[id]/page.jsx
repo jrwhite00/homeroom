@@ -99,10 +99,13 @@ export default function ClassPage({ params }) {
                       : "Waiting for a talk"}
                   </h3>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                    {t.students.map((p) => (
-                      <Student key={p.student} p={p} moved={moved[`${p.student}:${p.slot}`]}
-                               was={lastTalk(seen.current, p)} />
-                    ))}
+                    {t.students.map((p) => {
+                      const mv = moved[`${p.student}:${p.slot}`];
+                      return (
+                        <Student key={p.student} p={p} moved={t.talk && mv?.to === t.talk ? mv : null}
+                                 was={lastTalk(seen.current, p)} />
+                      );
+                    })}
                   </ul>
                   {!t.talk && t.students.map((p) => p.plain && (
                     <p key={p.student} style={{ margin: "0.4rem 0 0" }}><strong>{p.student}:</strong> {p.plain}</p>
