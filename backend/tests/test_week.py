@@ -190,6 +190,19 @@ def test_unknown_course_is_explained_in_plain_words():
     assert body["knows"] == ["Programming basics"]
 
 
+def test_ticked_concepts_count_like_a_course():
+    body = get_week(StubES(ALL), state="Utah", courses="fx-intro-cs", concepts="containers,networking-basics").json()
+    assert body["knows"] == ["Containers", "Networking basics", "Programming basics"]
+    assert "Shipping apps with containers" in titles(body, "ready")
+    assert body["messages"] == []
+
+
+def test_unknown_ticked_concept_is_explained_and_not_counted():
+    body = get_week(StubES(ALL), state="Utah", concepts="no-such-concept").json()
+    assert body["knows"] == []
+    assert body["messages"] == ['We don\'t know the concept "no-such-concept", so it isn\'t counted.']
+
+
 def test_everything_unknown_before_tagging():
     body = get_week(StubES([talk("9", "Untagged A"), talk("10", "Untagged B")]), **STUDENT).json()
     assert body["counts"] == {"ready": 0, "one_step": 0, "not_yet": 0, "unknown": 2}
