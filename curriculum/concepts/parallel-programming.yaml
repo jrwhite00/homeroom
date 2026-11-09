@@ -1,0 +1,3 @@
+concept: Parallel programming
+definition: Combinining multiple programming models to implement code
+technical words: shared memory multiprocessors, parallel algorithms, memory hierarchy
