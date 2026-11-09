@@ -1,28 +1,85 @@
-/* Colors are chosen for at least 4.5:1 contrast on white. */
-.main {
-  font-family: system-ui, sans-serif;
-  color: #1a1a1a;
-  background: #fff;
-  max-width: 760px;
-  margin: 2rem auto 4rem;
-  padding: 0 1rem;
-  line-height: 1.5;
+/* Look: a dark navy header band over a light page of white cards, with one bright accent, in the spirit of
+   conference schedule sites. Text colors keep at least 4.5:1 contrast on the surface they sit on; the accent
+   is only ever a fill or a line, never small text on white. */
+:global(body) {
+  margin: 0;
+  background: #f3f4fa;
 }
 
+.main {
+  --navy: #14123a;
+  --navy-soft: #25225a;
+  --accent: #ff5d7d;
+  --link: #3326c9;
+  --ink: #1a1a2e;
+  --muted: #4b4b63;
+  --line: #d9dbea;
+  --surface: #fff;
+  --ready: #1d7a3c;
+  --one-step: #b45f06;
+  --not-yet: #5b5f8a;
+  --unknown: #767676;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  line-height: 1.55;
+  padding-bottom: 4rem;
+}
+
+/* --- header band and page width ------------------------------------------------------------ */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  color: #fff;
+  padding: 2.5rem 1rem 2.25rem;
+  border-bottom: 4px solid var(--accent);
+}
+
+.hero h1 {
+  max-width: 880px;
+  margin: 0 auto;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero .lead {
+  max-width: 880px;
+  margin: 0.75rem auto 0;
+  font-size: 1.15rem;
+  color: #e6e6fa;
+}
+
+.content {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.lead {
+  font-size: 1.1rem;
+}
+
+/* --- controls ------------------------------------------------------------------------------ */
 .main button,
 .main select,
 .main input[type="text"] {
   font: inherit;
-  padding: 0.45rem 0.8rem;
-  border: 2px solid #4a4a4a;
-  border-radius: 6px;
-  background: #fff;
-  color: #1a1a1a;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid var(--navy);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
 }
 
 .main button {
   cursor: pointer;
-  background: #f0f0f0;
+  font-weight: 600;
+  background: #fff;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.main button:hover:not(:disabled) {
+  background: #ececf8;
 }
 
 .main button:disabled {
@@ -31,25 +88,56 @@
 }
 
 .main :focus-visible {
-  outline: 3px solid #0b57d0;
+  outline: 3px solid var(--link);
   outline-offset: 2px;
 }
 
-.lead {
-  font-size: 1.1rem;
+.hero :focus-visible {
+  outline-color: #fff;
 }
 
+.primary.primary {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+}
+
+.primary.primary:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--navy);
+}
+
+.linkButton.linkButton {
+  border: none;
+  background: none;
+  padding: 0.1rem 0.2rem;
+  color: var(--link);
+  text-decoration: underline;
+}
+
+.linkButton.linkButton:hover:not(:disabled) {
+  background: none;
+}
+
+/* --- cards and form ------------------------------------------------------------------------ */
 .decoder,
-.panel {
-  border: 1px solid #767676;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+.panel,
+.fieldset {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
   margin: 1rem 0;
+  box-shadow: 0 1px 2px rgba(20, 18, 58, 0.06);
 }
 
 .decoder summary {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .form {
@@ -66,14 +154,11 @@
 
 .field label,
 .fieldset legend {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .fieldset {
-  border: 1px solid #767676;
-  border-radius: 8px;
-  padding: 0.5rem 1rem 0.75rem;
-  margin: 0 0 1rem;
+  padding: 0.5rem 1.1rem 0.85rem;
 }
 
 .check {
@@ -81,26 +166,20 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.5rem;
-  margin: 0.35rem 0;
+  margin: 0.4rem 0;
 }
 
 .check input {
   width: 1.15rem;
   height: 1.15rem;
+  accent-color: var(--navy);
 }
 
 .definition {
   flex-basis: 100%;
   padding-left: 1.65rem;
   font-size: 0.92rem;
-  color: #454545;
-}
-
-.primary.primary {
-  background: #0b57d0;
-  border-color: #0b57d0;
-  color: #fff;
-  font-weight: 600;
+  color: var(--muted);
 }
 
 .inline {
@@ -121,28 +200,21 @@
   margin-bottom: 0.5rem;
 }
 
-.linkButton.linkButton {
-  border: none;
-  background: none;
-  padding: 0.1rem 0.2rem;
-  color: #0b57d0;
-  text-decoration: underline;
-}
-
 .small {
   font-size: 0.92rem;
-  color: #454545;
+  color: var(--muted);
   margin: 0.25rem 0;
 }
 
 .error {
   color: #a50e0e;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .note {
-  background: #eef4ff;
-  border-left: 4px solid #0b57d0;
+  background: #eceafd;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
   padding: 0.5rem 0.75rem;
 }
 
@@ -150,68 +222,122 @@
   margin: 0.25rem 0;
 }
 
+/* --- the week ------------------------------------------------------------------------------ */
 .week {
-  margin-top: 2rem;
+  margin-top: 2.25rem;
+}
+
+.week > h2 {
+  font-size: 1.8rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
 }
 
 .group {
-  border-top: 1px solid #767676;
-  padding: 0.5rem 0;
+  margin: 1rem 0;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-left: 8px solid var(--unknown);
+  padding: 0 1.1rem 0.75rem;
 }
+
+.group[data-group="ready"] { border-left-color: var(--ready); }
+.group[data-group="one_step"] { border-left-color: var(--one-step); }
+.group[data-group="not_yet"] { border-left-color: var(--not-yet); }
 
 .group summary {
   cursor: pointer;
+  padding: 0.8rem 0 0.4rem;
 }
 
 .groupTitle {
   display: inline;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   margin: 0;
 }
 
+.group[data-group="ready"] .groupTitle { color: var(--ready); }
+.group[data-group="one_step"] .groupTitle { color: var(--one-step); }
+.group[data-group="not_yet"] .groupTitle { color: var(--not-yet); }
+.group[data-group="unknown"] .groupTitle { color: var(--muted); }
+
 .count {
-  font-weight: normal;
-  color: #454545;
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .day {
-  font-size: 1rem;
-  margin: 1rem 0 0.25rem;
+  display: inline-block;
+  font-size: 0.95rem;
+  margin: 1.1rem 0 0.5rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  letter-spacing: 0.02em;
 }
 
 .talks {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  gap: 0.6rem;
 }
 
 .talk {
-  padding: 0.4rem 0;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fafaff;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.talk:hover,
+.talk:focus-within {
+  border-color: var(--navy);
+  box-shadow: 0 4px 14px rgba(20, 18, 58, 0.12);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
 }
 
 .time {
   display: inline-block;
-  min-width: 5.5rem;
-  color: #454545;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--navy);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
+.room {
+  color: var(--muted);
+}
+
+.talkTitle {
+  font-size: 1.05rem;
+}
+
 .talkLink {
-  color: #0b57d0;
+  color: var(--link);
 }
 
 .talkLink:visited {
   color: #6a1b9a;
 }
 
-.room {
-  color: #454545;
-}
-
 .missing,
 .suggest {
-  margin: 0.15rem 0 0 5.75rem;
+  margin: 0.3rem 0 0;
   font-size: 0.95rem;
 }
 
@@ -228,27 +354,38 @@
   white-space: nowrap;
 }
 
-@media (max-width: 520px) {
-  .missing,
-  .suggest {
-    margin-left: 0;
-  }
-}
-
 .about {
-  margin: 0.3rem 0 0.2rem;
+  margin: 0.4rem 0 0.2rem;
 }
 
 .about > summary {
   cursor: pointer;
   width: fit-content;
+  color: var(--link);
 }
 
 .about > summary:focus-visible {
-  outline: 3px solid #1d4f91;
+  outline: 3px solid var(--link);
   outline-offset: 2px;
 }
 
 .about > p {
   margin: 0.4rem 0 0;
+}
+
+@media (max-width: 520px) {
+  .hero {
+    padding-top: 1.75rem;
+  }
+
+  .inline button {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main button,
+  .talk {
+    transition: none;
+  }
 }
