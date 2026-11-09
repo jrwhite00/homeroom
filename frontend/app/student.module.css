@@ -234,3 +234,21 @@
     margin-left: 0;
   }
 }
+
+.about {
+  margin: 0.3rem 0 0.2rem;
+}
+
+.about > summary {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.about > summary:focus-visible {
+  outline: 3px solid #1d4f91;
+  outline-offset: 2px;
+}
+
+.about > p {
+  margin: 0.4rem 0 0;
+}

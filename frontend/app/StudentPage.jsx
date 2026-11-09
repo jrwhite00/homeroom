@@ -6,6 +6,8 @@ import {
   byDay, coursesFor, GROUP_HELP, GROUP_ORDER, MAX_PROPOSAL_CONCEPTS, proposalBody, proposalMessage, readQuery,
   statesFrom, timeOf, weekQuery,
 } from "./lib/week.mjs";
+import Decoded from "./Decoded";
+import KubeView from "./KubeView";
 import s from "./student.module.css";
 
 // The student page: pick a state, tick courses, see the week. No accounts and nothing about the student
@@ -357,9 +359,38 @@ function Week({ week, headingRef }) {
           ))}
         </details>
       ))}
-      <p className={s.small}>Times are Mountain Time (Salt Lake City). Open a talk to read its description, with
-        technical words explained.</p>
+      <p className={s.small}>Times are Mountain Time (Salt Lake City). Open &quot;What&apos;s this talk about?&quot; to read
+        a talk&apos;s description, with technical words explained.</p>
+      <p className={s.small}>Below is an example: how Kubernetes places the week of Maya, a made-up demo student. It isn&apos;t your week.</p>
+      <KubeView classId="demo" student="maya" />
     </section>
+  );
+}
+
+// The talk's description, run through the jargon decoder. Loaded only when the student opens it, so
+// a week of hundreds of talks doesn't ask for hundreds of descriptions up front.
+function About({ id }) {
+  const [talk, setTalk] = useState(null);
+  const [error, setError] = useState(null);
+  const asked = useRef(false);
+  const onToggle = (e) => {
+    if (!e.currentTarget.open || asked.current) return;
+    asked.current = true;
+    setError(null);
+    fetch(`/api/talks/${encodeURIComponent(id)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setTalk)
+      .catch(() => { asked.current = false; setError("We couldn't load this description. Close and open it to try again."); });
+  };
+  return (
+    <details className={s.about} onToggle={onToggle}>
+      <summary>What&apos;s this talk about?</summary>
+      {error && <p role="alert">{error}</p>}
+      {!talk && !error && <p>Loading…</p>}
+      {talk && (talk.abstract.length
+        ? <p>Words with a dotted underline are explained by your teachers.{" "}<Decoded segments={talk.abstract} /></p>
+        : <p>This talk has no description.</p>)}
+    </details>
   );
 }
 
@@ -373,6 +404,7 @@ function Talk({ talk, group }) {
       {talk.missing.length > 0 && (
         <p className={s.missing}>You&apos;d need: {talk.missing.join(", ")}.</p>
       )}
+      <About id={talk.id} />
       {group === "one_step" && sg?.kind === "beginner_talk" && (
         <p className={s.suggest}>Learn {sg.covers} first: &quot;{sg.title}&quot; at {timeOf(sg.starts_at)}
           {sg.room ? `, ${sg.room}` : ""}.</p>
