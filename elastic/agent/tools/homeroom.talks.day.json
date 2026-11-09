@@ -1,7 +1,7 @@
 {
   "id": "homeroom.talks.day",
   "type": "esql",
-  "description": "Every talk on one day with its time (Mountain), room, the concepts it assumes and assumes_status. A talk is ready when the student knows every concept it assumes; a talk with assumes_status 'tagged' and no concepts is ready for everyone. If assumes_status is not 'tagged', we don't know yet what the talk assumes, so say that.",
+  "description": "Every talk on one day with its time (Mountain), room and the concepts it assumes. A talk is ready for a student when the student knows every concept it assumes. assumes_status is \"tagged\" when the talk's concepts are known; anything else means it isn't sorted yet, so never call it ready. A tagged talk that assumes no concepts is ready for everyone.",
   "configuration": {
     "query": "FROM sessions | WHERE is_talk == true AND DATE_FORMAT(\"yyyy-MM-dd\", day) == ?day | EVAL local = starts_at - 7 hours, time = DATE_FORMAT(\"EEE HH:mm\", local) | SORT local | KEEP title, time, room, assumes, assumes_status | LIMIT 200",
     "params": {

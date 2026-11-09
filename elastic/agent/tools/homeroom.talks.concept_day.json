@@ -1,9 +1,9 @@
 {
   "id": "homeroom.talks.concept_day",
   "type": "esql",
-  "description": "Talks on one day that assume a given concept, with all the concepts each one assumes. Use it to find talks that build on something the student knows.",
+  "description": "Talks on one day that assume a given concept, with all the concepts each one assumes. Use it to find talks that build on something the student knows. assumes_status is \"tagged\" when the talk's concepts are known; anything else means it isn't sorted yet, so never call it ready. A tagged talk that assumes no concepts is ready for everyone.",
   "configuration": {
-    "query": "FROM sessions | WHERE is_talk == true AND DATE_FORMAT(\"yyyy-MM-dd\", day) == ?day | EVAL needs = assumes, local = starts_at - 7 hours, time = DATE_FORMAT(\"EEE HH:mm\", local) | MV_EXPAND assumes | WHERE assumes == ?concept | SORT local | KEEP title, time, room, needs | LIMIT 100",
+    "query": "FROM sessions | WHERE is_talk == true AND DATE_FORMAT(\"yyyy-MM-dd\", day) == ?day | EVAL needs = assumes, local = starts_at - 7 hours, time = DATE_FORMAT(\"EEE HH:mm\", local) | MV_EXPAND assumes | WHERE assumes == TO_LOWER(REPLACE(?concept, \" \", \"-\")) | SORT local | KEEP title, time, room, needs, assumes_status | LIMIT 100",
     "params": {
       "day": {
         "type": "string",
@@ -11,7 +11,7 @@
       },
       "concept": {
         "type": "string",
-        "description": "A concept slug such as networking-basics (not its name; look the slug up with homeroom.concept.define first)."
+        "description": "A concept slug such as networking-basics, or its name such as Networking basics (spaces become hyphens)."
       }
     }
   },

@@ -174,3 +174,26 @@ def copy_definitions(tmp_path):
     target = tmp_path / "agent"
     shutil.copytree(elastic_sync.DIR, target)
     return target
+
+
+def test_connector_config_change_needs_no_key(kb, monkeypatch, tmp_path):
+    push(kb)
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
+    directory = copy_definitions(tmp_path)
+    connector_file = directory / "connector.json"
+    connector = json.loads(connector_file.read_text(encoding="utf-8"))
+    connector["config"]["taskTypeConfig"]["max_tokens"] = 4096
+    connector_file.write_text(json.dumps(connector), encoding="utf-8")
+    kb.calls.clear()
+    assert push(kb, directory=directory)["connector homeroom-claude"] == "updated"
+    _, path, body = next(c for c in kb.calls if c[0] == "PUT")
+    assert path == f"{CONNECTORS}/homeroom-claude" and "secrets" not in body
+
+
+def test_day_tools_return_the_tag_status_and_accept_concept_names():
+    _, tools, _ = elastic_sync.definitions()
+    by_id = {t["id"]: t for t in tools}
+    for tid in ("homeroom.talks.day", "homeroom.talks.concept_day"):
+        assert "assumes_status" in by_id[tid]["configuration"]["query"]
+        assert "isn't sorted yet" in by_id[tid]["description"]
+    assert 'TO_LOWER(REPLACE(?concept, " ", "-"))' in by_id["homeroom.talks.concept_day"]["configuration"]["query"]
