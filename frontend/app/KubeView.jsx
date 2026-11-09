@@ -98,8 +98,9 @@ function Hour({ p, decoded, showStudent }) {
   );
 }
 
-export default function KubeView({ classId, student }) {
-  const [open, setOpen] = useState(false);
+// startOpen: the class page shows it open; the student page keeps it behind a button.
+export default function KubeView({ classId, student, startOpen = false }) {
+  const [open, setOpen] = useState(startOpen);
   const [placements, setPlacements] = useState(null);
   const [error, setError] = useState(null);
   const [decoded, setDecoded] = useState({});
@@ -147,7 +148,7 @@ export default function KubeView({ classId, student }) {
       <button type="button" aria-expanded={open} aria-controls={regionId} onClick={() => setOpen((o) => !o)}
               style={{ font: "inherit", padding: "0.5rem 0.9rem", borderRadius: 6, border: "2px solid #3b6fb6",
                        background: open ? "#3b6fb6" : "#fff", color: open ? "#fff" : "#1a1a1a", cursor: "pointer" }}>
-        {open ? "Hide how Kubernetes sees my week" : "Show how Kubernetes sees my week"}
+        {`${open ? "Hide" : "Show"} how Kubernetes sees ${student ? "my week" : "this class"}`}
       </button>
       <div id={regionId} hidden={!open} style={{ marginTop: "1rem" }}>
         <p>
