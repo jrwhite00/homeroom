@@ -11,7 +11,7 @@ Every PDF must match the SHA-256 below, so the parser always sees the text it wa
 After parsing, each source must give the expected number of standards, or nothing is indexed.
 
 Connection comes from the environment, never from arguments, so the key stays out of shell history:
-    ES_URL      default http://localhost:9200 (falls back to ES_LOCAL_URL)
+    ES_URL      default http://127.0.0.1:9200 (falls back to ES_LOCAL_URL)
     ES_API_KEY  (falls back to ES_LOCAL_API_KEY, the name start-local uses)
 
 After loading it compares each source's _count with the number parsed and exits 1 if any differ.
@@ -30,6 +30,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.es import DEFAULT_URL, loopback
 from app.standards import parse_source
 
 INDEX = "standards"
@@ -145,7 +146,7 @@ def mapping(inference_id: str = DEFAULT_INFERENCE) -> dict:
 
 class ES:
     def __init__(self, url: str, api_key: str | None):
-        self.url = url.rstrip("/")
+        self.url = loopback(url).rstrip("/")
         self.headers = {"Authorization": f"ApiKey {api_key}"} if api_key else {}
 
     def req(self, method: str, path: str, body=None, ndjson: bool = False, ok404: bool = False, timeout: int = 900):
@@ -218,7 +219,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{'total':42} {sum(len(d) for d in by_source.values()):6}")
         return 0
 
-    es = ES(os.environ.get("ES_URL") or os.environ.get("ES_LOCAL_URL") or "http://localhost:9200",
+    es = ES(os.environ.get("ES_URL") or os.environ.get("ES_LOCAL_URL") or DEFAULT_URL,
             os.environ.get("ES_API_KEY") or os.environ.get("ES_LOCAL_API_KEY"))
     print("Elasticsearch", es.req("GET", "/")["version"]["number"], "at", es.url)
     load(es, by_source, args.recreate, args.inference_id)

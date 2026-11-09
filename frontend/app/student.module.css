@@ -1,0 +1,236 @@
+/* Colors are chosen for at least 4.5:1 contrast on white. */
+.main {
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 760px;
+  margin: 2rem auto 4rem;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+.main button,
+.main select,
+.main input[type="text"] {
+  font: inherit;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid #4a4a4a;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+}
+
+.main button {
+  cursor: pointer;
+  background: #f0f0f0;
+}
+
+.main button:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.main :focus-visible {
+  outline: 3px solid #0b57d0;
+  outline-offset: 2px;
+}
+
+.lead {
+  font-size: 1.1rem;
+}
+
+.decoder,
+.panel {
+  border: 1px solid #767676;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.decoder summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form {
+  margin: 1.5rem 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  max-width: 28rem;
+}
+
+.field label,
+.fieldset legend {
+  font-weight: 600;
+}
+
+.fieldset {
+  border: 1px solid #767676;
+  border-radius: 8px;
+  padding: 0.5rem 1rem 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+}
+
+.check input {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.definition {
+  flex-basis: 100%;
+  padding-left: 1.65rem;
+  font-size: 0.92rem;
+  color: #454545;
+}
+
+.primary.primary {
+  background: #0b57d0;
+  border-color: #0b57d0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 1rem;
+}
+
+.inline button {
+  margin-top: 1.9rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.linkButton.linkButton {
+  border: none;
+  background: none;
+  padding: 0.1rem 0.2rem;
+  color: #0b57d0;
+  text-decoration: underline;
+}
+
+.small {
+  font-size: 0.92rem;
+  color: #454545;
+  margin: 0.25rem 0;
+}
+
+.error {
+  color: #a50e0e;
+  font-weight: 600;
+}
+
+.note {
+  background: #eef4ff;
+  border-left: 4px solid #0b57d0;
+  padding: 0.5rem 0.75rem;
+}
+
+.ticked ul {
+  margin: 0.25rem 0;
+}
+
+.week {
+  margin-top: 2rem;
+}
+
+.group {
+  border-top: 1px solid #767676;
+  padding: 0.5rem 0;
+}
+
+.group summary {
+  cursor: pointer;
+}
+
+.groupTitle {
+  display: inline;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.count {
+  font-weight: normal;
+  color: #454545;
+}
+
+.day {
+  font-size: 1rem;
+  margin: 1rem 0 0.25rem;
+}
+
+.talks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.talk {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.time {
+  display: inline-block;
+  min-width: 5.5rem;
+  color: #454545;
+  font-variant-numeric: tabular-nums;
+}
+
+.talkLink {
+  color: #0b57d0;
+}
+
+.talkLink:visited {
+  color: #6a1b9a;
+}
+
+.room {
+  color: #454545;
+}
+
+.missing,
+.suggest {
+  margin: 0.15rem 0 0 5.75rem;
+  font-size: 0.95rem;
+}
+
+.suggest {
+  color: #1d5e2b;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .missing,
+  .suggest {
+    margin-left: 0;
+  }
+}

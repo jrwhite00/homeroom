@@ -43,6 +43,16 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: homeroom-backend
+            # Elasticsearch is the start-local container (es-local-dev), joined to the kind network so
+            # pods reach it by name. Its API key comes from a secret; see Commands in CLAUDE.md.
+            - name: ES_URL
+              value: http://es-local-dev:9200
+            - name: ES_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homeroom-es
+                  key: api_key
+                  optional: true
             # The chaos switch's token. Optional: without the secret the switch can't be flipped.
             - name: CHAOS_TOKEN
               valueFrom:

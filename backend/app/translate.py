@@ -18,15 +18,21 @@ MAX_CONCEPTS = 3
 RELATIVE_CUTOFF = 0.8
 
 
-def translate(es: ES, question: str, index: str = INDEX) -> dict | None:
-    """Return {"text", "concepts"} for the closest concepts, or None if no concept matches."""
-    body = {"size": MAX_CONCEPTS, "query": {"match": {"semantic": {"query": question}}},
+def closest_concepts(es: ES, text: str, index: str = INDEX) -> list[dict]:
+    """The MAX_CONCEPTS concepts closest in meaning to the text, best first, each with its "_score"."""
+    body = {"size": MAX_CONCEPTS, "query": {"match": {"semantic": {"query": text}}},
             "_source": ["slug", "concept", "technical_words"]}
     hits = es.search(index, body).get("hits", {}).get("hits", [])
-    if not hits or not hits[0].get("_score"):
+    return [{**h["_source"], "_score": h.get("_score") or 0} for h in hits]
+
+
+def translate(es: ES, question: str, index: str = INDEX) -> dict | None:
+    """Return {"text", "concepts"} for the closest concepts, or None if no concept matches."""
+    hits = closest_concepts(es, question, index)
+    if not hits or not hits[0]["_score"]:
         return None
     top = hits[0]["_score"]
-    chosen = [h["_source"] for h in hits if h.get("_score", 0) >= RELATIVE_CUTOFF * top]
+    chosen = [h for h in hits if h["_score"] >= RELATIVE_CUTOFF * top]
     words: list[str] = []
     for concept in chosen:
         words += [w for w in concept.get("technical_words", []) if w not in words]

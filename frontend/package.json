@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test app/lib/*.test.mjs"
   },
   "dependencies": {
     "@dash0/sdk-web": "0.28.3",

@@ -100,6 +100,24 @@ def test_latest_failed_scheduling_message_per_pod_uid():
     assert placer.latest_failed_scheduling(events) == {"uid-p": "new"}
 
 
+def test_latest_event_is_the_last_row_of_kubectl_describe():
+    pods = {"p": {"metadata": {"name": "p", "uid": "u2"}}}
+    ev = lambda reason, uid, **stamps: {"type": "Normal", "reason": reason, "message": f"{reason} msg",
+                                        "involvedObject": {"kind": "Pod", "name": "p", "uid": uid},
+                                        "source": {"component": "default-scheduler"}, **stamps}
+    events = [
+        ev("FailedScheduling", "u2", lastTimestamp="2026-11-09T19:00:00Z"),
+        ev("Scheduled", "u2", eventTime="2026-11-09T19:00:00.500000Z"),  # same second, later: describe sorts it last
+        ev("Evicted", "u1", lastTimestamp="2026-11-09T20:00:00Z"),  # the evicted pod this one replaced
+    ]
+    assert placer.latest_events(events, pods) == {"p": {
+        "type": "Normal", "reason": "Scheduled", "from": "default-scheduler", "message": "Scheduled msg",
+        "at": "2026-11-09T19:00:00.500000+00:00"}}
+    events.append(ev("Pulled", "u2", lastTimestamp="2026-11-09T18:00:00Z",
+                     series={"lastObservedTime": "2026-11-09T21:00:00Z"}))  # a repeating event's last sighting
+    assert placer.latest_events(events, pods)["p"]["reason"] == "Pulled"
+
+
 # --- controller loop with fakes ------------------------------------------------------------------------
 
 class FakeKube:
@@ -190,10 +208,29 @@ def test_controller_records_pending_message_and_recreates_evicted_pod(monkeypatc
     counts = placer.reconcile(kube, es, "demo")
     status = es.docs["demo:maya:test-0000"]["status"]
     assert counts["pending"] == 1 and status["message"] == msg and status["missing"][0]["slug"] == "containers"
+    assert (status["pod"], status["namespace"]) == ("maya-test-0000", "class-demo")
+    assert status["event"]["reason"] == "FailedScheduling" and status["event"]["message"] == msg
 
     del kube.pods["maya-test-0000"]  # a NoExecute taint evicted the bare pod; nothing brings it back
     assert placer.reconcile(kube, es, "demo")["recreated"] == 1
     assert "maya-test-0000" in kube.pods
+
+
+def test_controller_records_the_scheduled_event_for_a_seated_hour(monkeypatch):
+    monkeypatch.setattr(placer.time, "sleep", lambda s: None)
+    kube, es = FakeKube(nodes=[node("talk-1", slot="thu-1430", title="Kubernetes for Beginners")]), FakeES()
+    placer.place(kube, es, "demo", "maya", "thu-1430", [])
+    pod = kube.pods["maya-thu-1430"]
+    pod["metadata"]["uid"], pod["spec"]["nodeName"], pod["status"] = "u1", "talk-1", {"phase": "Running"}
+    msg = "Successfully assigned class-demo/maya-thu-1430 to talk-1"
+    kube.events = [{"type": "Normal", "reason": "Scheduled", "message": msg, "lastTimestamp": "2026-11-09T19:00:00Z",
+                    "source": {"component": "default-scheduler"},
+                    "involvedObject": {"kind": "Pod", "name": "maya-thu-1430", "uid": "u1"}}]
+    placer.reconcile(kube, es, "demo")
+    status = es.docs["demo:maya:thu-1430"]["status"]
+    assert (status["phase"], status["talk"], status["message"]) == ("Running", "talk-1", None)
+    assert status["event"] == {"type": "Normal", "reason": "Scheduled", "from": "default-scheduler",
+                               "message": msg, "at": "2026-11-09T19:00:00+00:00"}
 
 
 def test_controller_waits_for_failed_pod_deletion(monkeypatch):
@@ -297,7 +334,8 @@ def test_placements_api_serves_what_the_controller_saw():
 
 # --- the Kubernetes view: what kubectl describe shows ---------------------------------------------------
 
-def test_latest_event_of_any_reason_per_pod_uid():
+def test_latest_event_of_any_reason_new_style_events_and_reporting_component():
+    pods = {"p": {"metadata": {"name": "p", "uid": "uid-p"}}, "q": {"metadata": {"name": "q", "uid": "uid-q"}}}
     events = [
         {"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "p", "uid": "uid-p"},
          "lastTimestamp": "2026-11-09T19:00:00Z", "message": "0/602 nodes are available"},
@@ -309,13 +347,14 @@ def test_latest_event_of_any_reason_per_pod_uid():
         {"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "q", "uid": "uid-q"},
          "lastTimestamp": "2026-11-09T19:01:00Z", "message": "untolerated", "source": {"component": "default-scheduler"}},
         {"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "r"},
-         "lastTimestamp": "2026-11-09T19:08:00Z", "message": "event without uid"},
+         "lastTimestamp": "2026-11-09T19:08:00Z", "message": "event for a pod we don't have"},
     ]
-    assert placer.latest_events(events) == {
-        "uid-p": {"type": "Normal", "reason": "Scheduled", "from": "default-scheduler",
-                  "message": "Successfully assigned class-demo/p to talk-1"},
-        "old-uid": {"type": "Warning", "reason": "FailedScheduling", "from": None, "message": "evicted pod event"},
-        "uid-q": {"type": "Warning", "reason": "FailedScheduling", "from": "default-scheduler", "message": "untolerated"}}
+    latest = placer.latest_events(events, pods)
+    assert set(latest) == {"p", "q"}
+    assert latest["p"] == {"type": "Normal", "reason": "Scheduled", "from": "default-scheduler",
+                           "message": "Successfully assigned class-demo/p to talk-1",
+                           "at": "2026-11-09T19:06:00.123456+00:00"}
+    assert latest["q"]["message"] == "untolerated" and latest["q"]["from"] == "default-scheduler"
 
 
 def test_controller_records_pod_node_and_latest_event_word_for_word(monkeypatch):
@@ -334,7 +373,8 @@ def test_controller_records_pod_node_and_latest_event_word_for_word(monkeypatch)
     status = es.docs["demo:maya:test-0000"]["status"]
     assert status["pod"] == "maya-test-0000" and status["node"] is None
     assert status["message"] == pending
-    assert status["event"] == {"type": "Warning", "reason": "FailedScheduling", "from": None, "message": pending}
+    assert {k: status["event"][k] for k in ("type", "reason", "from", "message")} == \
+        {"type": "Warning", "reason": "FailedScheduling", "from": "", "message": pending}
     assert status["plain"] == "Learn containers first, and a talk in this hour opens up."
 
     placer.learn(kube, es, "demo", "maya", "containers")
@@ -347,7 +387,9 @@ def test_controller_records_pod_node_and_latest_event_word_for_word(monkeypatch)
     placer.reconcile(kube, es, "demo")
     status = es.docs["demo:maya:test-0000"]["status"]
     assert status["phase"] == "Running" and status["node"] == "talk-1" and status["host_ip"] == "10.244.1.181"
-    assert status["event"] == {"type": "Normal", "reason": "Scheduled", "from": None, "message": done}
+    assert {k: status["event"][k] for k in ("type", "reason", "from", "message")} == \
+        {"type": "Normal", "reason": "Scheduled", "from": "", "message": done}
+    assert status["namespace"] == "class-demo" and status["event"]["at"].startswith("2026-11-09T19:05:00")
 
 
 def test_placements_can_be_filtered_to_one_student():
