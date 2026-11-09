@@ -227,6 +227,15 @@ Browser monitoring (`@dash0/sdk-web`) reads its endpoint and ingest-only token f
   It explains any problem in plain words, and it never approves or pushes changes to course files.
 - **Teachers' wording is used as written.** The app shows Anna's definitions exactly as she wrote them. The AI only picks which of her concepts a talk assumes. It never writes a definition.
 
+## How Gitar keeps the data honest
+
+Gitar has two jobs, and which one it does depends on what a pull request touches.
+
+- **Course pull requests (Anna's area): Gitar flags problems and fixes nothing.** It runs the curriculum check above, which catches a misspelled concept, a blank standard or a stray name. Then it posts one comment a teacher can read, quoting the line and saying how to fix it. It can't edit `curriculum/`, and auto-apply is never turned on for these pull requests. If its code review shows "Changes requested" or "Blocked" on a course, treat that as advice: Anna decides, and a person reviews the final diff.
+- **Code pull requests (ours): Gitar makes the app tougher.** For backend, frontend and deploy changes we comment `gitar auto-apply:on`, so Gitar can push fixes itself. For example, it might fix the loader so a course with odd spacing doesn't crash it, so a course pointing at a missing concept gets skipped safely, or so a proposal always lands in `data/proposed-courses/` and never goes straight into `curriculum/`. James still merges.
+
+Gitar catches the mechanical mistakes, but not every mistake. A course that says Robotics teaches networking passes all four checks and is still wrong. A teacher catches that kind of mistake, and that's the point. In short, Gitar flags messy data for Anna to fix, makes the code handle it, and never changes the teacher's data itself.
+
 ## Data sources and licenses
 
 - **KubeCon + CloudNativeCon North America 2026 schedule** (Salt Lake City, November 9-12, 2026). It covers the sessions, speakers and Project Pavilion kiosks. The data comes from the public event schedule published by the CNCF and the Linux Foundation, and it stays with them and the speakers. It's loaded into Elasticsearch and isn't committed to this repo.
