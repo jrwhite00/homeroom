@@ -44,7 +44,9 @@ def ensure_index(es: ES) -> None:
             "class": kw, "student": kw, "slot": kw, "knows": kw, "updated_at": {"type": "date"},
             "status": {"properties": {"phase": kw, "talk": kw, "title": {"type": "text"},
                                       "message": {"type": "text"}, "plain": {"type": "text"},
-                                      "missing": {"properties": {"slug": kw, "name": kw}}}}}}})
+                                      "missing": {"properties": {"slug": kw, "name": kw}},
+                                      "pod": kw, "node": kw, "host_ip": kw,
+                                      "event": {"properties": {"type": kw, "reason": kw, "from": kw, "message": {"type": "text"}}}}}}}})
 
 
 def desired(es: ES, class_name: str) -> list[dict]:
@@ -114,6 +116,25 @@ def latest_failed_scheduling(events: list[dict]) -> dict[str, str]:
     return {k: v[1] for k, v in latest.items()}
 
 
+def event_time(e: dict) -> str:
+    return e.get("lastTimestamp") or e.get("eventTime") or e.get("firstTimestamp") or         (e.get("metadata") or {}).get("creationTimestamp") or ""
+
+
+def latest_events(events: list[dict]) -> dict[str, dict]:
+    """Pod name -> its most recent event of any reason (type, reason, message), as kubectl describe lists it."""
+    latest: dict[str, tuple[str, dict]] = {}
+    for e in events:
+        name = (e.get("involvedObject") or {}).get("name")
+        if not name:
+            continue
+        stamp = event_time(e)
+        if name not in latest or stamp >= latest[name][0]:
+            source = (e.get("source") or {}).get("component") or e.get("reportingComponent") or None
+            latest[name] = (stamp, {"type": e.get("type"), "reason": e.get("reason"), "from": source,
+                                    "message": e.get("message", "")})
+    return {k: v[1] for k, v in latest.items()}
+
+
 def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | None = None) -> dict:
     """One pass of the controller loop. Returns counts."""
     ns = namespace(class_name)
@@ -131,8 +152,8 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
     if counts["recreated"]:
         time.sleep(2)  # give the scheduler a moment before reading status
         pods = {p["metadata"]["name"]: p for p in kube.json("get", "pods", "-n", ns, "-l", f"{MANAGED_BY}={MANAGER}")["items"]}
-    messages = latest_failed_scheduling(kube.json("get", "events", "-n", ns, "--field-selector",
-                                                  "reason=FailedScheduling")["items"])
+    events = kube.json("get", "events", "-n", ns)["items"]
+    messages, latest = latest_failed_scheduling(events), latest_events(events)
     slots = {d["slot"] for d in want}
     nodes = kube.json("get", "nodes", "-l", "type=kwok")["items"] if slots else []
     by_slot: dict[str, list[dict]] = {}
@@ -145,6 +166,9 @@ def reconcile(kube: Kubectl, es: ES, class_name: str, names: dict[str, str] | No
         pod = pods.get(name)
         status = summarize(pod, messages.get(name) if pod and not pod["spec"].get("nodeName") else None,
                            by_slot.get(d["slot"], []), names)
+        # What kubectl describe shows for this pod: its name, the node it's on and its latest event.
+        status.update(pod=name, node=(pod or {}).get("spec", {}).get("nodeName"),
+                      host_ip=(pod or {}).get("status", {}).get("hostIP"), event=latest.get(name))
         counts["running" if status["talk"] else "pending"] += 1
         lines.append(json.dumps({"update": {"_index": INDEX, "_id": doc_id(class_name, d["student"], d["slot"])}}))
         lines.append(json.dumps({"doc": {"status": status, "updated_at": now}}))

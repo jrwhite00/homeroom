@@ -288,3 +288,66 @@ def test_placements_api_serves_what_the_controller_saw():
     finally:
         app.dependency_overrides.clear()
     assert body["placements"][0]["phase"] == "Pending" and body["placements"][0]["plain"] == "Learn Containers first."
+
+
+# --- the Kubernetes view: what kubectl describe shows ---------------------------------------------------
+
+def test_latest_event_of_any_reason_per_pod():
+    events = [
+        {"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "p"},
+         "lastTimestamp": "2026-11-09T19:00:00Z", "message": "0/602 nodes are available"},
+        {"type": "Normal", "reason": "Scheduled", "involvedObject": {"name": "p"}, "lastTimestamp": None,
+         "reportingComponent": "default-scheduler",
+         "eventTime": "2026-11-09T19:06:00.123456Z", "message": "Successfully assigned class-demo/p to talk-1"},
+        {"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "q"},
+         "lastTimestamp": "2026-11-09T19:01:00Z", "message": "untolerated", "source": {"component": "default-scheduler"}},
+    ]
+    assert placer.latest_events(events) == {
+        "p": {"type": "Normal", "reason": "Scheduled", "from": "default-scheduler",
+              "message": "Successfully assigned class-demo/p to talk-1"},
+        "q": {"type": "Warning", "reason": "FailedScheduling", "from": "default-scheduler", "message": "untolerated"}}
+
+
+def test_controller_records_pod_node_and_latest_event_word_for_word(monkeypatch):
+    monkeypatch.setattr(placer.time, "sleep", lambda s: None)
+    kube, es = FakeKube(nodes=[node("talk-1", slot="test-0000", prereqs=["containers"])]), FakeES()
+    placer.place(kube, es, "demo", "maya", "test-0000", ["python"])
+    pending = "0/602 nodes are available: 1 node(s) had untolerated taint(s)."
+    kube.events = [{"type": "Warning", "reason": "FailedScheduling", "involvedObject": {"name": "maya-test-0000"},
+                    "lastTimestamp": "2026-11-09T19:00:00Z", "message": pending}]
+    placer.reconcile(kube, es, "demo")
+    status = es.docs["demo:maya:test-0000"]["status"]
+    assert status["pod"] == "maya-test-0000" and status["node"] is None
+    assert status["event"] == {"type": "Warning", "reason": "FailedScheduling", "from": None, "message": pending}
+    assert status["plain"] == "Learn containers first, and a talk in this hour opens up."
+
+    placer.learn(kube, es, "demo", "maya", "containers")
+    kube.pods["maya-test-0000"]["spec"]["nodeName"] = "talk-1"
+    kube.pods["maya-test-0000"]["status"] = {"phase": "Running", "hostIP": "10.244.1.181"}
+    done = "Successfully assigned class-demo/maya-test-0000 to talk-1"
+    kube.events.append({"type": "Normal", "reason": "Scheduled", "involvedObject": {"name": "maya-test-0000"},
+                        "eventTime": "2026-11-09T19:05:00.000000Z", "message": done})
+    placer.reconcile(kube, es, "demo")
+    status = es.docs["demo:maya:test-0000"]["status"]
+    assert status["phase"] == "Running" and status["node"] == "talk-1" and status["host_ip"] == "10.244.1.181"
+    assert status["event"] == {"type": "Normal", "reason": "Scheduled", "from": None, "message": done}
+
+
+def test_placements_can_be_filtered_to_one_student():
+    seen = {}
+
+    class ES:
+        def search(self, index, body):
+            seen.update(body)
+            return {"hits": {"hits": [{"_source": {"class": "demo", "student": "maya", "slot": "thu-1245", "knows": [],
+                                                   "status": {"phase": "Running", "pod": "maya-thu-1245",
+                                                              "node": "talk-1371083"}}}]}}
+    app.dependency_overrides[get_es] = lambda: ES()
+    try:
+        client = TestClient(app)
+        body = client.get("/placements", params={"class": "demo", "student": "maya"}).json()
+        assert client.get("/placements", params={"class": "demo", "student": "Not A Pseudonym"}).status_code == 422
+    finally:
+        app.dependency_overrides.clear()
+    assert seen["query"] == {"bool": {"filter": [{"term": {"class": "demo"}}, {"term": {"student": "maya"}}]}}
+    assert body["placements"][0]["pod"] == "maya-thu-1245" and body["placements"][0]["node"] == "talk-1371083"
