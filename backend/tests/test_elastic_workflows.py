@@ -1,4 +1,6 @@
 """elastic_workflows: validate, then create or update by name; run and wait; keys never printed."""
+import re
+
 import pytest
 
 from app import elastic_workflows as ew
@@ -108,14 +110,44 @@ def test_repo_workflows_have_names_and_write_only_to_the_events_index():
     workflows = ew.read_workflows()
     assert set(workflows) == {"talk-cancelled", "tagging-check"}
     for yaml_text in workflows.values():
-        for index in __import__("re").findall(r"^\s+index: (\S+)", yaml_text, __import__("re").M):
+        for index in re.findall(r"^\s+index: (\S+)", yaml_text, re.M):
             assert index in ("sessions", ew.EVENTS_INDEX)
 
 
-def test_talk_cancelled_is_labeled_simulated_by_default_and_never_reads_student_names():
+def talk_cancelled_steps():
+    """talk-cancelled's YAML and its steps as (indent, name, type), parsed from the file."""
     text = ew.read_workflows()["talk-cancelled"]
-    assert "name: simulated" in text and "default: true" in text
-    assert "COUNT_DISTINCT(student)" in text and "student }}" not in text  # counted, never copied out
+    return text, re.findall(r"^( *)- name: (\S+)\n\1  type: (\S+)", text, re.M)
+
+
+def test_talk_cancelled_is_simulated_by_default():
+    text, _ = talk_cancelled_steps()
+    assert re.search(r"- name: simulated\n\s+type: boolean\n\s+default: true", text)
+
+
+def test_simulated_run_never_touches_the_session():
+    # The only write to sessions is mark_cancelled, nested under an if that runs only when simulated is false.
+    text, steps = talk_cancelled_steps()
+    updates = [(indent, name) for indent, name, kind in steps if kind == "elasticsearch.update"]
+    assert updates == [("      ", "mark_cancelled")]  # nested one level, inside the if
+    if_block = text[text.index("- name: apply_if_real"):text.index("- name: write_summary")]
+    assert 'condition: "inputs.simulated : false"' in if_block and "mark_cancelled" in if_block
+    assert "else:" not in if_block
+    top = [name for indent, name, kind in steps if indent == "  "]
+    assert top == ["get_talk", "count_students", "apply_if_real", "write_summary"]
+
+
+def test_summary_always_written_and_says_which_path_ran():
+    text, steps = talk_cancelled_steps()
+    summary = text[text.index("- name: write_summary"):]
+    assert f"index: {ew.EVENTS_INDEX}" in summary and 'simulated: "{{ inputs.simulated }}"' in summary
+    assert "simulated: talk not changed" in summary and "talk marked cancelled" in summary
+    assert "note" in ew.EVENTS_MAPPING["mappings"]["properties"]
+
+
+def test_students_are_counted_never_copied_out():
+    text, _ = talk_cancelled_steps()
+    assert "COUNT_DISTINCT(student)" in text and "student }}" not in text
 
 
 def test_key_goes_only_in_the_header(monkeypatch):

@@ -1,9 +1,9 @@
 version: "1"
 name: talk-cancelled
 description: >-
-  A talk is cancelled. Marks the session cancelled in the sessions index, counts the students
-  placed in it from the placements index, and records a summary in homeroom-workflow-events.
-  Demo runs are labeled simulated (the default).
+  A talk is cancelled. Counts the students placed in it from the placements index and records a
+  summary in homeroom-workflow-events. Only with simulated=false does it also mark the session
+  cancelled in the sessions index; a simulated run (the default, for the demo) never changes the talk.
 enabled: true
 tags: [homeroom]
 triggers:
@@ -16,7 +16,7 @@ triggers:
       - name: simulated
         type: boolean
         default: true
-        description: Label the cancellation as simulated (demo)
+        description: Simulated (default) only records what would happen; false really marks the talk cancelled
 steps:
   - name: get_talk
     type: elasticsearch.search
@@ -27,16 +27,6 @@ steps:
       query:
         term:
           id: "{{ inputs.talk_id }}"
-  - name: mark_cancelled
-    type: elasticsearch.update
-    with:
-      index: sessions
-      id: "{{ inputs.talk_id }}"
-      refresh: wait_for
-      doc:
-        status: Cancelled
-        cancelled_at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
-        cancelled_simulated: "{{ inputs.simulated }}"
   - name: count_students
     type: elasticsearch.esql.query
     with:
@@ -46,6 +36,19 @@ steps:
         | STATS students = COUNT_DISTINCT(student), slot = MAX(slot)
       params:
         - "talk-{{ inputs.talk_id }}"
+  - name: apply_if_real
+    type: if
+    condition: "inputs.simulated : false"
+    steps:
+      - name: mark_cancelled
+        type: elasticsearch.update
+        with:
+          index: sessions
+          id: "{{ inputs.talk_id }}"
+          refresh: wait_for
+          doc:
+            status: Cancelled
+            cancelled_at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
   - name: write_summary
     type: elasticsearch.index
     with:
@@ -60,5 +63,6 @@ steps:
         slot: "{{ steps.count_students.output.values[0][1] }}"
         students_affected: "{{ steps.count_students.output.values[0][0] }}"
         simulated: "{{ inputs.simulated }}"
+        note: "{% if inputs.simulated == false %}talk marked cancelled{% else %}simulated: talk not changed{% endif %}"
         at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
         execution_id: "{{ execution.id }}"

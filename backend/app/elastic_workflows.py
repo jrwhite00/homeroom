@@ -33,6 +33,7 @@ EVENTS_MAPPING = {"mappings": {"properties": {
     "type": {"type": "keyword"}, "talk_id": {"type": "keyword"}, "title": {"type": "text"},
     "starts_at": {"type": "date"}, "slot": {"type": "keyword"}, "students_affected": {"type": "integer"},
     "total": {"type": "integer"}, "untagged": {"type": "integer"}, "simulated": {"type": "boolean"},
+    "note": {"type": "keyword"},
     "at": {"type": "date"}, "execution_id": {"type": "keyword"},
 }}}
 DONE = {"completed", "failed", "cancelled", "timed_out"}
