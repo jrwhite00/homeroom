@@ -2,6 +2,8 @@
 
 > **To learn the pod, you must become the pod.**
 
+Hi, Anna and I work for Oasis XRE, a k-12 education service provider, so we figured we would build something to help our often intimidated students attend sessions that they have a better chance of understanding. Instead of sitting through something too advacned for them.
+
 A high school student picks their state and the computer science courses they've taken. Homeroom sorts every KubeCon talk into **ready**, **one step away** and **not yet**, and then Kubernetes' own scheduler builds their week.
 
 - **Talks are nodes.** Each talk is a simulated Kubernetes node. The concepts a talk assumes are taints on that node.
@@ -29,17 +31,23 @@ A high school student picks their state and the computer science courses they've
   - **Embeddings:** `semantic_text` fields use ELSER embeddings.
   - **`/search`:** fuses BM25 and semantic results with an `rrf` retriever.
   - **Translation:** semantic search over the concept definitions turns "how do big websites stay up when everyone visits" into the technical words talks actually use.
+
 - **Gitar** reviews every pull request.
   - It follows the rules in `.gitar/rules/`.
   - On course pull requests, the curriculum check posts a comment a teacher can read.
   - With `gitar auto-apply:on` it pushes its own fixes. In the demo PR #33, which deliberately broke `readiness()`, Gitar found the cause of the CI failure and pushed the fix.
-- **Dash0** is where we watch the app, and where the teacher's view lives: a bar chart on the dashboard showing which concepts most often keep a class "one step away" from talks. It answers the teacher's question: "What should I teach before the trip?" Under the hood:
+
+-**Special Gitar** We figured the best use of Gitar is one where our product does not work without it. I think we found a pretty creative way of doing that. If you look at Anna's PRs, she builds the contraint tables from looking at university courses (ones our students take through duel enrollment) and gitar comments on wether or not the contstraints match the course curriculum. So essentially we use gitar not only to review PRs, but also to help Anna input otherwise really messy data.
+
+- **Dash0** is kind of litterally the teacher's view lives: a bar chart on the dashboard showing which concepts most often keep a class "one step away" from talks. It answers the teacher's question: "What should I teach before the trip?" Under the hood:
   - The Dash0 operator auto-instruments the backend.
   - The backend adds its own spans and metrics.
   - The dashboard and two targets (SLOs) are stored as code in `observability/dash0/`.
   - The student page has browser monitoring.
   - Flipping the chaos switch shows up on the dashboard within about two minutes.
+  - 
 - **Radar** is the organizer's view. Look there to see how many students are having trouble finding sessions, and what would happen if a talk got cancelled. It runs in the `radar` namespace, and its MCP server lets the coding agent read the cluster too.
+- This only really works because these students are literally kubernetes objects, we figure because kubernetes is kind of just a scheduler, if we make our students pods and sessions nodes, we can just have kubernetes rebalance when a session (a node) is cancled (like a node going down and pods having to be redistributed.)
 
 ## Setup from a clean laptop
 
