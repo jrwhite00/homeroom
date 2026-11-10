@@ -1,0 +1,68 @@
+version: "1"
+name: talk-cancelled
+description: >-
+  A talk is cancelled. Counts the students placed in it from the placements index and records a
+  summary in homeroom-workflow-events. Only with simulated=false does it also mark the session
+  cancelled in the sessions index; a simulated run (the default, for the demo) never changes the talk.
+enabled: true
+tags: [homeroom]
+triggers:
+  - type: manual
+    inputs:
+      - name: talk_id
+        type: string
+        required: true
+        description: The session id, for example 1371083
+      - name: simulated
+        type: boolean
+        default: true
+        description: Simulated (default) only records what would happen; false really marks the talk cancelled
+steps:
+  - name: get_talk
+    type: elasticsearch.search
+    with:
+      index: sessions
+      size: 1
+      _source: [id, title, starts_at]
+      query:
+        term:
+          id: "{{ inputs.talk_id }}"
+  - name: count_students
+    type: elasticsearch.esql.query
+    with:
+      format: json
+      query: >-
+        FROM placements | WHERE status.talk == ?
+        | STATS students = COUNT_DISTINCT(student), slot = MAX(slot)
+      params:
+        - "talk-{{ inputs.talk_id }}"
+  - name: apply_if_real
+    type: if
+    condition: "inputs.simulated : false"
+    steps:
+      - name: mark_cancelled
+        type: elasticsearch.update
+        with:
+          index: sessions
+          id: "{{ inputs.talk_id }}"
+          refresh: wait_for
+          doc:
+            status: Cancelled
+            cancelled_at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
+  - name: write_summary
+    type: elasticsearch.index
+    with:
+      index: homeroom-workflow-events
+      id: "talk-cancelled-{{ inputs.talk_id }}-{{ execution.id }}"
+      refresh: wait_for
+      document:
+        type: talk-cancelled
+        talk_id: "{{ inputs.talk_id }}"
+        title: "{{ steps.get_talk.output.hits.hits[0]._source.title }}"
+        starts_at: "{{ steps.get_talk.output.hits.hits[0]._source.starts_at }}"
+        slot: "{{ steps.count_students.output.values[0][1] }}"
+        students_affected: "{{ steps.count_students.output.values[0][0] }}"
+        simulated: "{{ inputs.simulated }}"
+        note: "{% if inputs.simulated == false %}talk marked cancelled{% else %}simulated: talk not changed{% endif %}"
+        at: "{{ execution.startedAt | date: \"%Y-%m-%dT%H:%M:%S%:z\" }}"
+        execution_id: "{{ execution.id }}"
